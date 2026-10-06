@@ -1,3 +1,11 @@
+---
+import { getDict, resolveLocale, localizePath } from "../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+const docHref = localizePath("/doc", locale);
+---
+
 <footer
   class="relative mt-20 border-t border-purple-500/10 bg-black/20 py-12 overflow-hidden"
 >
@@ -23,10 +31,10 @@
             Venus<span class="text-purple-300">.</span>
           </span>
         </div>
-        <p class="max-w-70 text-sm text-purple-100/40 leading-relaxed">
-          Refining <code class="text-purple-200/60 font-mono">fetch</code> into a
-          calm, predictable, and resilient experience.
-        </p>
+        <p
+          class="max-w-70 text-sm text-purple-100/40 leading-relaxed"
+          set:html={t.footer.tagline}
+        />
       </div>
 
       <div
@@ -36,7 +44,7 @@
           <h4
             class="text-xs font-bold uppercase tracking-widest text-white mb-5"
           >
-            Proyecto
+            {t.footer.project}
           </h4>
           <ul class="space-y-3 text-sm text-purple-100/40">
             <li>
@@ -54,8 +62,10 @@
               >
             </li>
             <li>
-              <a href="/doc" class="hover:text-purple-200 transition-colors"
-                >Docs</a
+              <a
+                href={docHref}
+                class="hover:text-purple-200 transition-colors"
+                >{t.footer.docs}</a
               >
             </li>
           </ul>
@@ -65,7 +75,7 @@
           <h4
             class="text-xs font-bold uppercase tracking-widest text-white mb-5"
           >
-            Autor
+            {t.footer.author}
           </h4>
           <ul class="space-y-3 text-sm text-purple-100/40">
             <li>
@@ -89,7 +99,7 @@
       class="mt-16 flex flex-col items-center justify-between border-t border-white/5 pt-8 gap-4 md:flex-row"
     >
       <p class="text-[10px] sm:text-xs text-purple-100/20 order-2 md:order-1">
-        &copy; {new Date().getFullYear()} @braydev. Built with Astro & Love.
+        &copy; {new Date().getFullYear()} @braydev. {t.footer.built}
       </p>
 
       <div class="flex items-center gap-4 order-1 md:order-2">
@@ -99,7 +109,7 @@
           <span
             class="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"
           ></span>
-          Operational on Vercel
+          {t.footer.operational}
         </span>
       </div>
     </div>

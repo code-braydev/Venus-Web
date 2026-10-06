@@ -2,24 +2,52 @@
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import { getDict, localeFromPath, localizePath } from "../i18n";
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
+  autoRedirect?: boolean;
 }
 
 const {
-  title = "Venus | Networking without friction",
-  description = "A modern, lightweight, type-safe networking library for JS/TS. Stop fighting fetch.",
-  image = "/og-image.png", // Crea una imagen de 1200x630 para cuando compartas el link
+  title,
+  description,
+  image = "/og-image.png", // 1200x630 image used when the link is shared
+  autoRedirect = false,
 } = Astro.props;
 
+const locale = localeFromPath(Astro.url.pathname);
+const t = getDict(locale);
+
+const path = Astro.url.pathname.replace(/\/$/, "");
+const isDocPage = path === "/doc" || path.endsWith("/doc");
+const pageTitle = title ?? (isDocPage ? t.layout.docTitle : t.layout.homeTitle);
+const pageDescription = description ?? (isDocPage ? t.layout.docDescription : t.layout.homeDescription);
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+// Auto-redirect to /es/ for Spanish browsers, unless the user picked a language.
+const redirectScript = `(function(){
+  try {
+    var stored = localStorage.getItem("venus-lang");
+    var path = location.pathname;
+    var onEs = path === "/es" || path.indexOf("/es/") === 0;
+    if (stored === "en") return;
+    if (!stored) {
+      var nav = (navigator.language || navigator.userLanguage || "").toLowerCase();
+      if (nav.indexOf("es") !== 0) return;
+    }
+    if (onEs) return;
+    var target = path === "/" ? "/es/" : "/es" + path;
+    location.replace(target + location.search + location.hash);
+  } catch (e) {}
+})();`;
 ---
 
 <!doctype html>
-<html lang="es" class="scroll-smooth">
+<html lang={locale} class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -27,27 +55,29 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="generator" content={Astro.generator} />
 
-    <title>{title}</title>
-    <meta name="title" content={title} />
-    <meta name="description" content={description} />
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={pageDescription} />
     <link rel="canonical" href={canonicalURL} />
-    <meta
-      name="keywords"
-      content="venus, networking, library, javascript, typescript, fetch, api, restful, graphql"
-    />
+    <link rel="alternate" hreflang="en" href={new URL(localizePath(Astro.url.pathname, "en"), Astro.site)} />
+    <link rel="alternate" hreflang="es" href={new URL(localizePath(Astro.url.pathname, "es"), Astro.site)} />
+    <link rel="alternate" hreflang="x-default" href={new URL(localizePath(Astro.url.pathname, "en"), Astro.site)} />
+    <meta name="keywords" content={t.layout.keywords} />
     <meta name="author" content="Braydev" />
     <meta name="robots" content="index, follow" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
     <meta property="og:image" content={new URL(image, Astro.url)} />
+    <meta property="og:locale" content={locale === "es" ? "es_ES" : "en_US"} />
+    <meta property="og:locale:alternate" content={locale === "es" ? "en_US" : "es_ES"} />
 
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={Astro.url} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
+    <meta property="twitter:title" content={pageTitle} />
+    <meta property="twitter:description" content={pageDescription} />
     <meta property="twitter:image" content={new URL(image, Astro.url)} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -56,6 +86,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    {autoRedirect && <script is:inline set:html={redirectScript} />}
   </head>
   <body
     class="bg-[#030005] antialiased selection:bg-purple-500/30 overflow-x-hidden"

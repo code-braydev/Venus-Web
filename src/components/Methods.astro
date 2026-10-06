@@ -1,74 +1,48 @@
+---
+import { getDict, resolveLocale } from "../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+
+const rows = [
+  { name: "get", fn: "get<T>(path, options?)", effect: t.methods.rows.get },
+  { name: "getRss", fn: "getRss(path, options?)", effect: t.methods.rows.getRss },
+  { name: "send", fn: "send<T>(path, body, options?)", effect: t.methods.rows.send },
+  { name: "update", fn: "update<T>(path, body, options?)", effect: t.methods.rows.update },
+  { name: "updateOnly", fn: "updateOnly<T>(path, body, options?)", effect: t.methods.rows.updateOnly },
+  { name: "remove", fn: "remove<T>(path, options?)", effect: t.methods.rows.remove },
+  { name: "venusConfig", fn: "setBaseURL / setGlobalHeaders", effect: t.methods.rows.config },
+];
+---
+
 <section class="section-container">
   <div class="venus-card overflow-hidden border-purple-500/10">
     <div class="bg-white/5 px-6 py-4 border-b border-white/5">
       <h3 class="text-sm font-bold uppercase tracking-widest text-purple-200">
-        API Reference
+        {t.methods.heading}
       </h3>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
         <thead class="text-purple-100/20 uppercase text-[10px] font-bold">
           <tr>
-            <th class="px-6 py-4">Method</th>
-            <th class="px-6 py-4">Function</th>
-            <th class="px-6 py-4">Effect</th>
+            <th class="px-6 py-4">{t.methods.thMethod}</th>
+            <th class="px-6 py-4">{t.methods.thFunction}</th>
+            <th class="px-6 py-4">{t.methods.thEffect}</th>
           </tr>
         </thead>
         <tbody
           class="divide-y divide-white/5 text-purple-100/60 font-mono text-xs"
         >
-          <tr class="hover:bg-white/2 transition-colors">
-            <td class="px-6 py-4 text-purple-300 font-bold">get</td>
-            <td class="px-6 py-4 text-purple-100/80"
-              >get&lt;T&gt;(path, options?)</td
-            >
-            <td class="px-6 py-4 italic text-purple-100/40"
-              >Fetch resources with parser/timeout/retry controls</td
-            >
-          </tr>
-          <tr class="hover:bg-white/2 transition-colors">
-            <td class="px-6 py-4 text-purple-300 font-bold">getRss</td>
-            <td class="px-6 py-4 text-purple-100/80">getRss(path, options?)</td>
-            <td class="px-6 py-4 italic text-purple-100/40"
-              >Fetch and normalize RSS/Atom feeds</td
-            >
-          </tr>
-          <tr class="hover:bg-white/2 transition-colors">
-            <td class="px-6 py-4 text-purple-300 font-bold">send</td>
-            <td class="px-6 py-4 text-purple-100/80"
-              >send&lt;T&gt;(path, body, options?)</td
-            >
-            <td class="px-6 py-4 italic text-purple-100/40"
-              >Create resources (POST) with retry and hooks</td
-            >
-          </tr>
-          <tr class="hover:bg-white/2 transition-colors">
-            <td class="px-6 py-4 text-purple-300 font-bold">update</td>
-            <td class="px-6 py-4 text-purple-100/80"
-              >update&lt;T&gt;(path, body, options?)</td
-            >
-            <td class="px-6 py-4 italic text-purple-100/40"
-              >Replace entire resource (PUT)</td
-            >
-          </tr>
-          <tr class="hover:bg-white/2 transition-colors">
-            <td class="px-6 py-4 text-purple-300 font-bold">updateOnly</td>
-            <td class="px-6 py-4 text-purple-100/80"
-              >updateOnly&lt;T&gt;(path, body, options?)</td
-            >
-            <td class="px-6 py-4 italic text-purple-100/40"
-              >Partial update (PATCH)</td
-            >
-          </tr>
-          <tr class="hover:bg-white/2 transition-colors">
-            <td class="px-6 py-4 text-purple-300 font-bold">remove</td>
-            <td class="px-6 py-4 text-purple-100/80"
-              >remove&lt;T&gt;(path, options?)</td
-            >
-            <td class="px-6 py-4 italic text-purple-100/40"
-              >Delete resources (DELETE)</td
-            >
-          </tr>
+          {
+            rows.map((row) => (
+              <tr class="hover:bg-white/2 transition-colors">
+                <td class="px-6 py-4 text-purple-300 font-bold">{row.name}</td>
+                <td class="px-6 py-4 text-purple-100/80">{row.fn}</td>
+                <td class="px-6 py-4 italic text-purple-100/40">{row.effect}</td>
+              </tr>
+            ))
+          }
         </tbody>
       </table>
     </div>

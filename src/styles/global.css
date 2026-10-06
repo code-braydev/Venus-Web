@@ -2,10 +2,10 @@
 
 @layer base {
   :root {
-    /* Paleta Venus: Morado Pastel & Dark Mode */
+    /* Venus palette: pastel purple & dark mode */
     --color-venus-pastel: 214 188 250; /* #D6BCFA */
-    --color-venus-deep: 3 0 5;       /* Fondo casi negro */
-    --color-venus-accent: 168 85 247;  /* Púrpura más vivo */
+    --color-venus-deep: 3 0 5;       /* Near-black background */
+    --color-venus-accent: 168 85 247;  /* Vivid purple */
   }
 
   html {
@@ -16,7 +16,7 @@
     @apply bg-[#030005] text-purple-100/80 antialiased font-sans;
   }
 
-  /* Scrollbar personalizada minimalista */
+  /* Minimal custom scrollbar */
   ::-webkit-scrollbar {
     @apply w-1.5;
   }
@@ -29,28 +29,28 @@
 }
 
 @layer components {
-  /* Contenedores estándar */
+  /* Standard containers */
   .section-container {
     @apply mx-auto max-w-6xl px-6 py-24;
   }
 
-  /* Títulos con gradiente Venus */
+  /* Venus gradient titles */
   .title-gradient {
     @apply bg-gradient-to-b from-purple-100 to-purple-400 bg-clip-text text-transparent font-extrabold;
   }
 
-  /* Tarjetas del IDE y Bento Grid */
+  /* IDE cards and bento grid */
   .venus-card {
     @apply relative overflow-hidden rounded-2xl border border-white/5 bg-[#08050A] 
            transition-all duration-300 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-900/20;
   }
 
-  /* Efecto de resplandor sutil */
+  /* Subtle glow effect */
   .venus-glow {
     @apply absolute -z-10 rounded-full bg-purple-600/10 blur-[100px];
   }
 
-  /* Botón principal (Primary) */
+  /* Primary button */
   .btn-primary {
     @apply flex items-center gap-2 rounded-xl bg-purple-200 px-6 py-3 
            text-sm font-bold text-purple-950 transition-all 
@@ -58,16 +58,125 @@
            shadow-[0_0_20px_rgba(214,188,250,0.2)];
   }
 
-  /* Botón Secundario / Comando Terminal */
+  /* Secondary / terminal command button */
   .btn-command {
     @apply flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 
            px-5 py-3 font-mono text-sm text-purple-100/70 backdrop-blur-sm 
            transition-all hover:border-purple-500/20 hover:text-purple-200;
   }
   
-  /* Estilo para bloques de código */
+  /* Code block style */
   .code-block {
     @apply font-mono text-sm leading-relaxed text-purple-100/90;
+  }
+
+  /* ===== IDE / Terminal code window ===== */
+  .code-window {
+    @apply overflow-hidden rounded-xl border border-white/10;
+  }
+
+  .code-tabbar {
+    @apply flex items-center gap-3 px-4 py-2.5;
+    background-color: #181818;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .code-dots {
+    @apply flex shrink-0 gap-1.5;
+  }
+
+  .code-tab {
+    @apply flex min-w-0 items-center gap-2 rounded-md px-3 py-1.5 text-[11px] font-medium;
+    background-color: #1e1e1e;
+    color: #cfd3dc;
+    box-shadow: inset 0 -2px 0 0 #7c5cff;
+  }
+
+  .code-badge {
+    @apply rounded px-1 text-[9px] font-black tracking-tight;
+    background-color: rgba(0, 122, 204, 0.25);
+    color: #3fa9f5;
+    line-height: 1.4;
+  }
+
+  .code-scroll {
+    overflow-x: auto;
+    overflow-y: hidden;
+    background-color: #1e1e1e;
+  }
+
+  .code-scroll pre.astro-code,
+  pre.astro-code {
+    margin: 0;
+    padding: 1rem 1.25rem 1.1rem;
+    background-color: #1e1e1e !important;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco,
+      Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    line-height: 1.75;
+    font-variant-ligatures: none;
+    tab-size: 2;
+  }
+
+  .code-scroll pre.astro-code code {
+    display: block;
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .code-scroll .line {
+    display: inline-block;
+  }
+
+  .code-scroll .line[data-line] {
+    position: relative;
+    padding-left: 3.5ch;
+  }
+
+  .code-scroll .line[data-line]::before {
+    content: attr(data-line);
+    position: absolute;
+    left: 0;
+    width: 2.4ch;
+    text-align: right;
+    color: #6e7681;
+    user-select: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .code-scroll .line[data-line]:hover::before {
+    color: #9da5b4;
+  }
+
+  /* Scrollbar del editor */
+  .code-scroll::-webkit-scrollbar {
+    height: 8px;
+  }
+  .code-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .code-scroll::-webkit-scrollbar-thumb {
+    background: rgba(168, 85, 247, 0.25);
+    border-radius: 999px;
+  }
+  .code-scroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(168, 85, 247, 0.45);
+  }
+
+  /* ===== Sidebar ScrollSpy ===== */
+  .spy-link {
+    @apply block border-l-2 border-transparent pl-3 -ml-3 transition-all duration-200;
+  }
+
+  .spy-link.is-active {
+    border-left-color: rgb(168 85 247);
+    color: rgb(233 213 255);
+    font-weight: 600;
+    background: linear-gradient(
+      90deg,
+      rgba(168, 85, 247, 0.14),
+      rgba(168, 85, 247, 0)
+    );
   }
 }
 

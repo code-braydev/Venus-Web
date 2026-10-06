@@ -1,3 +1,19 @@
+---
+import CodeBlock from "./CodeBlock.astro";
+import { getDict, resolveLocale } from "../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+
+const fullRequest = `await get<User>("/profile", {
+  headers: { Authorization: "Bearer ..." },
+  timeout: 5000,
+  params: { include: ["roles"] },
+  responseType: "auto",
+  retry: { attempts: 2, backoffMs: 200 },
+});`;
+---
+
 <div class="p-8 rounded-2xl bg-white/2 border border-white/5">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
     <div class="space-y-6">
@@ -5,20 +21,18 @@
         <h4
           class="text-sm font-bold text-purple-300 uppercase tracking-widest mb-2"
         >
-          Is the Schema mandatory?
+          {t.explainer.schemaTitle}
         </h4>
-        <p class="text-sm text-purple-100/40 leading-relaxed">
-          <strong>No.</strong> Omitting it returns <code class="text-purple-300"
-            >any</code
-          >. However, we <strong>strongly recommend</strong> it for full IDE Intellisense,
-          preventing "undefined" errors before they reach production.
-        </p>
+        <p
+          class="text-sm text-purple-100/40 leading-relaxed"
+          set:html={t.explainer.schemaBody}
+        />
       </div>
       <div>
         <h4
           class="text-sm font-bold text-purple-300 uppercase tracking-widest mb-2"
         >
-          Unified Options in v2.0.0
+          {t.explainer.optionsTitle}
         </h4>
         <div class="space-y-3">
           <div
@@ -27,11 +41,10 @@
             <p
               class="text-xs font-bold text-white mb-1 group-hover:text-purple-300"
             >
-              Request Controls
+              {t.explainer.requestControlsTitle}
             </p>
             <p class="text-[10px] text-purple-100/30 italic">
-              headers, timeout, signal, params and paramsArrayFormat for safe
-              URL query handling.
+              {t.explainer.requestControlsBody}
             </p>
           </div>
           <div
@@ -40,29 +53,20 @@
             <p
               class="text-xs font-bold text-white mb-1 group-hover:text-purple-300"
             >
-              Parsing + Resilience
+              {t.explainer.parsingTitle}
             </p>
             <p class="text-[10px] text-purple-100/30 italic">
-              responseType: auto/json/text/blob/formData/arrayBuffer, retry with
-              backoff, and lifecycle hooks.
+              {t.explainer.parsingBody}
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <div
-      class="venus-card p-6 bg-[#0D0A11] font-mono text-xs border-purple-500/5 self-center shadow-2xl"
-    >
-      <p class="text-purple-400 italic mb-4">// Full request implementation</p>
-      <pre
-        class="overflow-x-auto whitespace-pre text-purple-100/90">{`await get<User>("/profile", {
-  headers: { Authorization: "Bearer ..." },
-  timeout: 5000,
-  params: { include: ["roles"] },
-  responseType: "auto",
-  retry: { attempts: 2, backoffMs: 200 },
-});`}</pre>
-    </div>
+    <CodeBlock
+      code={fullRequest}
+      filename="request.ts"
+      label={t.explainer.fullRequest}
+    />
   </div>
 </div>

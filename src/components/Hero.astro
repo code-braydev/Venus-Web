@@ -1,3 +1,11 @@
+---
+import { getDict, resolveLocale, localizePath } from "../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+const docHref = localizePath("/doc", locale);
+---
+
 <section
   class="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030005] px-4 sm:px-6 pt-20"
 >
@@ -20,35 +28,30 @@
           <span class="relative inline-flex h-2 w-2 rounded-full bg-purple-300"
           ></span>
         </span>
-        Venus SDK v2.0.0 is out
+        {t.hero.badge}
       </span>
     </div>
 
     <h1
       class="mb-6 text-4xl sm:text-7xl lg:text-8xl title-gradient text-balance leading-[1.1]"
     >
-      Networking, <br class="hidden sm:block" />
-      <span class="block sm:inline">without the friction.</span>
+      {t.hero.titleLine1} <br class="hidden sm:block" />
+      <span class="block sm:inline">{t.hero.titleLine2}</span>
     </h1>
 
     <p
       class="mx-auto mb-10 max-w-2xl text-base leading-relaxed text-purple-100/60 sm:text-xl px-2 sm:px-0"
-    >
-      A modern, lightweight networking library that turns complex
-      <code class="text-purple-300 font-mono bg-purple-500/10 px-1 rounded"
-        >fetch</code
-      > patterns into a
-      <span class="text-purple-200">calm, predictable experience</span>.
-    </p>
+      set:html={t.hero.lead}
+    />
 
     <div
       class="flex flex-col items-stretch sm:items-center justify-center gap-4 sm:flex-row sm:gap-6 px-4 sm:px-0"
     >
       <a
-        href="/doc"
+        href={docHref}
         class="btn-primary group py-4 px-8 w-full sm:w-auto justify-center"
       >
-        Get Started
+        {t.hero.cta}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
@@ -74,8 +77,9 @@
 
         <button
           id="copy-btn"
+          data-failed={t.hero.copyFailed}
           class="ml-4 text-purple-100/30 hover:text-purple-200 transition-all shrink-0 active:scale-90"
-          title="Copy command"
+          title={t.hero.copyTitle}
         >
           <svg
             id="icon-copy"
@@ -137,6 +141,7 @@
   const commandText = document.getElementById("command-text")?.innerText;
   const iconCopy = document.getElementById("icon-copy");
   const iconCheck = document.getElementById("icon-check");
+  const failedText = copyBtn?.getAttribute("data-failed") || "Copy failed:";
 
   copyBtn?.addEventListener("click", async () => {
     if (!commandText) return;
@@ -154,7 +159,7 @@
         copyBtn?.classList.replace("text-green-400", "text-purple-100/30");
       }, 2000);
     } catch (err) {
-      console.error("Fallo al copiar:", err);
+      console.error(failedText, err);
     }
   });
 </script>

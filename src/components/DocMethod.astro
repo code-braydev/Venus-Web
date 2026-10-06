@@ -1,4 +1,10 @@
 ---
+import CodeBlock from "./CodeBlock.astro";
+import { getDict, resolveLocale } from "../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+
 interface Props {
   id: string;
   method: string;
@@ -6,13 +12,26 @@ interface Props {
   syntax: string;
   description: string;
   status: string;
+  code: string;
+  filename?: string;
+  details?: { title: string; body: string }[];
 }
-const { id, method, color, syntax, description, status } = Astro.props;
+const {
+  id,
+  method,
+  color,
+  syntax,
+  description,
+  status,
+  code,
+  filename = "example.ts",
+  details,
+} = Astro.props;
 ---
 
 <div
   id={id}
-  class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center scroll-mt-32 group"
+  class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start scroll-mt-32 group"
 >
   <div class="space-y-6">
     <div class="flex items-center gap-3">
@@ -41,62 +60,48 @@ const { id, method, color, syntax, description, status } = Astro.props;
         class="flex flex-col sm:flex-row justify-between gap-1 border-b border-white/5 pb-2 text-balance"
       >
         <span class="uppercase tracking-tighter text-purple-300/40"
-          >Sintaxis</span
+          >{t.docMethod.syntax}</span
         >
         <span class="text-purple-200">{syntax}</span>
       </li>
       <li class="flex flex-col sm:flex-row justify-between gap-1 pt-1">
         <span class="uppercase tracking-tighter text-purple-300/40"
-          >Status Esperado</span
+          >{t.docMethod.expectedStatus}</span
         >
         <span class="text-green-400 font-bold">{status}</span>
       </li>
     </ul>
+
+    {
+      details && details.length > 0 && (
+        <div class="space-y-3">
+          <h4 class="text-[10px] font-bold uppercase tracking-widest text-purple-300/40">
+            {t.docMethod.insights}
+          </h4>
+          <ul class="space-y-3">
+            {details.map((detail) => (
+              <li
+                class="text-[12px] leading-relaxed bg-purple-500/5 border border-purple-500/10 rounded-lg p-3"
+              >
+                <span class="text-purple-300 font-bold block mb-1">
+                  {detail.title}
+                </span>
+                <span class="text-purple-100/50">{detail.body}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
   </div>
 
-  <div class="relative w-full min-w-0">
+  <div class="relative w-full min-w-0 lg:sticky lg:top-32">
     <div
       class="absolute -inset-0.5 bg-linear-to-br from-purple-500/10 to-transparent rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"
     >
     </div>
-    <div
-      class="relative venus-card bg-[#0D0A11] border-white/10 font-mono text-xs shadow-xl rounded-xl overflow-hidden"
-    >
-      <div
-        class="flex items-center justify-between px-6 py-3 border-b border-white/5 bg-white/2"
-      >
-        <span class="text-[9px] uppercase tracking-widest text-white/20"
-          >Example Usage</span
-        >
-        <div class="flex gap-1.5">
-          <div class="h-2 w-2 rounded-full bg-red-500/20"></div>
-          <div class="h-2 w-2 rounded-full bg-orange-500/20"></div>
-          <div class="h-2 w-2 rounded-full bg-green-500/20"></div>
-        </div>
-      </div>
-
-      <div
-        class="p-6 overflow-x-auto custom-scrollbar leading-relaxed text-purple-100/90 whitespace-pre"
-      >
-        <slot name="code" />
-      </div>
+    <div class="relative">
+      <CodeBlock code={code} filename={filename} label={t.docMethod.example} />
     </div>
   </div>
 </div>
-
-<style>
-  /* Custom scrollbar para que no se vea feo el scroll por defecto */
-  .custom-scrollbar::-webkit-scrollbar {
-    height: 4px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(168, 85, 247, 0.2);
-    border-radius: 10px;
-  }
-  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(168, 85, 247, 0.4);
-  }
-</style>

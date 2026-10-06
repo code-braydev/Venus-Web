@@ -1,13 +1,82 @@
 ---
 import DocMethod from "./DocMethod.astro";
 import GenericExplainer from "./GenericExplainer.astro";
+import { getDict, resolveLocale } from "../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+const ins = t.insights;
+
+const getCode = `const { data, ok, errorCode } = await get<User>("/profile", {
+  params: { include: ["roles"] },
+  paramsArrayFormat: "repeat",
+  responseType: "auto",
+  timeout: 8000,
+});
+
+if (!ok) return handleError(errorCode);
+console.log(data?.name);`;
+
+const getRssCode = `const feedResult = await getRss("https://hnrss.org/frontpage", {
+  timeout: 8000,
+  retry: true,
+  rssMode: "strict",
+});
+
+if (feedResult.ok) {
+  const item = feedResult.data.items[0];
+  console.log(item?.title);
+  console.log(item?.image);     // resolved thumbnail
+  console.log(item?.enclosure); // raw attachment
+}`;
+
+const sendCode = `const payload = { name: "Brayan" };
+
+await send("/users", payload, {
+  retry: { attempts: 2, backoffMs: 200 },
+  hooks: {
+    afterResponse: () => console.log("done"),
+  },
+});
+
+// File upload: application/json is NOT forced
+const form = new FormData();
+form.append("avatar", file);
+await send("/upload", form);`;
+
+const updateCode = `// PUT: full replacement
+await update("/users/1", {
+  name: "Brayan",
+  email: "bray@dev.com",
+  active: true,
+});
+
+// PATCH: only the fields that change
+await updateOnly("/users/1", { active: false }, {
+  timeout: 6000,
+});`;
+
+const removeCode = `const { ok, status } = await remove("/id/10", { retry: 1 });
+
+// ok = true even on 204 No Content
+if (ok) refreshTable(status);`;
+
+const anatomyFields = [
+  { code: "data: T | null", color: "text-purple-300", key: "data" },
+  { code: "ok: boolean", color: "text-green-400", key: "ok" },
+  { code: "status?: number", color: "text-blue-400", key: "status" },
+  { code: "error: string | null", color: "text-red-400", key: "error" },
+  { code: "errorCode", color: "text-orange-400", key: "errorCode" },
+  { code: "RETRY_EXHAUSTED", color: "text-yellow-400", key: "exhausted" },
+] as const;
 ---
 
 <div class="space-y-32">
   <GenericExplainer />
 
   <section
-    class="p-8 rounded-2xl bg-purple-500/3 border border-purple-500/10 mb-20"
+    id="anatomy"
+    class="p-8 rounded-2xl bg-purple-500/3 border border-purple-500/10 mb-20 scroll-mt-32"
   >
     <div class="flex items-center gap-3 mb-6">
       <div class="p-2 bg-purple-500/20 rounded-lg">
@@ -27,61 +96,31 @@ import GenericExplainer from "./GenericExplainer.astro";
         >
       </div>
       <div>
-        <h3 class="text-xl font-bold text-white">Anatomy of a Response</h3>
+        <h3 class="text-xl font-bold text-white">{ins.anatomyTitle}</h3>
         <p class="text-xs text-purple-100/30 uppercase tracking-widest mt-1">
-          What Venus returns
+          {ins.anatomyKicker}
         </p>
       </div>
     </div>
 
-    <p class="text-sm text-purple-100/40 mb-8 leading-relaxed">
-      Every method in Venus returns a predictable contract. No try/catch is
-      required for normal control flow; check <code>ok</code> and render from there.
-    </p>
+    <p
+      class="text-sm text-purple-100/40 mb-8 leading-relaxed"
+      set:html={ins.anatomyBody}
+    />
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-      <div
-        class="p-4 rounded-xl bg-black/40 border border-white/5 hover:border-purple-500/20 transition-colors group"
-      >
-        <code class="text-purple-300 font-bold block mb-1">data: T | null</code>
-        <p class="text-[11px] text-purple-100/30 italic">
-          Parsed payload from json/text/blob/formData/arrayBuffer.
-        </p>
-      </div>
-      <div
-        class="p-4 rounded-xl bg-black/40 border border-white/5 hover:border-purple-500/20 transition-colors group"
-      >
-        <code class="text-green-400 font-bold block mb-1">ok: boolean</code>
-        <p class="text-[11px] text-purple-100/30 italic">
-          True when request succeeded.
-        </p>
-      </div>
-      <div
-        class="p-4 rounded-xl bg-black/40 border border-white/5 hover:border-purple-500/20 transition-colors group"
-      >
-        <code class="text-blue-400 font-bold block mb-1">status?: number</code>
-        <p class="text-[11px] text-purple-100/30 italic">
-          HTTP status when available.
-        </p>
-      </div>
-      <div
-        class="p-4 rounded-xl bg-black/40 border border-white/5 hover:border-purple-500/20 transition-colors group"
-      >
-        <code class="text-red-400 font-bold block mb-1"
-          >error: string | null</code
-        >
-        <p class="text-[11px] text-purple-100/30 italic">
-          Human-readable message for logs/UI.
-        </p>
-      </div>
-      <div
-        class="p-4 rounded-xl bg-black/40 border border-white/5 hover:border-purple-500/20 transition-colors group"
-      >
-        <code class="text-orange-400 font-bold block mb-1">errorCode</code>
-        <p class="text-[11px] text-purple-100/30 italic">
-          HTTP_ERROR, TIMEOUT, ABORTED, NETWORK_ERROR and more.
-        </p>
-      </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {
+        anatomyFields.map((field) => (
+          <div class="p-4 rounded-xl bg-black/40 border border-white/5 hover:border-purple-500/20 transition-colors group">
+            <code class:list={[field.color, "font-bold block mb-1"]}>
+              {field.code}
+            </code>
+            <p class="text-[11px] text-purple-100/30 italic">
+              {ins.anatomy[field.key]}
+            </p>
+          </div>
+        ))
+      }
     </div>
   </section>
 
@@ -90,89 +129,85 @@ import GenericExplainer from "./GenericExplainer.astro";
     method="GET"
     color="bg-blue-500/10 text-blue-400 border-blue-500/20"
     syntax="get<T>(path, options?)"
-    description="Fetch resources with smart parsing, query params, timeout and retry controls. responseType: auto detects JSON vs text payloads."
+    description={ins.descriptions.get}
     status="200 OK"
-  >
-    <pre
-      slot="code"
-      class="font-mono text-xs leading-relaxed text-purple-100/90">{`const { data, ok, errorCode } = await get<User>("/profile", {
-  params: { include: ["roles"] },
-  responseType: "auto",
-  timeout: 8000,
-});
-
-if (!ok) return handleError(errorCode);
-console.log(data?.name);`}</pre>
-  </DocMethod>
+    code={getCode}
+    filename="profile.ts"
+    details={[
+      ins.get.params,
+      ins.get.arrayFormat,
+      ins.get.auto,
+      ins.get.modes,
+      ins.get.retry,
+    ]}
+  />
 
   <DocMethod
     id="getRss"
     method="GET RSS"
     color="bg-cyan-500/10 text-cyan-400 border-cyan-500/20"
     syntax="getRss(path, options?)"
-    description="Fetch and normalize RSS/Atom feeds with strict or lenient modes for non-standard XML sources."
+    description={ins.descriptions.getRss}
     status="200 OK"
-  >
-    <pre
-      slot="code"
-      class="font-mono text-xs leading-relaxed text-purple-100/90">{`const feedResult = await getRss("https://hnrss.org/frontpage", {
-  timeout: 8000,
-  retry: true,
-  rssMode: "strict",
-});
-
-if (feedResult.ok) {
-  console.log(feedResult.data.items[0]?.title);
-}`}</pre>
-  </DocMethod>
+    code={getRssCode}
+    filename="feed.ts"
+    details={[
+      ins.getRss.strict,
+      ins.getRss.lenient,
+      ins.getRss.image,
+      ins.getRss.media,
+      ins.getRss.fields,
+    ]}
+  />
 
   <DocMethod
     id="send"
     method="POST"
     color="bg-green-500/10 text-green-400 border-green-500/20"
     syntax="send<T>(path, body, options?)"
-    description="Create resources with retry policy and hooks support for request/response instrumentation."
+    description={ins.descriptions.send}
     status="201 Created"
-  >
-    <pre
-      slot="code"
-      class="font-mono text-xs leading-relaxed text-purple-100/90">{`const payload = { name: "Brayan" };
-
-await send("/users", payload, {
-  retry: { attempts: 2, backoffMs: 200 },
-  hooks: {
-    afterResponse: () => console.log("done"),
-  },
-});`}</pre>
-  </DocMethod>
+    code={sendCode}
+    filename="users.ts"
+    details={[
+      ins.send.validation,
+      ins.send.contentType,
+      ins.send.serverErrors,
+      ins.send.bodies,
+    ]}
+  />
 
   <DocMethod
     id="update"
     method="PUT / PATCH"
     color="bg-orange-500/10 text-orange-400 border-orange-500/20"
     syntax="update<T>(path, body, options?)"
-    description="Use update for full replacement (PUT) and updateOnly for partial changes (PATCH) with the same options model."
+    description={ins.descriptions.update}
     status="200 OK"
-  >
-    <pre
-      slot="code"
-      class="font-mono text-xs leading-relaxed text-purple-100/90">{`await updateOnly("/users/1", { active: false }, {
-  timeout: 6000,
-});`}</pre>
-  </DocMethod>
+    code={updateCode}
+    filename="update-user.ts"
+    details={[
+      ins.update.difference,
+      ins.update.validation,
+      ins.update.uploads,
+      ins.update.errors,
+    ]}
+  />
 
   <DocMethod
     id="remove"
     method="DELETE"
     color="bg-red-500/10 text-red-400 border-red-500/20"
     syntax="remove<T>(path, options?)"
-    description="Delete resources with 204 handling and the same timeout/retry/hook controls available everywhere."
+    description={ins.descriptions.remove}
     status="204 No Content"
-  >
-    <pre
-      slot="code"
-      class="font-mono text-xs leading-relaxed text-purple-100/90">{`const { ok, status } = await remove("/id/10", { retry: 1 });
-
-if (ok) refreshTable(status);`}</pre>
-  </DocMethod>
+    code={removeCode}
+    filename="delete.ts"
+    details={[
+      ins.remove.noContent,
+      ins.remove.errors,
+      ins.remove.options,
+      ins.remove.generic,
+    ]}
+  />
 </div>

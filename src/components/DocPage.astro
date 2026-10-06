@@ -1,0 +1,674 @@
+---
+import Layout from "../layouts/Layout.astro";
+import QuickStart from "./QuickStart.astro";
+import MethodReference from "./MethodReference.astro";
+import CodeBlock from "./CodeBlock.astro";
+import { getDict, localeFromPath } from "../i18n";
+
+const locale = localeFromPath(Astro.url.pathname);
+const t = getDict(locale);
+const d = t.doc;
+
+const commonOptionsSnippet = `{
+  // Headers for this request (they override the global ones)
+  headers?: HeadersInit;
+
+  // Timeout in ms; when exceeded the request aborts with errorCode "TIMEOUT"
+  timeout?: number;
+
+  // External cancellation signal (AbortController)
+  signal?: AbortSignal;
+
+  // Query params object; serialized and appended to the URL
+  params?: Record<string, QueryValue>;
+
+  // How arrays inside params are serialized
+  paramsArrayFormat?: "repeat" | "comma" | "brackets" | "indices";
+
+  // Body parser; "auto" detects JSON vs text
+  responseType?: "auto" | "json" | "text" | "blob" | "formData" | "arrayBuffer";
+
+  // Retry policy for 408, 429 and 5xx responses
+  retry?: boolean | number | {
+    attempts?: number;      // retries after the first attempt
+    backoffMs?: number;     // initial wait between attempts
+    maxBackoffMs?: number;  // backoff ceiling
+    retryOn?: number[];     // HTTP codes worth retrying
+    shouldRetry?: (ctx) => boolean; // custom decision
+  };
+
+  // Lifecycle hooks
+  hooks?: {
+    beforeRequest?: (ctx) => void | RequestInit | Promise<void | RequestInit>;
+    afterResponse?: (ctx) => void | Promise<void>;
+  };
+
+  // Telemetry callback: url, method, ok, status, durationMs, attempt, errorCode
+  onTelemetry?: (event) => void;
+}`;
+
+const rssSnippet = `import { getRss } from "@braydev/venus";
+
+const feed = await getRss("https://example.com/rss.xml", {
+  timeout: 7000,
+  rssMode: "strict",
+});
+
+if (feed.ok) {
+  for (const item of feed.data.items) {
+    console.log(item.title, item.link);
+    console.log(item.image);      // resolved thumbnail
+    console.log(item.enclosure);  // raw attachment
+    console.log(item.media);      // media:content / media:thumbnail
+  }
+}`;
+
+const feedFieldsSnippet = `{
+  title: string;
+  link?: string;
+  description?: string; // raw HTML when the feed embeds markup
+  content?: string;
+  pubDate?: string;
+  guid?: string;
+  author?: string;
+  categories?: string[];
+
+  // RSS <enclosure> / Atom <link rel="enclosure">
+  enclosure?: { url: string; type?: string; length?: number };
+
+  // Media RSS (podcasts, video, images)
+  media?: {
+    content?: { url: string; type?: string; medium?: string }[];
+    thumbnail?: { url: string }[];
+  };
+
+  // Cascade: enclosure → media → first <img> in the HTML
+  image?: string;
+}`;
+
+const retrySnippet = `import { get } from "@braydev/venus";
+
+// 1. Boolean: retry with the defaults (exponential backoff)
+await get("/status", { retry: true });
+
+// 2. Number: exact amount of retries
+await get("/status", { retry: 3 });
+
+// 3. Object: full control over the policy
+const res = await get("/report", {
+  retry: {
+    attempts: 3,        // 3 retries after the first attempt
+    backoffMs: 200,     // initial wait: 200ms
+    maxBackoffMs: 5000, // ceiling: 5s (exponential backoff)
+    retryOn: [429, 500, 502, 503],
+  },
+});
+
+// 4. Custom decision
+await get("/orders", {
+  retry: {
+    attempts: 2,
+    shouldRetry: ({ attempt, status, errorCode }) =>
+      status === 429 || errorCode === "NETWORK_ERROR",
+  },
+});
+
+// When every attempt is spent:
+if (res.errorCode === "RETRY_EXHAUSTED") {
+  console.log("Last status:", res.status); // still preserved
+}`;
+
+const hooksSnippet = `import { get, send } from "@braydev/venus";
+
+// Dynamic token injection + tracing on every request
+await get("/profile", {
+  hooks: {
+    beforeRequest: ({ url, options, attempt }) => {
+      console.log("-> " + url + " (attempt " + attempt + ")");
+      const headers = new Headers(options.headers);
+      headers.set("Authorization", "Bearer " + refreshToken());
+      headers.set("X-Trace-Id", crypto.randomUUID());
+      return { ...options, headers };
+    },
+    afterResponse: ({ response, durationMs, attempt }) => {
+      console.log("<- " + response.status + " in " + durationMs + "ms");
+    },
+  },
+});
+
+// App-wide telemetry
+send("/events", { type: "click" }, {
+  onTelemetry: ({ url, ok, durationMs, attempt, errorCode }) => {
+    analytics.track("request", { url, ok, durationMs, attempt, errorCode });
+  },
+});`;
+
+const uploadSnippet = `import { send } from "@braydev/venus";
+
+// FormData: application/json is NOT forced, the multipart
+// boundary is preserved and the upload works correctly
+const form = new FormData();
+form.append("avatar", fileInput.files[0]);
+form.append("name", "Brayan");
+
+const res = await send<User>("/users/1/avatar", form);
+
+// Blob: downloads and binaries
+const blob = await fetch("/file.pdf").then((r) => r.blob());
+await send("/files", blob, { responseType: "blob" });
+
+// Raw strings and URLSearchParams are supported too
+await send("/form", new URLSearchParams({ a: "1", b: "2" }));`;
+
+const modesSnippet = `// Strict mode (default): validates the XML structure
+const strict = await getRss("https://example.com/feed.xml", {
+  rssMode: "strict",
+});
+// Not a valid RSS/Atom document -> errorCode "PARSING_ERROR"
+
+// Tolerant mode: best-effort for non-standard feeds
+const lenient = await getRss("https://example.com/custom-xml", {
+  rssMode: "lenient",
+});
+// Flattens and extracts the items even when the structure is irregular`;
+
+const frontendSnippet = `import { getRss } from "@braydev/venus";
+
+export async function loadNews() {
+  const result = await getRss("https://hnrss.org/frontpage", {
+    timeout: 6000,
+    retry: true,
+    rssMode: "strict",
+  });
+
+  if (!result.ok) {
+    throw new Error(result.error ?? "Feed error");
+  }
+
+  return result.data.items.slice(0, 10);
+}`;
+
+const backendSnippet = `import { getRss } from "@braydev/venus";
+
+export async function fetchTechFeed() {
+  const result = await getRss("https://example.com/custom-feed", {
+    timeout: 8000,
+    retry: { attempts: 2, backoffMs: 200 },
+    rssMode: "lenient",
+  });
+
+  if (!result.ok) {
+    return { items: [], source: "fallback", error: result.error };
+  }
+
+  return {
+    source: result.data.title,
+    items: result.data.items.map((item) => ({
+      title: item.title,
+      link: item.link,
+      image: item.image,
+      publishedAt: item.pubDate,
+    })),
+  };
+}`;
+
+const changelogSnippet = `## 2.2.2
+
+### Changed
+- Documentation and consistency: README aligned with the changelog (MIT License).
+
+## 2.2.1
+
+### Added
+- Official MIT License file and updated package configuration.
+
+## 2.2.0
+
+### Added
+- RSS/Atom item images: VenusRssItem now exposes enclosure, media and image
+  (RSS/Atom enclosure -> media:thumbnail/media:content -> first <img> in HTML).
+- RETRY_EXHAUSTED error code: when retries run out the response reports a
+  stable errorCode while keeping the last HTTP status.
+
+### Fixed
+- Retry on last attempt: a request that succeeded exactly on its final retry
+  is no longer reported as RETRY_EXHAUSTED.
+- Content-Type for uploads: send/update no longer force application/json on
+  FormData, Blob or URLSearchParams bodies.
+
+## 2.1.0
+
+### Added
+- Global headers: venusConfig.setGlobalHeaders() and getGlobalHeaders().
+  Per-request headers still take precedence.
+
+## 2.0.1
+
+### Added
+- Full ESM support ("type": "module" + exports map).
+- Fixed named export resolution in ESM-first frameworks like Astro 5.
+
+## 2.0.0
+
+### Added
+- Unified API: get, send, update, updateOnly, remove, getRss.
+- Timeout + AbortSignal, retry with backoff, hooks and telemetry.
+- Multi-format parsing: json, text, blob, formData, arrayBuffer.
+- Normalized response contract with errorCode and optional status.
+
+### Breaking
+- Signature: methods now take a unified options object.
+- Response: wrapped in the contract that includes errorCode.`;
+
+const navGroups = [
+  {
+    title: d.sidebar.gettingStarted,
+    links: [
+      { href: "#quick-start", label: d.sidebar.links.installation },
+      { href: "#basics", label: d.sidebar.links.firstSteps },
+    ],
+  },
+  {
+    title: d.sidebar.advanced,
+    links: [
+      { href: "#advanced", label: d.sidebar.links.advancedExamples },
+      { href: "#advanced-retry", label: d.sidebar.links.retries },
+      { href: "#advanced-hooks", label: d.sidebar.links.hooks },
+      { href: "#advanced-upload", label: d.sidebar.links.uploads },
+      { href: "#advanced-arch", label: d.sidebar.links.arch },
+    ],
+  },
+  {
+    title: d.sidebar.apiManual,
+    links: [
+      { href: "#anatomy", label: d.sidebar.links.anatomy },
+      { href: "#get", label: d.sidebar.links.get },
+      { href: "#send", label: d.sidebar.links.send },
+      { href: "#getRss", label: d.sidebar.links.rss },
+      { href: "#update", label: d.sidebar.links.update },
+      { href: "#remove", label: d.sidebar.links.remove },
+      { href: "#common-options", label: d.sidebar.links.commonOptions },
+      { href: "#rss", label: d.sidebar.links.rssAtom },
+      { href: "#changelog", label: d.sidebar.links.changelog },
+    ],
+  },
+];
+---
+
+<Layout>
+  <div class="section-container pt-32 pb-20">
+    <div class="flex flex-col lg:flex-row gap-12">
+      <aside class="lg:w-64 shrink-0 sticky top-32 h-fit hidden lg:block">
+        <nav class="space-y-8" id="doc-sidebar">
+          {
+            navGroups.map((group) => (
+              <div>
+                <h4 class="text-xs font-bold uppercase tracking-widest text-purple-300/40 mb-4">
+                  {group.title}
+                </h4>
+                <ul class="space-y-2.5 text-sm text-purple-100/50 font-medium">
+                  {group.links.map((link) => (
+                    <li>
+                      <a
+                        href={link.href}
+                        data-spy={link.href.slice(1)}
+                        class="spy-link hover:text-purple-200 transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </nav>
+      </aside>
+
+      <article class="flex-1 max-w-4xl min-w-0">
+        <header class="mb-12 sm:mb-16">
+          <h1 class="text-4xl sm:text-6xl font-extrabold text-white mb-6">
+            {d.title}
+          </h1>
+          <p
+            class="text-base sm:text-lg text-purple-100/40 leading-relaxed text-balance"
+          >
+            {d.lead}
+          </p>
+        </header>
+
+        <!-- ===================== GETTING STARTED ===================== -->
+        <section id="quick-start" class="scroll-mt-32 mb-24">
+          <div class="mb-8">
+            <h2 class="text-2xl font-bold text-white mb-4">
+              {d.headings.installation}
+            </h2>
+            <div
+              class="btn-command py-4 px-6 mb-8 w-full sm:w-fit flex justify-between items-center gap-4 overflow-hidden"
+            >
+              <span class="text-purple-400 font-mono mr-2">$</span>
+              <span id="command-text" class="truncate font-mono text-sm"
+                >npm install @braydev/venus</span
+              >
+
+              <button
+                id="copy-btn"
+                class="ml-4 text-purple-100/30 hover:text-purple-200 transition-all shrink-0 active:scale-90"
+                title={t.header.copyTitle}
+              >
+                <svg
+                  id="icon-copy"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="block"
+                >
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"
+                  ></rect>
+                  <path
+                    d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                  ></path>
+                </svg>
+
+                <svg
+                  id="icon-check"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#4ade80"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="hidden"
+                >
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </button>
+            </div>
+
+            <section id="basics" class="scroll-mt-32">
+              <QuickStart />
+            </section>
+          </div>
+
+          <hr class="border-white/5 mb-24" />
+
+          <!-- ===================== ADVANCED PATTERNS ===================== -->
+          <section id="advanced" class="scroll-mt-32 mb-24">
+            <h2 class="text-2xl font-bold text-white mb-4">
+              {d.headings.advanced}
+            </h2>
+            <p
+              class="text-purple-100/50 leading-relaxed mb-10"
+              set:html={d.prose.advanced}
+            />
+
+            <div id="advanced-retry" class="scroll-mt-32 space-y-6 mb-16">
+              <h3 class="text-xl font-bold text-white">
+                {d.headings.retries}
+              </h3>
+              <p
+                class="text-purple-100/50 leading-relaxed"
+                set:html={d.prose.retries}
+              />
+              <CodeBlock
+                code={retrySnippet}
+                filename="retry.ts"
+                label="Resilience"
+              />
+            </div>
+
+            <div id="advanced-hooks" class="scroll-mt-32 space-y-6 mb-16">
+              <h3 class="text-xl font-bold text-white">
+                {d.headings.hooks}
+              </h3>
+              <p
+                class="text-purple-100/50 leading-relaxed"
+                set:html={d.prose.hooks}
+              />
+              <CodeBlock
+                code={hooksSnippet}
+                filename="hooks.ts"
+                label="Instrumentation"
+              />
+            </div>
+
+            <div id="advanced-upload" class="scroll-mt-32 space-y-6 mb-16">
+              <h3 class="text-xl font-bold text-white">
+                {d.headings.uploads}
+              </h3>
+              <p
+                class="text-purple-100/50 leading-relaxed"
+                set:html={d.prose.uploads}
+              />
+              <CodeBlock
+                code={uploadSnippet}
+                filename="upload.ts"
+                label="Uploads"
+              />
+            </div>
+
+            <div id="advanced-rss" class="scroll-mt-32 space-y-6 mb-16">
+              <h3 class="text-xl font-bold text-white">
+                {d.headings.rssModes}
+              </h3>
+              <p
+                class="text-purple-100/50 leading-relaxed"
+                set:html={d.prose.rssModes}
+              />
+              <CodeBlock
+                code={modesSnippet}
+                filename="rss-modes.ts"
+                label="Feeds"
+              />
+            </div>
+
+            <div id="advanced-arch" class="scroll-mt-32 space-y-6">
+              <h3 class="text-xl font-bold text-white">
+                {d.headings.architecture}
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-3">
+                  <p
+                    class="text-[10px] uppercase tracking-widest text-purple-300/40"
+                  >
+                    {d.headings.frontend}
+                  </p>
+                  <CodeBlock
+                    code={frontendSnippet}
+                    filename="news.ts"
+                    lines={false}
+                  />
+                </div>
+                <div class="space-y-3">
+                  <p
+                    class="text-[10px] uppercase tracking-widest text-purple-300/40"
+                  >
+                    {d.headings.backend}
+                  </p>
+                  <CodeBlock
+                    code={backendSnippet}
+                    filename="feed-ssr.ts"
+                    lines={false}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <hr class="border-white/5 mb-24" />
+
+          <!-- ============ METHOD REFERENCE / INSIGHTS ============ -->
+          <section id="method-reference" class="scroll-mt-32">
+            <h2 class="text-2xl font-bold text-white mb-4">
+              {d.headings.methodReference}
+            </h2>
+            <p
+              class="text-purple-100/50 leading-relaxed mb-12"
+              set:html={d.prose.methodReference}
+            />
+            <MethodReference />
+          </section>
+
+          <section id="common-options" class="scroll-mt-32 mt-24">
+            <h2 class="text-2xl font-bold text-white mb-6">
+              {d.headings.commonOptions}
+            </h2>
+            <p
+              class="text-purple-100/50 leading-relaxed mb-6"
+              set:html={d.prose.commonOptions}
+            />
+            <CodeBlock
+              code={commonOptionsSnippet}
+              filename="options.ts"
+              label="Reference"
+            />
+          </section>
+
+          <section id="rss" class="scroll-mt-32 mt-24 space-y-6">
+            <h2 class="text-2xl font-bold text-white">{d.headings.rss}</h2>
+            <p
+              class="text-purple-100/50 leading-relaxed"
+              set:html={d.prose.rss}
+            />
+            <CodeBlock code={rssSnippet} filename="feed.ts" label="Feeds" />
+
+            <h3 class="text-xl font-bold text-white pt-6">
+              {d.headings.feedFields}
+            </h3>
+            <p
+              class="text-purple-100/50 leading-relaxed"
+              set:html={d.prose.feedFields}
+            />
+            <CodeBlock
+              code={feedFieldsSnippet}
+              filename="feed-item.d.ts"
+              label="Types"
+            />
+            <p
+              class="text-purple-100/50 leading-relaxed"
+              set:html={d.prose.feedFieldsEnd}
+            />
+          </section>
+
+          <section id="changelog" class="scroll-mt-32 mt-24 space-y-6">
+            <h2 class="text-2xl font-bold text-white">
+              {d.headings.changelog}
+            </h2>
+            <p
+              class="text-purple-100/50 leading-relaxed"
+              set:html={d.prose.changelog}
+            />
+            <CodeBlock
+              code={changelogSnippet}
+              filename="CHANGELOG.md"
+              lang="md"
+              lines={false}
+              label="History"
+            />
+          </section>
+
+          <section id="testing" class="scroll-mt-32 mt-24 space-y-4">
+            <h2 class="text-2xl font-bold text-white">{d.headings.testing}</h2>
+            <p class="text-purple-100/50 leading-relaxed">{d.prose.testing}</p>
+            <div class="btn-command py-3 px-5 w-fit">
+              <span class="text-purple-400 font-mono mr-2">$</span>
+              <code class="font-mono text-sm">npm test</code>
+            </div>
+          </section>
+
+          <section id="license" class="scroll-mt-32 mt-24 space-y-4">
+            <h2 class="text-2xl font-bold text-white">{d.headings.license}</h2>
+            <p class="text-purple-100/50">{d.prose.license}</p>
+          </section>
+        </section>
+      </article>
+    </div>
+  </div>
+
+  <script>
+    // --- Copy to clipboard ---
+    const copyBtn = document.getElementById("copy-btn");
+    const commandText = document.getElementById("command-text")?.innerText;
+    const iconCopy = document.getElementById("icon-copy");
+    const iconCheck = document.getElementById("icon-check");
+
+    copyBtn?.addEventListener("click", async () => {
+      if (!commandText) return;
+
+      try {
+        await navigator.clipboard.writeText(commandText);
+
+        iconCopy?.classList.add("hidden");
+        iconCheck?.classList.remove("hidden");
+        copyBtn?.classList.replace("text-purple-100/30", "text-green-400");
+
+        setTimeout(() => {
+          iconCopy?.classList.remove("hidden");
+          iconCheck?.classList.add("hidden");
+          copyBtn?.classList.replace("text-green-400", "text-purple-100/30");
+        }, 2000);
+      } catch (err) {
+        console.error("Copy failed:", err);
+      }
+    });
+
+    // --- Sidebar ScrollSpy ---
+    const links = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>("a[data-spy]"),
+    );
+
+    const targets = links
+      .map((link) => document.getElementById(link.dataset.spy || ""))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    const setActive = (id: string) => {
+      for (const link of links) {
+        link.classList.toggle("is-active", link.dataset.spy === id);
+      }
+    };
+
+    let ticking = false;
+
+    const updateSpy = () => {
+      ticking = false;
+      if (targets.length === 0) return;
+
+      const marker = 160;
+      let current = targets[0];
+
+      for (const section of targets) {
+        if (section.getBoundingClientRect().top <= marker) current = section;
+      }
+
+      // Bottom of page: force the last visible section
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 8
+      ) {
+        current = targets[targets.length - 1];
+      }
+
+      setActive(current.id);
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateSpy);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    updateSpy();
+  </script>
+</Layout>

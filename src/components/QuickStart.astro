@@ -1,35 +1,113 @@
-<div class="space-y-12">
+---
+import CodeBlock from "./CodeBlock.astro";
+import { getDict, resolveLocale } from "../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+const s = t.quickStart.steps;
+
+const configSnippet = `import { venusConfig } from "@braydev/venus";
+
+venusConfig.setBaseURL("https://api.braydev.xyz");`;
+
+const headersSnippet = `import { venusConfig } from "@braydev/venus";
+
+venusConfig.setBaseURL("https://api.braydev.xyz");
+
+venusConfig.setGlobalHeaders({
+  Authorization: "Bearer my-token",
+  "X-App-Version": "2.2.2",
+});
+
+// Read the current global headers (returns a plain object)
+const current = venusConfig.getGlobalHeaders();`;
+
+const firstRequestSnippet = `import { get, send } from "@braydev/venus";
+
+// GET with query params, timeout and smart parsing
+const profile = await get<User>("/profile", {
+  timeout: 8000,
+  params: { include: ["roles", "permissions"] },
+  paramsArrayFormat: "repeat",
+  responseType: "auto",
+});
+
+if (profile.ok) {
+  console.log(profile.data?.name);
+} else {
+  console.error(profile.errorCode, profile.error);
+}
+
+// POST with automatic retry
+const created = await send("/users", { name: "Brayan" }, {
+  retry: { attempts: 2, backoffMs: 200 },
+});`;
+
+const paramsSnippet = `await get("/news", {
+  params: { category: "tech", limit: 5 },
+});
+
+// Result: /news?category=tech&limit=5`;
+
+const rssSnippet = `import { getRss } from "@braydev/venus";
+
+const feed = await getRss("https://hnrss.org/frontpage", {
+  timeout: 8000,
+  retry: true,
+  rssMode: "strict",
+});
+
+if (feed.ok) {
+  for (const item of feed.data.items) {
+    console.log(item.title, item.link);
+    console.log(item.image); // auto-resolved thumbnail
+  }
+}`;
+
+const arrayFormats = [
+  {
+    mode: '"repeat" (default)',
+    result: "/search?tag=js&tag=ts",
+    note: t.quickStart.formats.repeat,
+  },
+  {
+    mode: '"comma"',
+    result: "/search?tag=js,ts",
+    note: t.quickStart.formats.comma,
+  },
+  {
+    mode: '"brackets"',
+    result: "/search?tag[]=js&tag[]=ts",
+    note: t.quickStart.formats.brackets,
+  },
+  {
+    mode: '"indices"',
+    result: "/search?tag[0]=js&tag[1]=ts",
+    note: t.quickStart.formats.indices,
+  },
+];
+---
+
+<div class="space-y-14">
   <div class="space-y-4">
     <h3 class="text-xl font-bold text-white flex items-center gap-2">
       <span
         class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
         >1</span
       >
-      Global Config
+      {s.baseTitle}
     </h3>
-    <p class="text-sm text-purple-100/40 leading-relaxed">
-      Before firing any request, you <strong>must</strong> initialize the Base URL.
-      This ensures all relative paths (e.g., <code class="text-purple-300"
-        >/users</code
-      >) resolve correctly to your server.
-    </p>
-    <div
-      class="venus-card p-6 bg-[#0D0A11] font-mono text-xs border-purple-500/5"
-    >
-      <p class="text-purple-400 italic mb-2">// src/api/config.ts</p>
-      <p class="text-white">import {"{venusConfig}"} from "@braydev/venus";</p>
-      <p class="text-white mt-2">
-        venusConfig.setBaseURL("https://api.braydev.xyz");
-      </p>
-    </div>
+    <p
+      class="text-sm text-purple-100/40 leading-relaxed"
+      set:html={s.baseBody}
+    />
+
+    <CodeBlock code={configSnippet} filename="config.ts" lines={false} />
+
     <p
       class="text-[11px] text-purple-300/60 italic bg-purple-500/5 p-3 rounded border border-purple-500/10"
-    >
-      💡 <strong>Best Practice:</strong> Import this config file in your main entry
-      point (e.g., <code class="text-white">Layout.astro</code> or <code
-        class="text-white">main.ts</code
-      >) so it runs before any components are rendered.
-    </p>
+      set:html={s.baseNote}
+    />
   </div>
 
   <div class="space-y-4">
@@ -38,36 +116,95 @@
         class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
         >2</span
       >
-      First Request (v2.0.0)
+      {s.headersTitle}
     </h3>
-    <p class="text-sm text-purple-100/40 leading-relaxed">
-      Venus now unifies options across methods and adds smarter parsing for JSON
-      or text/RSS responses.
-    </p>
+    <p
+      class="text-sm text-purple-100/40 leading-relaxed"
+      set:html={s.headersBody}
+    />
 
-    <div
-      class="venus-card p-6 bg-[#0D0A11] font-mono text-xs border-purple-500/5 overflow-x-auto"
-    >
-      <p class="text-purple-400 italic mb-2">// src/api/profile.ts</p>
-      <pre
-        class="whitespace-pre text-purple-100/90">{`import { get, getRss, send } from "@braydev/venus";
+    <CodeBlock code={headersSnippet} filename="config.ts" />
 
-const profile = await get<User>("/profile", {
-  timeout: 8000,
-  params: { include: ["roles", "permissions"] },
-  paramsArrayFormat: "repeat",
-  responseType: "auto",
-});
+    <p
+      class="text-[11px] text-purple-300/60 italic bg-purple-500/5 p-3 rounded border border-purple-500/10"
+      set:html={s.headersNote}
+    />
+  </div>
 
-const created = await send("/users", { name: "Brayan" }, {
-  retry: { attempts: 2, backoffMs: 200 },
-});
+  <div class="space-y-4">
+    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+      <span
+        class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
+        >3</span
+      >
+      {s.firstTitle}
+    </h3>
+    <p
+      class="text-sm text-purple-100/40 leading-relaxed"
+      set:html={s.firstBody}
+    />
 
-const feed = await getRss("https://hnrss.org/frontpage", {
-  timeout: 8000,
-  retry: true,
-  rssMode: "strict",
-});`}</pre>
+    <CodeBlock code={firstRequestSnippet} filename="profile.ts" label="TypeScript" />
+  </div>
+
+  <div class="space-y-4">
+    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+      <span
+        class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
+        >4</span
+      >
+      {s.paramsTitle}
+    </h3>
+    <p
+      class="text-sm text-purple-100/40 leading-relaxed"
+      set:html={s.paramsBody}
+    />
+
+    <CodeBlock code={paramsSnippet} filename="news.ts" />
+
+    <div class="space-y-3">
+      <p
+        class="text-sm text-purple-100/40 leading-relaxed"
+        set:html={s.paramsSub}
+      />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {
+          arrayFormats.map((format) => (
+            <div class="venus-card p-5 bg-[#0D0A11] font-mono text-xs border-purple-500/5">
+              <p class="text-purple-400 italic mb-3">
+                {"// paramsArrayFormat: "}
+                {format.mode}
+              </p>
+              <p class="text-purple-100/90">
+                params: &#123; tag: ["js", "ts"] &#125;
+              </p>
+              <p class="text-green-400 mt-2 break-all">
+                &#8594; {format.result}
+              </p>
+              <p class="text-purple-100/40 mt-3 text-[11px] font-sans leading-relaxed">
+                {format.note}
+              </p>
+            </div>
+          ))
+        }
+      </div>
     </div>
+  </div>
+
+  <div class="space-y-4">
+    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+      <span
+        class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
+        >5</span
+      >
+      {s.rssTitle}
+    </h3>
+    <p
+      class="text-sm text-purple-100/40 leading-relaxed"
+      set:html={s.rssBody}
+    />
+
+    <CodeBlock code={rssSnippet} filename="news.ts" label="Feeds" />
   </div>
 </div>

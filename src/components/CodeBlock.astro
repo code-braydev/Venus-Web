@@ -1,0 +1,68 @@
+---
+import { Code } from "astro:components";
+import type { ShikiTransformer } from "shiki";
+
+interface Props {
+  code: string;
+  lang?: string;
+  filename?: string;
+  lines?: boolean;
+  label?: string;
+}
+
+const {
+  code,
+  lang = "ts",
+  filename = "script.ts",
+  lines = true,
+  label,
+} = Astro.props;
+
+const lineNumbers: ShikiTransformer = {
+  line(node, line) {
+    node.properties = { ...node.properties, "data-line": line };
+  },
+};
+
+const ext = filename.includes(".") ? filename.split(".").pop()!.toLowerCase() : "";
+const badge =
+  ext === "ts" ? "TS" :
+  ext === "js" ? "JS" :
+  ext === "md" ? "MD" :
+  ext === "json" ? "{}" :
+  ext === "sh" || ext === "bash" || ext === "console" ? ">_" :
+  ext === "css" ? "#" :
+  ext ? ext.slice(0, 2).toUpperCase() : "TS";
+---
+
+<div class="code-window venus-card">
+  <div class="code-tabbar">
+    <div class="code-dots">
+      <span class="h-3 w-3 rounded-full bg-[#ff5f57]"></span>
+      <span class="h-3 w-3 rounded-full bg-[#febc2e]"></span>
+      <span class="h-3 w-3 rounded-full bg-[#28c840]"></span>
+    </div>
+
+    <div class="code-tab">
+      <span class="code-badge">{badge}</span>
+      <span class="truncate">{filename}</span>
+    </div>
+
+    {
+      label && (
+        <span class="ml-auto hidden shrink-0 text-[9px] font-bold uppercase tracking-widest text-white/25 sm:block">
+          {label}
+        </span>
+      )
+    }
+  </div>
+
+  <div class="code-scroll">
+    <Code
+      code={code}
+      lang={lang as any}
+      theme="dark-plus"
+      transformers={lines ? [lineNumbers] : []}
+    />
+  </div>
+</div>
