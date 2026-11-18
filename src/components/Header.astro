@@ -1,6 +1,5 @@
 ---
 import { getDict, resolveLocale, localizePath, alternatePath } from "../i18n";
-import ThemeToggle from "./ThemeToggle.astro";
 
 const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
@@ -126,8 +125,6 @@ const alternateLocale = locale === "en" ? "es" : "en";
         </a>
       </div>
 
-      <ThemeToggle class="hidden md:inline-flex" />
-
       <button
         id="copy-npm"
         data-command="npm install @braydev/venus"
@@ -209,7 +206,6 @@ const alternateLocale = locale === "en" ? "es" : "en";
       >
         {alternateLocale === "es" ? "ESPAÑOL" : "ENGLISH"}
       </a>
-      <ThemeToggle class="w-fit" />
     </nav>
   </div>
 </header>

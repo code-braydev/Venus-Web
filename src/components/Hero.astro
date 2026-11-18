@@ -1,5 +1,6 @@
 ---
 import { getDict, resolveLocale, localizePath } from "../i18n";
+import VenusHorizon from "./VenusHorizon.astro";
 
 const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
@@ -7,7 +8,7 @@ const docHref = localizePath("/doc", locale);
 ---
 
 <section
-  class="relative flex min-h-screen items-center justify-center overflow-hidden bg-space px-4 sm:px-6 pt-20"
+  class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 sm:px-6 pt-20 pb-[18vh] sm:pb-[22vh]"
 >
   <div
     class="venus-glow top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[30vh] w-[50vw] max-w-150"
@@ -16,7 +17,9 @@ const docHref = localizePath("/doc", locale);
   <div class="venus-glow bottom-0 right-0 h-50 w-50 opacity-30 sm:opacity-50">
   </div>
 
-  <div class="mx-auto max-w-5xl text-center">
+  <VenusHorizon />
+
+  <div class="relative z-10 mx-auto max-w-5xl text-center">
     <div class="mb-6 sm:mb-8 flex justify-center animate-fade-in-up">
       <span
         class="inline-flex items-center gap-2 rounded-full border border-venus-500/20 bg-venus-500/5 px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-xs font-medium text-venus-300 backdrop-blur-sm"
@@ -117,23 +120,23 @@ const docHref = localizePath("/doc", locale);
         </button>
       </div>
     </div>
+  </div>
 
-    <div
-      class="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 animate-bounce opacity-20 hidden md:block text-ink"
+  <div
+    class="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 animate-bounce hidden md:block z-10 text-venus-950/70"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      ><path d="m7 13 5 5 5-5"></path><path d="m7 6 5 5 5-5"></path></svg
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        ><path d="m7 13 5 5 5-5"></path><path d="m7 6 5 5 5-5"></path></svg
-      >
-    </div>
   </div>
 </section>
 <script>

@@ -1,0 +1,97 @@
+---
+/**
+ * The planet: a huge arc of Venus rising from the bottom of the hero, lit from
+ * above, wrapped in a glowing atmosphere (cream and gold fading into amber) with
+ * slow, streaky sulfuric clouds. Pure CSS + one inline SVG texture.
+ */
+const cloudTexture =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='420'>` +
+      `<filter id='n' x='0' y='0' width='100%' height='100%'>` +
+      `<feTurbulence type='fractalNoise' baseFrequency='0.0035 0.018' numOctaves='3' seed='7' stitchTiles='stitch'/>` +
+      `<feColorMatrix values='0 0 0 0 1  0 0 0 0 0.9  0 0 0 0 0.6  0 0 0 1.5 -0.55'/>` +
+      `</filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`,
+  );
+---
+
+<div class="horizon" aria-hidden="true" style={`--cloud:url("${cloudTexture}")`}>
+  <div class="planet">
+    <div class="clouds"></div>
+    <div class="shade"></div>
+  </div>
+</div>
+
+<style>
+  .horizon {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .planet {
+    --d: clamp(820px, 170vw, 2800px);
+    --cap: clamp(110px, 21vh, 280px);
+    position: absolute;
+    left: 50%;
+    top: calc(100% - var(--cap));
+    width: var(--d);
+    height: var(--d);
+    transform: translateX(-50%);
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(
+      circle at 50% 0%,
+      #fff4d6 0%,
+      #f9d88f 5%,
+      #eba43c 16%,
+      #c9702a 30%,
+      #7a3f19 48%,
+      #2b1410 66%,
+      #070a14 100%
+    );
+    box-shadow:
+      0 -1px 0 0 rgb(255 240 205 / 0.95),
+      0 -8px 32px 4px color-mix(in srgb, var(--color-venus-200) 55%, transparent),
+      0 -36px 110px 26px color-mix(in srgb, var(--color-venus-500) 30%, transparent),
+      0 -90px 240px 70px color-mix(in srgb, var(--color-venus-600) 16%, transparent);
+  }
+
+  /* Streaky sulfuric clouds drifting sideways */
+  .clouds {
+    position: absolute;
+    inset: 0;
+    background-image: var(--cloud);
+    background-size: 1200px 420px;
+    background-repeat: repeat;
+    opacity: 0.5;
+    mix-blend-mode: soft-light;
+    animation: drift 220s linear infinite;
+  }
+
+  /* Terminator: the planet fades into shadow away from the light */
+  .shade {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 0%,
+      transparent 18%,
+      rgb(3 4 9 / 0.55) 58%,
+      rgb(3 4 9 / 0.9) 100%
+    );
+  }
+
+  @keyframes drift {
+    to {
+      background-position-x: -1200px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .clouds {
+      animation: none;
+    }
+  }
+</style>
