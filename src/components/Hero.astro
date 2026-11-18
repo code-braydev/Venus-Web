@@ -1,6 +1,5 @@
 ---
 import { getDict, resolveLocale, localizePath } from "../i18n";
-import VenusHorizon from "./VenusHorizon.astro";
 
 const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
@@ -10,15 +9,6 @@ const docHref = localizePath("/doc", locale);
 <section
   class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 sm:px-6 pt-20 pb-[18vh] sm:pb-[22vh]"
 >
-  <div
-    class="venus-glow top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[30vh] w-[50vw] max-w-150"
-  >
-  </div>
-  <div class="venus-glow bottom-0 right-0 h-50 w-50 opacity-30 sm:opacity-50">
-  </div>
-
-  <VenusHorizon />
-
   <div class="relative z-10 mx-auto max-w-5xl text-center">
     <div class="mb-6 sm:mb-8 flex justify-center animate-fade-in-up">
       <span

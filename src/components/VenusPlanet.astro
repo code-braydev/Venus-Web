@@ -1,0 +1,199 @@
+---
+/**
+ * Venus, fixed behind the page.
+ *
+ * At the top it is a huge arc rising from the bottom of the hero. As you scroll
+ * it shrinks and slides to the left edge, where it stays half out of view
+ * while the content cards pass in front of it. `--p` (0 -> 1) is the scroll
+ * progress, written by the script below; everything else is CSS.
+ */
+interface Props {
+  /** Start already shrunk at the left (pages without a hero, e.g. the docs). */
+  settled?: boolean;
+}
+
+const { settled = false } = Astro.props;
+
+const cloudTexture =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='420'>` +
+      `<filter id='n' x='0' y='0' width='100%' height='100%'>` +
+      `<feTurbulence type='fractalNoise' baseFrequency='0.0035 0.018' numOctaves='3' seed='7' stitchTiles='stitch'/>` +
+      `<feColorMatrix values='0 0 0 0 1  0 0 0 0 0.9  0 0 0 0 0.6  0 0 0 1.5 -0.55'/>` +
+      `</filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`,
+  );
+---
+
+<div
+  class="planet-layer"
+  data-planet
+  data-settled={settled ? "true" : "false"}
+  aria-hidden="true"
+  style={`--cloud:url("${cloudTexture}")`}
+>
+  <div class="planet-wrap">
+    <div class="halo"></div>
+    <div class="planet">
+      <div class="clouds"></div>
+      <div class="shade"></div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .planet-layer {
+    --p: 0;
+    position: fixed;
+    inset: 0;
+    z-index: -9;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .planet-layer[data-settled="true"] {
+    --p: 1;
+    opacity: 0.55;
+  }
+
+  /* One transform moves and scales the whole planet (halo included) */
+  .planet-wrap {
+    --d: clamp(820px, 170vw, 2800px);
+    --cap: clamp(110px, 21vh, 280px);
+    --end: 0.3;
+    --x0: calc(50vw - var(--d) / 2);
+    --y0: calc(100vh - var(--cap));
+    --x1: calc(2vw - var(--d) / 2);
+    --y1: calc(58vh - var(--d) / 2);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--d);
+    height: var(--d);
+    transform-origin: 50% 50%;
+    transform: translate3d(
+        calc(var(--x0) + (var(--x1) - var(--x0)) * var(--p)),
+        calc(var(--y0) + (var(--y1) - var(--y0)) * var(--p)),
+        0
+      )
+      scale(calc(1 + (var(--end) - 1) * var(--p)));
+    will-change: transform;
+  }
+
+  /* Atmosphere: a radial glow ring (no blur filters, so no tiling artifacts) */
+  .halo {
+    --r: calc(var(--d) / 2);
+    --h: 340px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(var(--d) + var(--h) * 2);
+    height: calc(var(--d) + var(--h) * 2);
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      transparent calc(var(--r) - 4px),
+      rgb(255 236 190 / 0.6) var(--r),
+      rgb(244 194 94 / 0.3) calc(var(--r) + 36px),
+      rgb(219 132 41 / 0.14) calc(var(--r) + 130px),
+      transparent calc(var(--r) + var(--h))
+    );
+  }
+
+  .planet {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: radial-gradient(
+      circle at 50% 0%,
+      #fff4d6 0%,
+      #f9d88f 5%,
+      #eba43c 16%,
+      #c9702a 30%,
+      #7a3f19 48%,
+      #2b1410 66%,
+      #070a14 100%
+    );
+    box-shadow: 0 -1px 0 0 rgb(255 240 205 / 0.9);
+  }
+
+  /* Streaky sulfuric clouds, drifting sideways (transform only: compositor) */
+  .clouds {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: calc(100% + 1200px);
+    background-image: var(--cloud);
+    background-size: 1200px 420px;
+    background-repeat: repeat;
+    opacity: 0.5;
+    mix-blend-mode: soft-light;
+    animation: drift 220s linear infinite;
+  }
+  @keyframes drift {
+    to {
+      transform: translate3d(-1200px, 0, 0);
+    }
+  }
+
+  /* Terminator: the planet fades into shadow away from the light */
+  .shade {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 50% 0%,
+      transparent 18%,
+      rgb(3 4 9 / 0.55) 58%,
+      rgb(3 4 9 / 0.9) 100%
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .clouds {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const layer = document.querySelector<HTMLElement>("[data-planet]");
+
+  if (layer && layer.dataset.settled !== "true") {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    const setProgress = (p: number) =>
+      layer.style.setProperty("--p", p.toFixed(4));
+
+    if (reduceMotion) {
+      // No travelling planet: it rests at the left from the start.
+      setProgress(1);
+    } else {
+      let ticking = false;
+
+      const update = () => {
+        ticking = false;
+        // The move spans a bit more than the first screen of scrolling.
+        const range = window.innerHeight * 1.1;
+        const t = Math.min(1, Math.max(0, window.scrollY / range));
+        setProgress(t * t * (3 - 2 * t)); // smoothstep easing
+      };
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        },
+        { passive: true },
+      );
+      window.addEventListener("resize", update, { passive: true });
+      update();
+    }
+  }
+</script>
