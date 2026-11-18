@@ -1,5 +1,6 @@
 ---
 import { getDict, resolveLocale, localizePath, alternatePath } from "../i18n";
+import ThemeToggle from "./ThemeToggle.astro";
 
 const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
@@ -19,7 +20,7 @@ const alternateLocale = locale === "en" ? "es" : "en";
   >
     <a href={homeHref} class="flex items-center gap-3 group">
       <div
-        class="relative flex h-9 w-9 items-center justify-center rounded-xl bg-venus-200 text-venus-950 font-black shadow-[0_0_20px_rgba(214,188,250,0.3)] group-hover:rotate-12 transition-all duration-300"
+        class="relative flex h-9 w-9 items-center justify-center rounded-xl bg-venus-200 text-venus-950 font-black shadow-lg shadow-venus-400/30 group-hover:rotate-12 transition-all duration-300"
       >
         V
         <span class="absolute -top-1 -right-1 flex h-3 w-3">
@@ -125,6 +126,8 @@ const alternateLocale = locale === "en" ? "es" : "en";
         </a>
       </div>
 
+      <ThemeToggle class="hidden md:inline-flex" />
+
       <button
         id="copy-npm"
         data-command="npm install @braydev/venus"
@@ -206,6 +209,7 @@ const alternateLocale = locale === "en" ? "es" : "en";
       >
         {alternateLocale === "es" ? "ESPAÑOL" : "ENGLISH"}
       </a>
+      <ThemeToggle class="w-fit" />
     </nav>
   </div>
 </header>

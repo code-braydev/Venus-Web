@@ -28,6 +28,19 @@ const pageDescription = description ?? (isDocPage ? t.layout.docDescription : t.
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
+// Applies the saved theme before first paint (no flash). Dark is the default:
+// the identity is deep space.
+const themeScript = `(function(){
+  var theme = "dark";
+  try {
+    var stored = localStorage.getItem("venus-theme");
+    if (stored === "light" || stored === "dark") theme = stored;
+  } catch (e) {}
+  document.documentElement.setAttribute("data-theme", theme);
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", theme === "light" ? "#fbf6ec" : "#04030a");
+})();`;
+
 // Auto-redirect to /es/ for Spanish browsers, unless the user picked a language.
 const redirectScript = `(function(){
   try {
@@ -47,13 +60,15 @@ const redirectScript = `(function(){
 ---
 
 <!doctype html>
-<html lang={locale} class="scroll-smooth">
+<html lang={locale} class="scroll-smooth" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#04030a" />
+    <script is:inline set:html={themeScript} />
 
     <title>{pageTitle}</title>
     <meta name="title" content={pageTitle} />
