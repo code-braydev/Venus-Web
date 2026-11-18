@@ -87,6 +87,32 @@ export const es: Dict = {
     learnMore: "Saber más",
   },
 
+  name: {
+    kicker: "El nombre",
+    title: "¿Por qué el nombre Venus?",
+    p1: "Siempre me ha gustado el espacio. Venus me llamó la atención porque es la discreta: un planeta apartado pero bonito, con un nombre corto, y el planeta más brillante de nuestro cielo. Lo confieso: al principio hasta lo confundí con el planeta de los anillos.",
+    p2: "Quería un cliente HTTP que destacara igual: por su claridad y agilidad. La potencia de Axios, pero ultraligero, amigable y sin la fricción de escribir un try/catch en cada petición.",
+    signature: "— Braydev, autor de Venus",
+    traits: {
+      clarity: {
+        title: "Claridad",
+        body: "El planeta más brillante del cielo nocturno. Una API clara y una respuesta predecible: nada oculto.",
+      },
+      agility: {
+        title: "Agilidad",
+        body: "Cero dependencias y fetch nativo por defecto. Potencia al nivel de Axios, ultraligera.",
+      },
+      connection: {
+        title: "Conexión",
+        body: "En la mitología romana, Venus es la diosa del amor y la armonía. HTTP es la forma en que los sistemas se conectan; Venus lo hace armonioso.",
+      },
+      calm: {
+        title: "Calma",
+        body: "Venus esconde una atmósfera densa bajo nubes de aspecto sereno. Reintentos, timeouts y casos límite se quedan dentro; tú recibes una respuesta tranquila.",
+      },
+    },
+  },
+
   codeExample: {
     title: "Explora la sintaxis",
     badge: "TypeScript",

@@ -86,6 +86,32 @@ export const en = {
     learnMore: "Learn more",
   },
 
+  name: {
+    kicker: "The name",
+    title: "Why the name Venus?",
+    p1: "I've always loved space. Venus caught my eye because it's the quiet one: a planet that keeps its distance but is beautiful, with a short name, and the brightest planet in our sky. I'll admit that at first I even mixed it up with the planet with the rings.",
+    p2: "I wanted an HTTP client that stood out the same way: for its clarity and agility. The power of Axios, but ultralight, friendly, and without the friction of writing a try/catch around every request.",
+    signature: "— Braydev, author of Venus",
+    traits: {
+      clarity: {
+        title: "Clarity",
+        body: "The brightest planet in the night sky. A clear API and a predictable response: nothing hidden.",
+      },
+      agility: {
+        title: "Agility",
+        body: "Zero dependencies and native fetch by default. Axios-grade power, ultralight.",
+      },
+      connection: {
+        title: "Connection",
+        body: "In Roman myth, Venus is the goddess of love and harmony. HTTP is how systems connect; Venus makes it harmonious.",
+      },
+      calm: {
+        title: "Calm",
+        body: "Venus hides a dense atmosphere under calm-looking clouds. Retries, timeouts and edge cases stay inside; you get a calm response.",
+      },
+    },
+  },
+
   codeExample: {
     title: "Explore the Syntax",
     badge: "TypeScript",

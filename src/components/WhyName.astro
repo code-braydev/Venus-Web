@@ -1,0 +1,93 @@
+---
+import { getDict, resolveLocale } from "../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+const n = t.name;
+
+// Same icon language as the rest of the site: simple 24px strokes.
+const traits = [
+  {
+    key: "clarity",
+    // sun / brightness
+    paths: ["circle:12,12,4", "M12 2v2|M12 20v2|M4.93 4.93l1.41 1.41|M17.66 17.66l1.41 1.41|M2 12h2|M20 12h2|M6.34 17.66l-1.41 1.41|M19.07 4.93l-1.41 1.41"],
+  },
+  {
+    key: "agility",
+    // bolt
+    paths: ["M13 2 3 14h9l-1 8 10-12h-9l1-8z"],
+  },
+  {
+    key: "connection",
+    // link
+    paths: ["M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71|M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"],
+  },
+  {
+    key: "calm",
+    // waves
+    paths: ["M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1|M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1|M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"],
+  },
+] as const;
+---
+
+<section id="name" class="section-container">
+  <div class="venus-card p-8 sm:p-12">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-5 lg:gap-12">
+      <div class="lg:col-span-2">
+        <p
+          class="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-accent-soft"
+        >
+          {n.kicker}
+        </p>
+        <h2 class="mb-6 text-3xl md:text-4xl title-gradient text-balance">
+          {n.title}
+        </h2>
+        <div class="space-y-4 text-sm leading-relaxed text-muted sm:text-base">
+          <p>{n.p1}</p>
+          <p>{n.p2}</p>
+        </div>
+        <p class="mt-6 text-sm italic text-venus-300">{n.signature}</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-3">
+        {
+          traits.map((trait) => (
+            <div class="rounded-xl border border-ink/5 bg-surface-2 p-5 transition-colors hover:border-venus-500/30">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="mb-3 text-venus-400"
+                aria-hidden="true"
+              >
+                {trait.paths.flatMap((group) => group.split("|")).map((segment) =>
+                  segment.startsWith("circle:") ? (
+                    <circle
+                      cx={segment.slice(7).split(",")[0]}
+                      cy={segment.slice(7).split(",")[1]}
+                      r={segment.slice(7).split(",")[2]}
+                    />
+                  ) : (
+                    <path d={segment} />
+                  ),
+                )}
+              </svg>
+              <h3 class="mb-1 text-lg font-bold text-ink">
+                {n.traits[trait.key].title}
+              </h3>
+              <p class="text-sm leading-relaxed text-muted">
+                {n.traits[trait.key].body}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
