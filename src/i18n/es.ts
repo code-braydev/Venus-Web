@@ -10,9 +10,9 @@ import type { Dict } from "./en";
 
 export const es: Dict = {
   layout: {
-    homeTitle: "Venus | Networking sin fricción",
+    homeTitle: "Venus | HTTP, sin fricción",
     homeDescription:
-      "Una librería de networking moderna, ligera y con tipos para JS/TS. Deja de pelearte con fetch.",
+      "Un cliente HTTP moderno y sin dependencias para JS/TS. Deja de pelearte con fetch.",
     docTitle: "Documentación | Venus SDK",
     docDescription:
       "Venus v3.0.1 desde cero: instalación, los dos modos, cuerpos de petición, resiliencia y la referencia completa de cada método.",
@@ -45,10 +45,10 @@ export const es: Dict = {
 
   hero: {
     badge: "Venus v3 ya está aquí — HTTP, sin fricción",
-    titleLine1: "Networking,",
+    titleLine1: "HTTP,",
     titleLine2: "sin fricción.",
     lead:
-      'Una librería de networking moderna y ligera que convierte los patrones complejos de <code class="text-purple-300 font-mono bg-purple-500/10 px-1 rounded">fetch</code> en una <span class="text-purple-200">experiencia tranquila y predecible</span>.',
+      'Un cliente HTTP moderno y sin dependencias que convierte los patrones complejos de <code class="text-purple-300 font-mono bg-purple-500/10 px-1 rounded">fetch</code> en una <span class="text-purple-200">experiencia tranquila y predecible</span>.',
     cta: "Comenzar",
     copyTitle: "Copiar comando",
     copyFailed: "Error al copiar:",

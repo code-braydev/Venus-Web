@@ -9,9 +9,9 @@
 
 export const en = {
   layout: {
-    homeTitle: "Venus | Networking without friction",
+    homeTitle: "Venus | HTTP, without friction",
     homeDescription:
-      "A modern, lightweight, type-safe networking library for JS/TS. Stop fighting fetch.",
+      "A modern, zero-dependency HTTP client for JS/TS. Stop fighting fetch.",
     docTitle: "Documentation | Venus SDK",
     docDescription:
       "Venus v3.0.1 from scratch: setup, modes, request bodies, resilience and the full reference of every method.",
@@ -44,10 +44,10 @@ export const en = {
 
   hero: {
     badge: "Venus v3 is here — HTTP, without friction",
-    titleLine1: "Networking,",
+    titleLine1: "HTTP,",
     titleLine2: "without the friction.",
     lead:
-      'A modern, lightweight networking library that turns complex <code class="text-purple-300 font-mono bg-purple-500/10 px-1 rounded">fetch</code> patterns into a <span class="text-purple-200">calm, predictable experience</span>.',
+      'A modern, zero-dependency HTTP client that turns complex <code class="text-purple-300 font-mono bg-purple-500/10 px-1 rounded">fetch</code> patterns into a <span class="text-purple-200">calm, predictable experience</span>.',
     cta: "Get Started",
     copyTitle: "Copy command",
     copyFailed: "Copy failed:",
