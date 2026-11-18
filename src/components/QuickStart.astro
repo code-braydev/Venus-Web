@@ -6,63 +6,70 @@ const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
 const s = t.quickStart.steps;
 
-const configSnippet = `import { venusConfig } from "@braydev/venus";
+const configSnippet = `import { venus } from "@braydev/venus";
 
-venusConfig.setBaseURL("https://api.braydev.xyz");`;
+venus.config({
+  baseURL: "https://api.braydev.xyz",
+  timeout: 8000,
+});`;
 
-const headersSnippet = `import { venusConfig } from "@braydev/venus";
+const headersSnippet = `import { venus } from "@braydev/venus";
 
-venusConfig.setBaseURL("https://api.braydev.xyz");
-
-venusConfig.setGlobalHeaders({
-  Authorization: "Bearer my-token",
-  "X-App-Version": "2.2.2",
+venus.config({
+  baseURL: "https://api.braydev.xyz",
+  headers: { "X-App-Version": "1.0.0" },
+  hooks: {
+    // Runs on every attempt, retries included: always the current token
+    beforeRequest: () => ({
+      headers: { Authorization: "Bearer " + session.token },
+    }),
+  },
 });
 
-// Read the current global headers (returns a plain object)
-const current = venusConfig.getGlobalHeaders();`;
+// Read the active config back
+const current = venus.config();`;
 
-const firstRequestSnippet = `import { get, send } from "@braydev/venus";
+const firstRequestSnippet = `import { venus } from "@braydev/venus";
 
-// GET with query params, timeout and smart parsing
-const profile = await get<User>("/profile", {
+// GET with query params, timeout and auto parsing
+const profile = await venus.get<User>("/profile", {
   timeout: 8000,
   params: { include: ["roles", "permissions"] },
   paramsArrayFormat: "repeat",
-  responseType: "auto",
 });
 
 if (profile.ok) {
-  console.log(profile.data?.name);
+  console.log(profile.data.name); // User: no null check needed
 } else {
   console.error(profile.errorCode, profile.error);
 }
 
-// POST with automatic retry
-const created = await send("/users", { name: "Brayan" }, {
-  retry: { attempts: 2, backoffMs: 200 },
-});`;
+// POST: the object is sent as JSON, Content-Type included
+const created = await venus.send<User>("/users", { name: "Brayan" });`;
 
-const paramsSnippet = `await get("/news", {
+const paramsSnippet = `await venus.get("/news", {
   params: { category: "tech", limit: 5 },
 });
 
 // Result: /news?category=tech&limit=5`;
 
-const rssSnippet = `import { getRss } from "@braydev/venus";
+const clientSnippet = `import { createClient } from "@braydev/venus";
 
-const feed = await getRss("https://hnrss.org/frontpage", {
+export const api = createClient({
+  baseURL: "https://api.braydev.xyz",
+  headers: { "X-App-Version": "1.0.0" },
   timeout: 8000,
-  retry: true,
-  rssMode: "strict",
 });
 
-if (feed.ok) {
-  for (const item of feed.data.items) {
-    console.log(item.title, item.link);
-    console.log(item.image); // auto-resolved thumbnail
-  }
-}`;
+export const cdn = createClient({
+  baseURL: "https://cdn.braydev.xyz",
+  timeout: 30_000,
+});
+
+const res = await api.get<User[]>("/users");
+if (res.ok) console.log(res.data.length);
+
+api.abort(); // cancel everything in flight on this client`;
 
 const arrayFormats = [
   {
@@ -198,13 +205,13 @@ const arrayFormats = [
         class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
         >5</span
       >
-      {s.rssTitle}
+      {s.clientTitle}
     </h3>
     <p
       class="text-sm text-purple-100/40 leading-relaxed"
-      set:html={s.rssBody}
+      set:html={s.clientBody}
     />
 
-    <CodeBlock code={rssSnippet} filename="news.ts" label="Feeds" />
+    <CodeBlock code={clientSnippet} filename="clients.ts" label="Clients" />
   </div>
 </div>

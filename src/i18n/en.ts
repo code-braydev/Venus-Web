@@ -14,7 +14,7 @@ export const en = {
       "A modern, lightweight, type-safe networking library for JS/TS. Stop fighting fetch.",
     docTitle: "Documentation | Venus SDK",
     docDescription:
-      "Venus v2.2.2 from scratch: setup, basic requests, advanced examples and the full reference of every method.",
+      "Venus v3.0.1 from scratch: setup, modes, request bodies, resilience and the full reference of every method.",
     keywords:
       "venus, networking, library, javascript, typescript, fetch, api, restful, graphql",
   },
@@ -43,7 +43,7 @@ export const en = {
   },
 
   hero: {
-    badge: "Venus SDK v2.2.2 is out",
+    badge: "Venus v3 is here — HTTP, without friction",
     titleLine1: "Networking,",
     titleLine2: "without the friction.",
     lead:
@@ -63,24 +63,24 @@ export const en = {
         body: "Beautiful code that stays out of your way. Focus on your logic, not boilerplate.",
       },
       types: {
-        title: "Type-safe by Default",
-        body: "Full TypeScript support, from request to response, for predictable data.",
+        title: "Narrowed Types",
+        body: "Check ok and data becomes T. On a failure you get the error code and the server's body.",
       },
       resilience: {
-        title: "Built-in Resilience",
-        body: "Handles timeouts and predictable errors, so your app stays robust.",
+        title: "Safe Resilience",
+        body: "Timeouts, retries with backoff and abort(). Only idempotent methods retry, so a POST is never duplicated.",
       },
       results: {
-        title: "Consistent Results",
-        body: "Predictable outcomes, no matter how a request succeeds or fails.",
+        title: "Never Throws",
+        body: "Every outcome is a predictable object: data, ok, error, status and metrics. No try/catch for the normal flow.",
       },
       deps: {
         title: "Zero Dependencies",
-        body: "Lightweight and fast, powered by native Web APIs, no bloat.",
+        body: "Native fetch by default, XMLHttpRequest only when you ask for progress or metrics. No bloat.",
       },
       focus: {
-        title: "Focused Power",
-        body: "Venus does one thing exceptionally well: making network requests simple and elegant.",
+        title: "Two Modes, One API",
+        body: "A global venus for simple apps, or createClient() for several APIs. Same methods, same contract.",
       },
     },
     learnMore: "Learn more",
@@ -102,47 +102,49 @@ export const en = {
     thFunction: "Function",
     thEffect: "Effect",
     rows: {
-      get: "GET with serialized query params, JSON/text auto-detection, timeout and retry",
-      getRss: "Normalized RSS/Atom with image/enclosure/media resolved for you",
-      send: "POST with body validation, FormData/Blob support, retry and hooks",
+      get: "GET with serialized query params, auto parsing (json/text/blob/stream), timeout and safe retry",
+      send: "POST with auto-serialized bodies (JSON, FormData, Blob, streams) and a Content-Type set for you",
       update: "Full resource replacement (PUT) with a non-empty body",
       updateOnly: "Partial field modification (PATCH)",
-      remove: "DELETE with 204 No Content normalization",
-      config: "Base URL and global headers for every request",
+      remove: "DELETE with 204 No Content normalization (data: null)",
+      abort: "Cancels every in-flight request of the scope (resolves as ABORTED)",
+      config: "Declarative global config: baseURL, headers, timeout, retry, metrics and hooks",
+      client: "Independent, immutable client with its own defaults. Same methods as venus",
     },
   },
+
 
   explainer: {
     schemaTitle: "Is the Schema mandatory?",
     schemaBody:
-      "<strong>No.</strong> Omitting it returns <code class=\"text-purple-300\">any</code>. However, we <strong>strongly recommend</strong> it for full IDE Intellisense, preventing \"undefined\" errors before they reach production.",
-    optionsTitle: "Unified Options in v2.0.0",
+      "<strong>No.</strong> Omitting it types <code class=\"text-purple-300\">data</code> as <code class=\"text-purple-300\">unknown</code>. However, we <strong>strongly recommend</strong> it: with <code class=\"text-purple-300\">get&lt;User&gt;</code> you get full IDE Intellisense and <code class=\"text-purple-300\">data</code> is a <code class=\"text-purple-300\">User</code> as soon as you check <code class=\"text-purple-300\">ok</code>.",
+    optionsTitle: "Unified Options in v3",
     requestControlsTitle: "Request Controls",
     requestControlsBody:
-      "headers, timeout, signal, params and paramsArrayFormat for safe URL query handling.",
-    parsingTitle: "Parsing + Resilience",
+      "headers, disableHeaders, timeout, signal, params and paramsArrayFormat for safe URL query handling.",
+    parsingTitle: "Bodies, Parsing + Resilience",
     parsingBody:
-      "responseType: auto/json/text/blob/formData/arrayBuffer, retry with backoff, and lifecycle hooks.",
+      "body is auto-serialized with its Content-Type; responseType: auto/json/text/blob/formData/arrayBuffer/stream; retry with backoff, hooks, metrics and progress.",
     fullRequest: "Full request",
   },
 
   quickStart: {
     steps: {
-      baseTitle: "Configure the base URL",
+      baseTitle: "Configure your API",
       baseBody:
-        'Before firing any request, you <strong>must</strong> initialize the base URL. This ensures every relative path (e.g. <code class="text-purple-300">/users</code>) resolves correctly against your server.',
+        'Call <code class="text-purple-300">venus.config()</code> once. Every relative path (e.g. <code class="text-purple-300">/users</code>) then resolves against your <code class="text-purple-300">baseURL</code>. Once a <code class="text-purple-300">baseURL</code> is set the scope is <strong>closed</strong>: absolute URLs are rejected with <code class="text-purple-300">INVALID_URL</code>. With no configuration at all, an absolute URL passes straight through.',
       baseNote:
         '💡 <strong>Best practice:</strong> import this config file from your main entry point (e.g. <code class="text-white">Layout.astro</code> or <code class="text-white">main.ts</code>) so it runs before any component renders.',
 
-      headersTitle: "Global headers (auth, versioning, tracing)",
+      headersTitle: "Global headers and token injection",
       headersBody:
-        "If your app always sends the same headers — an auth token, an app version, a trace id — define them once and Venus applies them to <strong>every</strong> request automatically.",
+        "Static headers go in <code class=\"text-purple-300\">headers</code> and apply to <strong>every</strong> request. For a token that changes, use a scope-wide <code class=\"text-purple-300\">beforeRequest</code> hook: it runs on every attempt, retries included, so it always reads the current token.",
       headersNote:
-        '⚡ <strong>Precedence:</strong> if you send a header with the same name in a single request’s options, <strong>that one</strong> wins. Per-request headers override global headers, never the other way around.',
+        '⚡ <strong>Precedence:</strong> a header with the same name in a single request’s options wins over the global one, never the other way around. Drop an inherited header per request with <code class="text-white">disableHeaders</code>.',
 
       firstTitle: "Your first request",
       firstBody:
-        "Venus unifies the options object across all methods and adds smart parsing for JSON or text/RSS payloads. Every response has the same shape: <code class=\"text-purple-300\">data</code>, <code class=\"text-purple-300\">ok</code>, <code class=\"text-purple-300\">error</code>, <code class=\"text-purple-300\">errorCode</code> and <code class=\"text-purple-300\">status</code>.",
+        "Every method is called on <code class=\"text-purple-300\">venus</code> and returns the same shape: <code class=\"text-purple-300\">data</code>, <code class=\"text-purple-300\">ok</code>, <code class=\"text-purple-300\">error</code>, <code class=\"text-purple-300\">errorCode</code>, <code class=\"text-purple-300\">status</code> and <code class=\"text-purple-300\">metrics</code>. Check <code class=\"text-purple-300\">ok</code> and TypeScript narrows the rest: <code class=\"text-purple-300\">data</code> becomes your type on success.",
 
       paramsTitle: "Query params: what they are and how they serialize",
       paramsBody:
@@ -150,9 +152,9 @@ export const en = {
       paramsSub:
         "When a value is an <strong>array</strong>, you choose how it serializes with <code class=\"text-purple-300\">paramsArrayFormat</code>. Each mode produces a different URL and targets a different kind of backend:",
 
-      rssTitle: "RSS and Atom feeds",
-      rssBody:
-        "Venus consumes feeds without manual XML parsing. Every item also exposes <code class=\"text-purple-300\">image</code>, <code class=\"text-purple-300\">enclosure</code> and <code class=\"text-purple-300\">media</code> in a normalized shape.",
+      clientTitle: "Several APIs? Use clients",
+      clientBody:
+        "<code class=\"text-purple-300\">createClient()</code> returns an independent, immutable client with its own <code class=\"text-purple-300\">baseURL</code>, headers, timeout, retry and hooks. It has the same methods as <code class=\"text-purple-300\">venus</code>. The two modes are <strong>exclusive</strong>: the first one you use locks the other.",
     },
     formats: {
       repeat:
@@ -177,14 +179,14 @@ export const en = {
     anatomyTitle: "Anatomy of a Response",
     anatomyKicker: "What Venus returns",
     anatomyBody:
-      "Every method in Venus returns a predictable contract. No try/catch is required for normal control flow; check <code>ok</code> and render from there.",
+      "Every method returns a predictable contract and never throws. Check <code>ok</code> and TypeScript narrows the response: <code>data</code> is your type on success, and the server's error body (<code>unknown</code>) on failure.",
     anatomy: {
-      data: "Parsed payload from json/text/blob/formData/arrayBuffer.",
-      ok: "True when the request succeeded.",
-      status: "HTTP status when available.",
-      error: "Human-readable message for logs and UI.",
-      errorCode: "HTTP_ERROR, TIMEOUT, ABORTED, NETWORK_ERROR, RETRY_EXHAUSTED and more.",
-      exhausted: "Returned when every retry attempt is spent. Keeps the last HTTP status.",
+      data: "T when ok is true. The server's error body (unknown) when it is false.",
+      ok: "True when the request succeeded. Checking it narrows the rest of the object.",
+      status: "HTTP status. 0 for network and validation failures.",
+      error: "Human-readable message for logs and UI. null on success.",
+      errorCode: "HTTP_ERROR, TIMEOUT, ABORTED, NETWORK_ERROR, RETRY_EXHAUSTED, INVALID_BODY, INVALID_URL, MODE_CONFLICT and more.",
+      metrics: "engine, startedAt, durationMs and attempts when metrics is enabled; otherwise null.",
     },
     get: {
       params: {
@@ -197,55 +199,33 @@ export const en = {
       },
       auto: {
         title: "responseType \"auto\": smart detection",
-        body: "Inspects headers and body: JSON is returned as an object, text/XML/HTML comes back as a string. Ideal for mixed endpoints and feeds with zero extra config.",
+        body: "Inspects headers and body: JSON is returned as an object, text/XML/HTML comes back as a string. Ideal for mixed endpoints with zero extra config.",
       },
       modes: {
         title: "Other response modes",
-        body: "Force the parser with \"json\", \"text\", \"blob\" (files and binaries), \"formData\" or \"arrayBuffer\" (streaming and binary processing).",
+        body: "Force the parser with \"json\", \"text\", \"blob\" (files and binaries), \"formData\" or \"arrayBuffer\". Use \"stream\" to get response.body as a ReadableStream and read it chunk by chunk (fetch engine only).",
       },
       retry: {
-        title: "retry: resilience against transient failures",
-        body: "Automatically retries on 408, 429 and 5xx. Accepts a boolean, a number, or an object with attempts, backoffMs, maxBackoffMs, retryOn and shouldRetry. When attempts run out the response reports errorCode RETRY_EXHAUSTED while keeping the last HTTP status.",
-      },
-    },
-    getRss: {
-      strict: {
-        title: "rssMode \"strict\" (default)",
-        body: "Strictly validates the XML structure. If the feed is not a valid RSS or Atom document the request fails immediately with PARSING_ERROR. Best when you control the source.",
-      },
-      lenient: {
-        title: "rssMode \"lenient\"",
-        body: "Tolerant mode (best-effort). If the feed has a custom or malformed structure, Venus flattens it and extracts the items anyway, without failing on a non-standard format.",
-      },
-      image: {
-        title: "item.image: auto-resolved thumbnail",
-        body: "Detection cascade in order: enclosure (RSS/Atom) → media (media:thumbnail / media:content) → first <img> tag found inside the content or description HTML. Returns a ready-to-use URL.",
-      },
-      media: {
-        title: "item.enclosure and item.media",
-        body: "Access to the raw sources: enclosure stores { url, type, length } from the RSS or Atom attachment; media stores arrays of content ({ url, type, medium }) and thumbnail ({ url }) from Media RSS. Useful for podcasts, video and images.",
-      },
-      fields: {
-        title: "Normalized feed fields",
-        body: "sourceType (\"rss\" | \"atom\"), title, description, link, language, updatedAt, image and items. Every item exposes title, link, description, content, pubDate, guid, author, categories, enclosure, media and image.",
+        title: "retry: safe resilience against transient failures",
+        body: "Retries on network errors, timeouts, 408, 429 and 5xx, only for idempotent methods (GET, HEAD, OPTIONS, PUT, DELETE). Backoff is exponential with jitter and a server Retry-After header replaces it. When attempts run out, errorCode is RETRY_EXHAUSTED and the last status and body are kept.",
       },
     },
     send: {
       validation: {
         title: "Pre-flight body validation (INVALID_BODY)",
-        body: "Before opening a network connection it checks whether body is null, undefined or an empty object {}. When empty it returns a local 400 with errorCode INVALID_BODY, saving bandwidth and avoiding a pointless server round-trip.",
+        body: "Before opening a network connection it checks whether the body is null, undefined, an empty string, {} or []. When empty it returns a local 400 with errorCode INVALID_BODY, saving a pointless server round-trip. A body that cannot be serialized (for example a circular object) returns INVALID_BODY instead of throwing.",
       },
       contentType: {
-        title: "Uploads that keep the Content-Type intact",
-        body: "Detects FormData, Blob and URLSearchParams and does NOT force application/json, so the browser can manage multipart boundaries correctly. String and plain-object bodies are still serialized with JSON.stringify.",
+        title: "Content-Type set for you",
+        body: "Objects and arrays go out as application/json, strings as text/plain, File/Blob with their own type, ArrayBuffer and typed arrays as application/octet-stream. FormData and URLSearchParams are left to the runtime, so multipart boundaries stay intact. An explicit Content-Type header always wins.",
       },
       serverErrors: {
         title: "Server error extraction",
-        body: "When the response is not ok, it tries to read the message field from the backend body and returns it prefixed with \"Venus: \" so errors stay readable in UI and logs.",
+        body: "When the response is not ok, it reads the message field from the backend body and returns it prefixed with \"Venus: \" so errors stay readable in UI and logs.",
       },
       bodies: {
         title: "Supported bodies",
-        body: "Objects (serialized to JSON), strings (raw payloads), FormData (multipart), Blob (binaries) and URLSearchParams (URL-encoded forms).",
+        body: "Objects and arrays (JSON), strings, FormData (multipart), URLSearchParams (urlencoded), File, Blob, ArrayBuffer, typed arrays and ReadableStream. A streamed body is sent with duplex: \"half\" and is never retried, because a stream cannot be replayed.",
       },
     },
     update: {
@@ -255,11 +235,11 @@ export const en = {
       },
       validation: {
         title: "Pre-flight body validation (INVALID_BODY)",
-        body: "Like send: it rejects null, undefined or empty {} bodies before touching the network, returning 400 with INVALID_BODY and the message \"PUT/PATCH requires a non-empty body\".",
+        body: "Like send: it rejects null, undefined, empty string, {} and [] bodies before touching the network, returning 400 with INVALID_BODY and the message \"PUT/PATCH requires a non-empty body\".",
       },
       uploads: {
-        title: "Same upload handling as send",
-        body: "FormData, Blob and URLSearchParams never get a forced application/json, so updates carrying file attachments work without breaking multipart boundaries.",
+        title: "Same body engine as send",
+        body: "The same auto-detection applies: FormData, Blob, binaries and streams keep their own Content-Type, so updates carrying file attachments work.",
       },
       errors: {
         title: "Normalized server errors",
@@ -269,15 +249,15 @@ export const en = {
     remove: {
       noContent: {
         title: "204 No Content normalization",
-        body: "REST APIs answer 204 with no body on successful deletions. Venus intercepts that status and normalizes the response: ok: true, data: null, error: null, errorCode: null — no try/catch or extra checks required.",
+        body: "REST APIs answer 204 with no body on successful deletions. Venus resolves it as ok: true, data: null, error: null, errorCode: null. Type the call as remove<null>(...) so data is typed as null.",
       },
       errors: {
         title: "Server error extraction",
-        body: "If the deletion fails (4xx/5xx) it tries to read the message field from the body and returns it as \"Venus: Delete operation failed. ...\", preserving status and errorCode.",
+        body: "If the deletion fails (4xx/5xx) it reads the message field from the body and returns it as \"Venus: Delete operation failed. ...\", preserving status and errorCode.",
       },
       options: {
         title: "Same options as everywhere else",
-        body: "Supports params, timeout, signal, responseType, retry and hooks — the same unified options model used by get, send and update.",
+        body: "Supports params, timeout, signal, responseType, retry and hooks — the same unified options model used by get, send and update. DELETE is idempotent, so it retries by default.",
       },
       generic: {
         title: "The <T> generic",
@@ -285,9 +265,8 @@ export const en = {
       },
     },
     descriptions: {
-      get: "Fetch resources with smart parsing, query params, timeout and retry controls. responseType: auto detects JSON vs text payloads.",
-      getRss: "Fetch and normalize RSS/Atom feeds with strict or lenient modes for non-standard XML sources.",
-      send: "Create resources with retry policy and hooks support for request/response instrumentation.",
+      get: "Fetch resources with smart parsing, query params, timeout and safe retry. responseType: auto detects JSON vs text; stream gives you a ReadableStream.",
+      send: "Create resources. The body is auto-serialized with its Content-Type, with retry, hooks and abort support.",
       update: "Use update for full replacement (PUT) and updateOnly for partial changes (PATCH) with the same options model.",
       remove: "Delete resources with 204 handling and the same timeout/retry/hook controls available everywhere.",
     },
@@ -295,7 +274,7 @@ export const en = {
 
   doc: {
     title: "Documentation",
-    lead: "Venus v2.2.2 from scratch: setup, basic requests, advanced examples and the full reference of every method with all of its details.",
+    lead: "Venus v3.0.1 from scratch: setup, the two modes, request bodies, resilience and the full reference of every method with all of its details.",
     sidebar: {
       gettingStarted: "Getting started",
       advanced: "Advanced patterns",
@@ -303,34 +282,37 @@ export const en = {
       links: {
         installation: "Installation",
         firstSteps: "First steps",
+        modes: "Two modes",
         advancedExamples: "Advanced examples",
         retries: "Retries",
         hooks: "Hooks & telemetry",
-        uploads: "Uploads & binaries",
+        uploads: "Request bodies",
+        abort: "Aborting",
+        engine: "Engine & metrics",
         arch: "SPA & SSR",
         anatomy: "Response anatomy",
-        get: "get<T>",
-        send: "send<T>",
-        rss: "getRss",
+        get: "venus.get<T>",
+        send: "venus.send<T>",
         update: "update / updateOnly",
-        remove: "remove",
+        remove: "venus.remove",
         commonOptions: "Common options",
-        rssAtom: "RSS & Atom",
+        migrating: "Migrating from v2",
         changelog: "Changelog",
       },
     },
     headings: {
       installation: "Installation",
+      modes: "Two modes: venus and createClient",
       advanced: "Advanced examples",
-      retries: "Resilience and retries",
+      retries: "Resilience and safe retries",
       hooks: "Lifecycle hooks and telemetry",
-      uploads: "Uploads and binary bodies",
-      rssModes: "RSS parsing modes",
+      uploads: "Request bodies",
+      abort: "Aborting requests",
+      engine: "Engine, progress and metrics",
       architecture: "Architecture: Frontend (SPA) and Backend (SSR)",
       methodReference: "Method reference",
       commonOptions: "Common options",
-      rss: "RSS and Atom",
-      feedFields: "Feed item fields",
+      migrating: "Migrating from v2",
       changelog: "Changelog",
       testing: "Testing",
       license: "License",
@@ -338,17 +320,27 @@ export const en = {
       backend: "Backend (Node / SSR)",
     },
     prose: {
-      advanced: "Production patterns: retry policies, lifecycle hooks, file uploads and SPA/SSR architecture.",
-      retries: "<code>retry</code> recovers requests that failed due to transient problems (408, 429, 5xx). It accepts <code>true</code>, a number, or an object with full control. When the attempts run out, the response reports <code class=\"text-yellow-400\">errorCode: \"RETRY_EXHAUSTED\"</code> while keeping the last HTTP status.",
-      hooks: "<code>beforeRequest</code> intercepts the request before it is sent (token injection, tracing, logging) and may return a modified <code>RequestInit</code>. <code>afterResponse</code> runs once the response arrives, with its duration and attempt. <code>onTelemetry</code> emits an event for every settled request.",
-      uploads: "<code>send</code> and <code>update</code> detect <code>FormData</code>, <code>Blob</code> and <code>URLSearchParams</code> and do <strong>not</strong> force <code>application/json</code>, preserving multipart boundaries so real uploads work.",
-      rssModes: "Choose between strict validation or a tolerant mode depending on the quality of the feed you consume.",
-      methodReference: "Every method with its syntax, response contract and all of its insights: which options it accepts, what it improves and how it behaves in edge cases.",
+      modes:
+        "Venus has two ways to be used, and they are <strong>exclusive</strong>. Use the global <code>venus</code> when your app talks to one API, or <code>createClient()</code> when it talks to several. The first mode you use locks the other for the life of the process.",
+      advanced:
+        "Production patterns: retry policies, lifecycle hooks, request bodies, aborting, the dual engine and SPA/SSR architecture.",
+      retries:
+        "<code>retry</code> recovers requests that failed for transient reasons (network errors, timeouts, 408, 429 and 5xx). By default only <strong>idempotent</strong> methods retry (GET, HEAD, OPTIONS, PUT, DELETE): a POST or PATCH is never repeated unless you opt in with <code>retryMethods</code> or <code>shouldRetry</code>, so a retry can never duplicate an order or a payment. Backoff is exponential with jitter, and a server <code>Retry-After</code> header replaces it. When the attempts run out, the response reports <code class=\"text-yellow-400\">errorCode: \"RETRY_EXHAUSTED\"</code> and keeps the last status and body.",
+      hooks:
+        "<code>beforeRequest</code> runs on every attempt and returns a partial override that is merged into the request (headers combine). <code>afterResponse</code> runs when the response arrives, with its duration and attempt. <code>onTelemetry</code> emits one event per attempt. Put them in <code>venus.config</code> or <code>createClient</code> to apply them to every request; the ones in a request run after the scope ones. A hook that throws never breaks the contract: the response is <code class=\"text-yellow-400\">UNKNOWN_ERROR</code>.",
+      uploads:
+        "Venus detects the payload and sets the <code>Content-Type</code> for you. An explicit <code>Content-Type</code> header always wins. Empty payloads (<code>null</code>, <code>\"\"</code>, <code>{}</code>, <code>[]</code>) return <code>INVALID_BODY</code> without touching the network.",
+      abort:
+        "Cancel one request with a standard <code>AbortSignal</code>, or everything in flight in a scope with <code>venus.abort()</code> or <code>api.abort()</code>. Aborted requests resolve as <code class=\"text-yellow-400\">ABORTED</code> (status 499) and are never retried.",
+      engine:
+        "<code>fetch</code> is the default engine. Venus switches to <code>XMLHttpRequest</code> on its own when you pass a <code>progress</code> callback or enable <code>metrics</code>: no flags to set. In Node there is no XHR, so <code>metrics</code> falls back to fetch and <code>progress</code> resolves as <code class=\"text-yellow-400\">UNSUPPORTED</code>.",
+      methodReference:
+        "Every method with its syntax, response contract and all of its insights: which options it accepts, what it improves and how it behaves in edge cases.",
       commonOptions: "Every option documented with exactly what it does.",
-      rss: "Venus consumes feeds without manual XML parsing using <code>getRss</code>. Use <code>rssMode: \"strict\"</code> by default, or <code>\"lenient\"</code> for non-standard XML feeds.",
-      feedFields: "Besides <code>title</code>/<code>link</code>/<code>description</code>/<code>content</code>, every item exposes image helpers that are resolved automatically:",
-      feedFieldsEnd: "Use <code>item.image</code> as a ready-to-use thumbnail, or inspect <code>enclosure</code>/<code>media</code> for the raw sources (podcast covers, video and image attachments).",
-      changelog: "Full history up to the current version <strong class=\"text-purple-300\">2.2.2</strong>.",
+      migrating:
+        "Coming from v2? These are the changes that need action. The full list lives in the changelog below.",
+      changelog:
+        "Full history up to the current version <strong class=\"text-purple-300\">3.0.1</strong>.",
       testing: "Venus is fully tested with Vitest.",
       license: "MIT © code-braydev",
       copyFailed: "Copy failed:",

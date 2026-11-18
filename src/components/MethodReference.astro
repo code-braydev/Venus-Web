@@ -7,7 +7,7 @@ const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
 const ins = t.insights;
 
-const getCode = `const { data, ok, errorCode } = await get<User>("/profile", {
+const getCode = `const { data, ok, errorCode } = await venus.get<User>("/profile", {
   params: { include: ["roles"] },
   paramsArrayFormat: "repeat",
   responseType: "auto",
@@ -15,59 +15,47 @@ const getCode = `const { data, ok, errorCode } = await get<User>("/profile", {
 });
 
 if (!ok) return handleError(errorCode);
-console.log(data?.name);`;
+console.log(data.name); // narrowed to User`;
 
-const getRssCode = `const feedResult = await getRss("https://hnrss.org/frontpage", {
-  timeout: 8000,
-  retry: true,
-  rssMode: "strict",
-});
+const sendCode = `// Objects and arrays are sent as JSON
+await venus.send<User>("/users", { name: "Brayan" });
 
-if (feedResult.ok) {
-  const item = feedResult.data.items[0];
-  console.log(item?.title);
-  console.log(item?.image);     // resolved thumbnail
-  console.log(item?.enclosure); // raw attachment
-}`;
-
-const sendCode = `const payload = { name: "Brayan" };
-
-await send("/users", payload, {
-  retry: { attempts: 2, backoffMs: 200 },
-  hooks: {
-    afterResponse: () => console.log("done"),
+// File upload: FormData keeps its multipart boundary
+const form = new FormData();
+form.append("avatar", file);
+await venus.send("/upload", form, {
+  progress: ({ direction, loaded, percent }) => {
+    console.log(direction, loaded, percent);
   },
 });
 
-// File upload: application/json is NOT forced
-const form = new FormData();
-form.append("avatar", file);
-await send("/upload", form);`;
+// Raw binary: the Content-Type comes from the file
+await venus.send("/files", file);`;
 
 const updateCode = `// PUT: full replacement
-await update("/users/1", {
+await venus.update("/users/1", {
   name: "Brayan",
   email: "bray@dev.com",
   active: true,
 });
 
 // PATCH: only the fields that change
-await updateOnly("/users/1", { active: false }, {
+await venus.updateOnly("/users/1", { active: false }, {
   timeout: 6000,
 });`;
 
-const removeCode = `const { ok, status } = await remove("/id/10", { retry: 1 });
+const removeCode = `const res = await venus.remove<null>("/users/10");
 
-// ok = true even on 204 No Content
-if (ok) refreshTable(status);`;
+// ok is true on 204 No Content, and data is null
+if (res.ok) refreshTable(res.status);`;
 
 const anatomyFields = [
-  { code: "data: T | null", color: "text-purple-300", key: "data" },
+  { code: "data: T", color: "text-purple-300", key: "data" },
   { code: "ok: boolean", color: "text-green-400", key: "ok" },
   { code: "status?: number", color: "text-blue-400", key: "status" },
   { code: "error: string | null", color: "text-red-400", key: "error" },
   { code: "errorCode", color: "text-orange-400", key: "errorCode" },
-  { code: "RETRY_EXHAUSTED", color: "text-yellow-400", key: "exhausted" },
+  { code: "metrics: VenusMetrics | null", color: "text-yellow-400", key: "metrics" },
 ] as const;
 ---
 
@@ -128,7 +116,7 @@ const anatomyFields = [
     id="get"
     method="GET"
     color="bg-blue-500/10 text-blue-400 border-blue-500/20"
-    syntax="get<T>(path, options?)"
+    syntax="venus.get<T>(path, options?)"
     description={ins.descriptions.get}
     status="200 OK"
     code={getCode}
@@ -143,28 +131,10 @@ const anatomyFields = [
   />
 
   <DocMethod
-    id="getRss"
-    method="GET RSS"
-    color="bg-cyan-500/10 text-cyan-400 border-cyan-500/20"
-    syntax="getRss(path, options?)"
-    description={ins.descriptions.getRss}
-    status="200 OK"
-    code={getRssCode}
-    filename="feed.ts"
-    details={[
-      ins.getRss.strict,
-      ins.getRss.lenient,
-      ins.getRss.image,
-      ins.getRss.media,
-      ins.getRss.fields,
-    ]}
-  />
-
-  <DocMethod
     id="send"
     method="POST"
     color="bg-green-500/10 text-green-400 border-green-500/20"
-    syntax="send<T>(path, body, options?)"
+    syntax="venus.send<T>(path, body, options?)"
     description={ins.descriptions.send}
     status="201 Created"
     code={sendCode}
@@ -181,7 +151,7 @@ const anatomyFields = [
     id="update"
     method="PUT / PATCH"
     color="bg-orange-500/10 text-orange-400 border-orange-500/20"
-    syntax="update<T>(path, body, options?)"
+    syntax="venus.update<T>(path, body, options?)"
     description={ins.descriptions.update}
     status="200 OK"
     code={updateCode}
@@ -198,7 +168,7 @@ const anatomyFields = [
     id="remove"
     method="DELETE"
     color="bg-red-500/10 text-red-400 border-red-500/20"
-    syntax="remove<T>(path, options?)"
+    syntax="venus.remove<T>(path, options?)"
     description={ins.descriptions.remove}
     status="204 No Content"
     code={removeCode}

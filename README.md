@@ -2,18 +2,17 @@
 
 Landing y documentacion oficial de Venus, una libreria moderna y ligera para networking en JavaScript/TypeScript.
 
-## Venus v2.0.0
+## Venus v3.0.1
 
-Novedades principales:
+La landing y la documentacion describen la version 3.0.1. Novedades principales:
 
-- Smart Parsing: deteccion automatica de JSON o texto (ideal para RSS/XML).
-- Multi-Format Support: soporte para blob, formData y arrayBuffer.
-- Query Params: opcion params para construir query strings de forma segura.
-- Enhanced DX: JSDoc completo para mejor IntelliSense en VS Code.
-- API unificada: options consistentes en get/send/update/updateOnly/remove.
-- Retry configurable con backoff para errores transitorios.
-- Hooks ligeros: beforeRequest y afterResponse.
-- getRss con normalizacion RSS/Atom y modos strict/lenient.
+- API simetrica: `venus.get/send/update/updateOnly/remove` (modo global) y `createClient()` (varios clientes). Los dos modos son excluyentes.
+- Respuestas tipadas que se estrechan con `ok`: `data` pasa a ser `T` al comprobarlo.
+- Motor dual: `fetch` por defecto y `XMLHttpRequest` automatico con `progress` o `metrics`.
+- Bodies autoserializados con su `Content-Type` (JSON, texto, FormData, URLSearchParams, File/Blob/ArrayBuffer y ReadableStream) y `responseType: "stream"`.
+- Reintentos seguros: solo metodos idempotentes, `retryMethods`, `Retry-After` y jitter.
+- `abort()` por scope, hooks y `onTelemetry` a nivel de `venus.config` y `createClient`.
+- Cero dependencias. El soporte RSS/Atom se elimino de Venus.
 
 ## Scripts
 

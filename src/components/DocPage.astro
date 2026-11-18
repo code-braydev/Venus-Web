@@ -10,10 +10,18 @@ const t = getDict(locale);
 const d = t.doc;
 
 const commonOptionsSnippet = `{
-  // Headers for this request (they override the global ones)
+  // Headers for this request (they override the scope ones)
   headers?: HeadersInit;
 
-  // Timeout in ms; when exceeded the request aborts with errorCode "TIMEOUT"
+  // Header names removed from this request (case-insensitive)
+  disableHeaders?: string[];
+
+  // Payload, auto-serialized with its Content-Type
+  // (object/array, string, FormData, URLSearchParams, File/Blob,
+  //  ArrayBuffer/typed arrays, ReadableStream)
+  body?: unknown;
+
+  // Timeout in ms; when exceeded the request resolves as "TIMEOUT"
   timeout?: number;
 
   // External cancellation signal (AbortController)
@@ -26,86 +34,72 @@ const commonOptionsSnippet = `{
   paramsArrayFormat?: "repeat" | "comma" | "brackets" | "indices";
 
   // Body parser; "auto" detects JSON vs text
-  responseType?: "auto" | "json" | "text" | "blob" | "formData" | "arrayBuffer";
+  responseType?: "auto" | "json" | "text" | "blob" | "formData" | "arrayBuffer" | "stream";
 
-  // Retry policy for 408, 429 and 5xx responses
+  // Retry policy (network errors, timeouts, 408, 429 and 5xx)
   retry?: boolean | number | {
-    attempts?: number;      // retries after the first attempt
-    backoffMs?: number;     // initial wait between attempts
-    maxBackoffMs?: number;  // backoff ceiling
-    retryOn?: number[];     // HTTP codes worth retrying
-    shouldRetry?: (ctx) => boolean; // custom decision
+    attempts?: number;       // retries after the first attempt
+    backoffMs?: number;      // initial wait between attempts
+    maxBackoffMs?: number;   // backoff ceiling (also caps Retry-After)
+    retryOn?: number[];      // HTTP codes worth retrying
+    retryMethods?: string[]; // default: GET, HEAD, OPTIONS, PUT, DELETE
+    shouldRetry?: (ctx) => boolean; // custom decision, overrides retryMethods
   };
 
-  // Lifecycle hooks
+  // Lifecycle hooks (also accepted by venus.config and createClient)
   hooks?: {
-    beforeRequest?: (ctx) => void | RequestInit | Promise<void | RequestInit>;
+    beforeRequest?: (ctx) => void | Override | Promise<void | Override>;
     afterResponse?: (ctx) => void | Promise<void>;
   };
 
-  // Telemetry callback: url, method, ok, status, durationMs, attempt, errorCode
+  // Telemetry per attempt: url, method, ok, status, durationMs, attempt, errorCode
   onTelemetry?: (event) => void;
+
+  // Fills response.metrics (XHR in browsers, fetch in Node)
+  metrics?: boolean;
+
+  // Transfer progress (switches to XHR; UNSUPPORTED in Node)
+  progress?: ({ direction, loaded, percent }) => void;
 }`;
 
-const rssSnippet = `import { getRss } from "@braydev/venus";
+const modesSnippet = `import { venus, createClient } from "@braydev/venus";
 
-const feed = await getRss("https://example.com/rss.xml", {
-  timeout: 7000,
-  rssMode: "strict",
-});
+// Mode 1: the global venus (one API)
+venus.config({ baseURL: "https://api.example.com", timeout: 8000 });
+await venus.get<User>("/profile");
+venus.reset(); // clear everything (e.g. on logout)
 
-if (feed.ok) {
-  for (const item of feed.data.items) {
-    console.log(item.title, item.link);
-    console.log(item.image);      // resolved thumbnail
-    console.log(item.enclosure);  // raw attachment
-    console.log(item.media);      // media:content / media:thumbnail
-  }
-}`;
+// Mode 2: clients (several APIs)
+const api = createClient({ baseURL: "https://api.example.com" });
+await api.get<User>("/profile");
 
-const feedFieldsSnippet = `{
-  title: string;
-  link?: string;
-  description?: string; // raw HTML when the feed embeds markup
-  content?: string;
-  pubDate?: string;
-  guid?: string;
-  author?: string;
-  categories?: string[];
+// Pick one. Once a client exists, venus.config() throws and
+// venus.get(...) resolves as { ok: false, errorCode: "MODE_CONFLICT" }.`;
 
-  // RSS <enclosure> / Atom <link rel="enclosure">
-  enclosure?: { url: string; type?: string; length?: number };
+const retrySnippet = `import { venus } from "@braydev/venus";
 
-  // Media RSS (podcasts, video, images)
-  media?: {
-    content?: { url: string; type?: string; medium?: string }[];
-    thumbnail?: { url: string }[];
-  };
+// 1. Boolean or number: GET, HEAD, OPTIONS, PUT and DELETE retry
+await venus.get("/status", { retry: true });
+await venus.get("/status", { retry: 3 });
 
-  // Cascade: enclosure → media → first <img> in the HTML
-  image?: string;
-}`;
-
-const retrySnippet = `import { get } from "@braydev/venus";
-
-// 1. Boolean: retry with the defaults (exponential backoff)
-await get("/status", { retry: true });
-
-// 2. Number: exact amount of retries
-await get("/status", { retry: 3 });
-
-// 3. Object: full control over the policy
-const res = await get("/report", {
+// 2. Full control over the policy
+const res = await venus.get("/report", {
   retry: {
     attempts: 3,        // 3 retries after the first attempt
-    backoffMs: 200,     // initial wait: 200ms
-    maxBackoffMs: 5000, // ceiling: 5s (exponential backoff)
+    backoffMs: 200,     // initial wait: 200ms (exponential, with jitter)
+    maxBackoffMs: 5000, // ceiling: 5s
     retryOn: [429, 500, 502, 503],
   },
 });
 
-// 4. Custom decision
-await get("/orders", {
+// 3. POST and PATCH never retry by default: a retry could duplicate
+//    the operation. Opt in only when the endpoint is safe to repeat.
+await venus.send("/events", { type: "click" }, {
+  retry: { attempts: 2, retryMethods: ["POST"] },
+});
+
+// 4. Custom decision (takes over the method policy)
+await venus.get("/orders", {
   retry: {
     attempts: 2,
     shouldRetry: ({ attempt, status, errorCode }) =>
@@ -113,106 +107,190 @@ await get("/orders", {
   },
 });
 
+// A server Retry-After header replaces the backoff (capped by maxBackoffMs).
 // When every attempt is spent:
-if (res.errorCode === "RETRY_EXHAUSTED") {
-  console.log("Last status:", res.status); // still preserved
+if (!res.ok && res.errorCode === "RETRY_EXHAUSTED") {
+  console.log("Last status:", res.status, res.data); // both preserved
 }`;
 
-const hooksSnippet = `import { get, send } from "@braydev/venus";
+const hooksSnippet = `import { createClient } from "@braydev/venus";
 
-// Dynamic token injection + tracing on every request
-await get("/profile", {
+export const api = createClient({
+  baseURL: "https://api.example.com",
   hooks: {
-    beforeRequest: ({ url, options, attempt }) => {
+    // Scope-wide: runs on every attempt, retries included
+    beforeRequest: ({ url, attempt }) => {
       console.log("-> " + url + " (attempt " + attempt + ")");
-      const headers = new Headers(options.headers);
-      headers.set("Authorization", "Bearer " + refreshToken());
-      headers.set("X-Trace-Id", crypto.randomUUID());
-      return { ...options, headers };
+      return {
+        headers: {
+          Authorization: "Bearer " + session.token, // always the current token
+          "X-Trace-Id": crypto.randomUUID(),
+        },
+      };
     },
-    afterResponse: ({ response, durationMs, attempt }) => {
+    afterResponse: ({ response, durationMs }) => {
       console.log("<- " + response.status + " in " + durationMs + "ms");
     },
   },
-});
-
-// App-wide telemetry
-send("/events", { type: "click" }, {
   onTelemetry: ({ url, ok, durationMs, attempt, errorCode }) => {
     analytics.track("request", { url, ok, durationMs, attempt, errorCode });
   },
+});
+
+// A request can add its own hooks: they run after the client ones
+await api.get("/profile", {
+  hooks: { beforeRequest: () => ({ headers: { "X-Feature": "beta" } }) },
 });`;
 
-const uploadSnippet = `import { send } from "@braydev/venus";
+const uploadSnippet = `import { venus } from "@braydev/venus";
 
-// FormData: application/json is NOT forced, the multipart
-// boundary is preserved and the upload works correctly
+// Object / array -> application/json
+await venus.send("/users", { name: "Brayan" });
+
+// string -> text/plain;charset=UTF-8
+await venus.send("/notes", "plain text");
+
+// FormData -> multipart (the runtime sets the boundary)
 const form = new FormData();
 form.append("avatar", fileInput.files[0]);
-form.append("name", "Brayan");
+await venus.send<User>("/users/1/avatar", form);
 
-const res = await send<User>("/users/1/avatar", form);
+// URLSearchParams -> application/x-www-form-urlencoded
+await venus.send("/login", new URLSearchParams({ user: "bray", pass: "1234" }));
 
-// Blob: downloads and binaries
-const blob = await fetch("/file.pdf").then((r) => r.blob());
-await send("/files", blob, { responseType: "blob" });
+// File / Blob -> its own type, or application/octet-stream
+await venus.send("/files", fileInput.files[0]);
 
-// Raw strings and URLSearchParams are supported too
-await send("/form", new URLSearchParams({ a: "1", b: "2" }));`;
+// ArrayBuffer / typed arrays -> application/octet-stream
+await venus.send("/raw", new Uint8Array([1, 2, 3]));
 
-const modesSnippet = `// Strict mode (default): validates the XML structure
-const strict = await getRss("https://example.com/feed.xml", {
-  rssMode: "strict",
+// ReadableStream -> application/octet-stream (sent with duplex: "half", never retried)
+await venus.send("/ingest", stream);
+
+// An explicit header always wins
+await venus.send("/vendor", { a: 1 }, {
+  headers: { "Content-Type": "application/vnd.api+json" },
 });
-// Not a valid RSS/Atom document -> errorCode "PARSING_ERROR"
 
-// Tolerant mode: best-effort for non-standard feeds
-const lenient = await getRss("https://example.com/custom-xml", {
-  rssMode: "lenient",
+// Responses: choose how to decode them
+const csv = await venus.get("/export.csv", { responseType: "text" });
+const pdf = await venus.get("/report.pdf", { responseType: "blob" });
+const live = await venus.get("/events", { responseType: "stream" });`;
+
+const abortSnippet = `import { venus, createClient } from "@braydev/venus";
+
+// One request: a standard AbortSignal
+const controller = new AbortController();
+const pending = venus.get("/slow", { signal: controller.signal });
+controller.abort();
+const res = await pending;
+// -> { ok: false, errorCode: "ABORTED", status: 499 }
+
+// Everything in flight in the scope (e.g. on route change or logout)
+venus.abort();
+
+// Same on a client
+const api = createClient({ baseURL: "https://api.example.com" });
+api.abort();`;
+
+const engineSnippet = `import { venus } from "@braydev/venus";
+
+// metrics: true -> response.metrics (XHR in browsers, fetch in Node)
+const res = await venus.get<User>("/profile", { metrics: true });
+console.log(res.metrics);
+// { engine: "xhr", startedAt: 1795024235363, durationMs: 84, attempts: 1 }
+
+// progress -> XHR. The direction is detected for you
+await venus.send("/upload", form, {
+  progress: ({ direction, loaded, percent }) => {
+    console.log(direction + ": " + loaded + " " + percent + "%");
+    // "upload: 125.0KB / 523.0KB 24%"
+  },
 });
-// Flattens and extracts the items even when the structure is irregular`;
 
-const frontendSnippet = `import { getRss } from "@braydev/venus";
+// Enable metrics for the whole scope
+venus.config({ metrics: true });`;
 
+const frontendSnippet = `// src/api.ts: one API, the global venus
+import { venus } from "@braydev/venus";
+
+venus.config({ baseURL: import.meta.env.PUBLIC_API_URL, timeout: 8000 });
+
+// src/news.ts
 export async function loadNews() {
-  const result = await getRss("https://hnrss.org/frontpage", {
-    timeout: 6000,
-    retry: true,
-    rssMode: "strict",
+  const res = await venus.get<Article[]>("/news", {
+    params: { limit: 5 },
+    retry: 2,
   });
-
-  if (!result.ok) {
-    throw new Error(result.error ?? "Feed error");
-  }
-
-  return result.data.items.slice(0, 10);
+  return res.ok ? res.data : [];
 }`;
 
-const backendSnippet = `import { getRss } from "@braydev/venus";
+const backendSnippet = `// server/clients.ts: several services, one client each
+import { createClient } from "@braydev/venus";
 
-export async function fetchTechFeed() {
-  const result = await getRss("https://example.com/custom-feed", {
-    timeout: 8000,
-    retry: { attempts: 2, backoffMs: 200 },
-    rssMode: "lenient",
-  });
+export const users = createClient({
+  baseURL: process.env.USERS_URL!,
+  timeout: 5000,
+  retry: 2,
+});
+export const billing = createClient({
+  baseURL: process.env.BILLING_URL!,
+  timeout: 10_000,
+});
 
-  if (!result.ok) {
-    return { items: [], source: "fallback", error: result.error };
-  }
-
-  return {
-    source: result.data.title,
-    items: result.data.items.map((item) => ({
-      title: item.title,
-      link: item.link,
-      image: item.image,
-      publishedAt: item.pubDate,
-    })),
-  };
+// server/profile.ts
+export async function loadProfile(id: string, signal: AbortSignal) {
+  const res = await users.get<User>("/users/" + id, { signal });
+  if (!res.ok) throw new Error(res.errorCode + ": " + res.error);
+  return res.data;
 }`;
 
-const changelogSnippet = `## 2.2.2
+const migrationSnippet = `- import { venusConfig, get, getRss } from "@braydev/venus";
++ import { venus } from "@braydev/venus";
+
+- venusConfig.setBaseURL("https://api.example.com");
++ venus.config({ baseURL: "https://api.example.com", timeout: 8000 });
+
+- const res = await get("/users");
++ const res = await venus.get<User[]>("/users");
+
+- onUploadProgress / onDownloadProgress / useXHR
++ progress: ({ direction, loaded, percent }) => {}
+
+Behavior changes
+- POST and PATCH no longer retry by default (opt in with retryMethods)
+- string bodies are sent as text/plain, not application/json
+- failures type data as unknown: narrow it before reading the error body
+- once a baseURL is set, absolute URLs return INVALID_URL
+- venus and createClient are exclusive: pick one per process
+- the standalone get/send/update/updateOnly/remove exports are gone
+- RSS/Atom support (getRss) was removed from Venus`;
+
+const changelogSnippet = `## 3.0.1
+
+3.0.0 was retracted. 3.0.1 is the first supported release of v3.
+
+### Added
+- venus (config, reset, abort, get, send, update, updateOnly, remove) and createClient().
+- Dual engine: fetch by default, XMLHttpRequest for progress and metrics.
+- Auto-serialized bodies with their Content-Type, and responseType "stream".
+- metrics, abort(), scope-wide hooks and onTelemetry.
+- Responses narrowed by ok (VenusSuccess | VenusFailure).
+- retryMethods, Retry-After support and jitter on the backoff.
+
+### Changed
+- POST and PATCH no longer retry by default.
+- Once a baseURL is set, only relative paths are accepted.
+- String bodies are sent as text/plain.
+- A throwing hook resolves as UNKNOWN_ERROR instead of throwing.
+
+### Removed (breaking)
+- RSS/Atom support and the fast-xml-parser dependency.
+- venusConfig, the standalone get/send/update/updateOnly/remove exports,
+  useXHR, onUploadProgress and onDownloadProgress.
+- PARSING_ERROR (renamed to JSON_PARSE_ERROR) and the baseUrl request option.
+
+## 2.2.2
 
 ### Changed
 - Documentation and consistency: README aligned with the changelog (MIT License).
@@ -266,6 +344,7 @@ const navGroups = [
     links: [
       { href: "#quick-start", label: d.sidebar.links.installation },
       { href: "#basics", label: d.sidebar.links.firstSteps },
+      { href: "#modes", label: d.sidebar.links.modes },
     ],
   },
   {
@@ -275,6 +354,8 @@ const navGroups = [
       { href: "#advanced-retry", label: d.sidebar.links.retries },
       { href: "#advanced-hooks", label: d.sidebar.links.hooks },
       { href: "#advanced-upload", label: d.sidebar.links.uploads },
+      { href: "#advanced-abort", label: d.sidebar.links.abort },
+      { href: "#advanced-engine", label: d.sidebar.links.engine },
       { href: "#advanced-arch", label: d.sidebar.links.arch },
     ],
   },
@@ -284,11 +365,10 @@ const navGroups = [
       { href: "#anatomy", label: d.sidebar.links.anatomy },
       { href: "#get", label: d.sidebar.links.get },
       { href: "#send", label: d.sidebar.links.send },
-      { href: "#getRss", label: d.sidebar.links.rss },
       { href: "#update", label: d.sidebar.links.update },
       { href: "#remove", label: d.sidebar.links.remove },
       { href: "#common-options", label: d.sidebar.links.commonOptions },
-      { href: "#rss", label: d.sidebar.links.rssAtom },
+      { href: "#migrating", label: d.sidebar.links.migrating },
       { href: "#changelog", label: d.sidebar.links.changelog },
     ],
   },
@@ -399,6 +479,15 @@ const navGroups = [
             </section>
           </div>
 
+          <section id="modes" class="scroll-mt-32 mb-24 space-y-6">
+            <h2 class="text-2xl font-bold text-white">{d.headings.modes}</h2>
+            <p
+              class="text-purple-100/50 leading-relaxed"
+              set:html={d.prose.modes}
+            />
+            <CodeBlock code={modesSnippet} filename="modes.ts" label="Modes" />
+          </section>
+
           <hr class="border-white/5 mb-24" />
 
           <!-- ===================== ADVANCED PATTERNS ===================== -->
@@ -456,18 +545,33 @@ const navGroups = [
               />
             </div>
 
-            <div id="advanced-rss" class="scroll-mt-32 space-y-6 mb-16">
+            <div id="advanced-abort" class="scroll-mt-32 space-y-6 mb-16">
               <h3 class="text-xl font-bold text-white">
-                {d.headings.rssModes}
+                {d.headings.abort}
               </h3>
               <p
                 class="text-purple-100/50 leading-relaxed"
-                set:html={d.prose.rssModes}
+                set:html={d.prose.abort}
               />
               <CodeBlock
-                code={modesSnippet}
-                filename="rss-modes.ts"
-                label="Feeds"
+                code={abortSnippet}
+                filename="abort.ts"
+                label="Cancellation"
+              />
+            </div>
+
+            <div id="advanced-engine" class="scroll-mt-32 space-y-6 mb-16">
+              <h3 class="text-xl font-bold text-white">
+                {d.headings.engine}
+              </h3>
+              <p
+                class="text-purple-100/50 leading-relaxed"
+                set:html={d.prose.engine}
+              />
+              <CodeBlock
+                code={engineSnippet}
+                filename="engine.ts"
+                label="Engine"
               />
             </div>
 
@@ -533,29 +637,20 @@ const navGroups = [
             />
           </section>
 
-          <section id="rss" class="scroll-mt-32 mt-24 space-y-6">
-            <h2 class="text-2xl font-bold text-white">{d.headings.rss}</h2>
+          <section id="migrating" class="scroll-mt-32 mt-24 space-y-6">
+            <h2 class="text-2xl font-bold text-white">
+              {d.headings.migrating}
+            </h2>
             <p
               class="text-purple-100/50 leading-relaxed"
-              set:html={d.prose.rss}
-            />
-            <CodeBlock code={rssSnippet} filename="feed.ts" label="Feeds" />
-
-            <h3 class="text-xl font-bold text-white pt-6">
-              {d.headings.feedFields}
-            </h3>
-            <p
-              class="text-purple-100/50 leading-relaxed"
-              set:html={d.prose.feedFields}
+              set:html={d.prose.migrating}
             />
             <CodeBlock
-              code={feedFieldsSnippet}
-              filename="feed-item.d.ts"
-              label="Types"
-            />
-            <p
-              class="text-purple-100/50 leading-relaxed"
-              set:html={d.prose.feedFieldsEnd}
+              code={migrationSnippet}
+              filename="migrate.diff"
+              lang="diff"
+              lines={false}
+              label="v2 → v3"
             />
           </section>
 
