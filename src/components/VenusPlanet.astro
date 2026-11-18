@@ -52,7 +52,11 @@ const cloudTexture =
   }
   .planet-layer[data-settled="true"] {
     --p: 1;
-    opacity: 0.55;
+    opacity: 0.4;
+  }
+  /* On the docs it sits further out so the sidebar stays readable */
+  .planet-layer[data-settled="true"] .planet-wrap {
+    --x1: calc(-9vw - var(--d) / 2);
   }
 
   /* One transform moves and scales the whole planet (halo included) */
