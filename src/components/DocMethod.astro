@@ -41,31 +41,31 @@ const {
         {method}
       </span>
       <h3
-        class="text-2xl font-bold text-white group-hover:text-purple-200 transition-colors"
+        class="text-2xl font-bold text-ink group-hover:text-venus-200 transition-colors"
       >
-        {id}<span class="text-purple-400/50 italic text-sm font-normal ml-1"
+        {id}<span class="text-accent-soft italic text-sm font-normal ml-1"
           >&lt;T&gt;</span
         >
       </h3>
     </div>
 
-    <p class="text-sm text-purple-100/60 leading-relaxed text-balance">
+    <p class="text-sm text-muted leading-relaxed text-balance">
       {description}
     </p>
 
     <ul
-      class="text-[11px] text-purple-100/30 space-y-2 font-mono bg-white/2 p-4 rounded-lg border border-white/5"
+      class="text-[11px] text-faint space-y-2 font-mono bg-ink/2 p-4 rounded-lg border border-ink/5"
     >
       <li
-        class="flex flex-col sm:flex-row justify-between gap-1 border-b border-white/5 pb-2 text-balance"
+        class="flex flex-col sm:flex-row justify-between gap-1 border-b border-ink/5 pb-2 text-balance"
       >
-        <span class="uppercase tracking-tighter text-purple-300/40"
+        <span class="uppercase tracking-tighter text-accent-soft"
           >{t.docMethod.syntax}</span
         >
-        <span class="text-purple-200">{syntax}</span>
+        <span class="text-venus-200">{syntax}</span>
       </li>
       <li class="flex flex-col sm:flex-row justify-between gap-1 pt-1">
-        <span class="uppercase tracking-tighter text-purple-300/40"
+        <span class="uppercase tracking-tighter text-accent-soft"
           >{t.docMethod.expectedStatus}</span
         >
         <span class="text-green-400 font-bold">{status}</span>
@@ -75,18 +75,18 @@ const {
     {
       details && details.length > 0 && (
         <div class="space-y-3">
-          <h4 class="text-[10px] font-bold uppercase tracking-widest text-purple-300/40">
+          <h4 class="text-[10px] font-bold uppercase tracking-widest text-accent-soft">
             {t.docMethod.insights}
           </h4>
           <ul class="space-y-3">
             {details.map((detail) => (
               <li
-                class="text-[12px] leading-relaxed bg-purple-500/5 border border-purple-500/10 rounded-lg p-3"
+                class="text-[12px] leading-relaxed bg-venus-500/5 border border-venus-500/10 rounded-lg p-3"
               >
-                <span class="text-purple-300 font-bold block mb-1">
+                <span class="text-venus-300 font-bold block mb-1">
                   {detail.title}
                 </span>
-                <span class="text-purple-100/50">{detail.body}</span>
+                <span class="text-muted">{detail.body}</span>
               </li>
             ))}
           </ul>
@@ -97,7 +97,7 @@ const {
 
   <div class="relative w-full min-w-0 lg:sticky lg:top-32">
     <div
-      class="absolute -inset-0.5 bg-linear-to-br from-purple-500/10 to-transparent rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"
+      class="absolute -inset-0.5 bg-linear-to-br from-venus-500/10 to-transparent rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"
     >
     </div>
     <div class="relative">

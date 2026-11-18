@@ -34,7 +34,7 @@ export const en = {
 
   footer: {
     tagline:
-      'Refining <code class="text-purple-200/60 font-mono">fetch</code> into a calm, predictable, and resilient experience.',
+      'Refining <code class="text-accent-soft font-mono">fetch</code> into a calm, predictable, and resilient experience.',
     project: "Project",
     author: "Author",
     docs: "Docs",
@@ -47,7 +47,7 @@ export const en = {
     titleLine1: "HTTP,",
     titleLine2: "without the friction.",
     lead:
-      'A modern, zero-dependency HTTP client that turns complex <code class="text-purple-300 font-mono bg-purple-500/10 px-1 rounded">fetch</code> patterns into a <span class="text-purple-200">calm, predictable experience</span>.',
+      'A modern, zero-dependency HTTP client that turns complex <code class="text-venus-300 font-mono bg-venus-500/10 px-1 rounded">fetch</code> patterns into a <span class="text-venus-200">calm, predictable experience</span>.',
     cta: "Get Started",
     copyTitle: "Copy command",
     copyFailed: "Copy failed:",
@@ -117,7 +117,7 @@ export const en = {
   explainer: {
     schemaTitle: "Is the Schema mandatory?",
     schemaBody:
-      "<strong>No.</strong> Omitting it types <code class=\"text-purple-300\">data</code> as <code class=\"text-purple-300\">unknown</code>. However, we <strong>strongly recommend</strong> it: with <code class=\"text-purple-300\">get&lt;User&gt;</code> you get full IDE Intellisense and <code class=\"text-purple-300\">data</code> is a <code class=\"text-purple-300\">User</code> as soon as you check <code class=\"text-purple-300\">ok</code>.",
+      "<strong>No.</strong> Omitting it types <code class=\"text-venus-300\">data</code> as <code class=\"text-venus-300\">unknown</code>. However, we <strong>strongly recommend</strong> it: with <code class=\"text-venus-300\">get&lt;User&gt;</code> you get full IDE Intellisense and <code class=\"text-venus-300\">data</code> is a <code class=\"text-venus-300\">User</code> as soon as you check <code class=\"text-venus-300\">ok</code>.",
     optionsTitle: "Unified Options in v3",
     requestControlsTitle: "Request Controls",
     requestControlsBody:
@@ -132,29 +132,29 @@ export const en = {
     steps: {
       baseTitle: "Configure your API",
       baseBody:
-        'Call <code class="text-purple-300">venus.config()</code> once. Every relative path (e.g. <code class="text-purple-300">/users</code>) then resolves against your <code class="text-purple-300">baseURL</code>. Once a <code class="text-purple-300">baseURL</code> is set the scope is <strong>closed</strong>: absolute URLs are rejected with <code class="text-purple-300">INVALID_URL</code>. With no configuration at all, an absolute URL passes straight through.',
+        'Call <code class="text-venus-300">venus.config()</code> once. Every relative path (e.g. <code class="text-venus-300">/users</code>) then resolves against your <code class="text-venus-300">baseURL</code>. Once a <code class="text-venus-300">baseURL</code> is set the scope is <strong>closed</strong>: absolute URLs are rejected with <code class="text-venus-300">INVALID_URL</code>. With no configuration at all, an absolute URL passes straight through.',
       baseNote:
-        '💡 <strong>Best practice:</strong> import this config file from your main entry point (e.g. <code class="text-white">Layout.astro</code> or <code class="text-white">main.ts</code>) so it runs before any component renders.',
+        '💡 <strong>Best practice:</strong> import this config file from your main entry point (e.g. <code class="text-ink">Layout.astro</code> or <code class="text-ink">main.ts</code>) so it runs before any component renders.',
 
       headersTitle: "Global headers and token injection",
       headersBody:
-        "Static headers go in <code class=\"text-purple-300\">headers</code> and apply to <strong>every</strong> request. For a token that changes, use a scope-wide <code class=\"text-purple-300\">beforeRequest</code> hook: it runs on every attempt, retries included, so it always reads the current token.",
+        "Static headers go in <code class=\"text-venus-300\">headers</code> and apply to <strong>every</strong> request. For a token that changes, use a scope-wide <code class=\"text-venus-300\">beforeRequest</code> hook: it runs on every attempt, retries included, so it always reads the current token.",
       headersNote:
-        '⚡ <strong>Precedence:</strong> a header with the same name in a single request’s options wins over the global one, never the other way around. Drop an inherited header per request with <code class="text-white">disableHeaders</code>.',
+        '⚡ <strong>Precedence:</strong> a header with the same name in a single request’s options wins over the global one, never the other way around. Drop an inherited header per request with <code class="text-ink">disableHeaders</code>.',
 
       firstTitle: "Your first request",
       firstBody:
-        "Every method is called on <code class=\"text-purple-300\">venus</code> and returns the same shape: <code class=\"text-purple-300\">data</code>, <code class=\"text-purple-300\">ok</code>, <code class=\"text-purple-300\">error</code>, <code class=\"text-purple-300\">errorCode</code>, <code class=\"text-purple-300\">status</code> and <code class=\"text-purple-300\">metrics</code>. Check <code class=\"text-purple-300\">ok</code> and TypeScript narrows the rest: <code class=\"text-purple-300\">data</code> becomes your type on success.",
+        "Every method is called on <code class=\"text-venus-300\">venus</code> and returns the same shape: <code class=\"text-venus-300\">data</code>, <code class=\"text-venus-300\">ok</code>, <code class=\"text-venus-300\">error</code>, <code class=\"text-venus-300\">errorCode</code>, <code class=\"text-venus-300\">status</code> and <code class=\"text-venus-300\">metrics</code>. Check <code class=\"text-venus-300\">ok</code> and TypeScript narrows the rest: <code class=\"text-venus-300\">data</code> becomes your type on success.",
 
       paramsTitle: "Query params: what they are and how they serialize",
       paramsBody:
-        "The <code class=\"text-purple-300\">params</code> option takes a plain object of query parameters. Venus serializes it and appends it to the URL with correct URL-encoding, so you never build query strings by hand.",
+        "The <code class=\"text-venus-300\">params</code> option takes a plain object of query parameters. Venus serializes it and appends it to the URL with correct URL-encoding, so you never build query strings by hand.",
       paramsSub:
-        "When a value is an <strong>array</strong>, you choose how it serializes with <code class=\"text-purple-300\">paramsArrayFormat</code>. Each mode produces a different URL and targets a different kind of backend:",
+        "When a value is an <strong>array</strong>, you choose how it serializes with <code class=\"text-venus-300\">paramsArrayFormat</code>. Each mode produces a different URL and targets a different kind of backend:",
 
       clientTitle: "Several APIs? Use clients",
       clientBody:
-        "<code class=\"text-purple-300\">createClient()</code> returns an independent, immutable client with its own <code class=\"text-purple-300\">baseURL</code>, headers, timeout, retry and hooks. It has the same methods as <code class=\"text-purple-300\">venus</code>. The two modes are <strong>exclusive</strong>: the first one you use locks the other.",
+        "<code class=\"text-venus-300\">createClient()</code> returns an independent, immutable client with its own <code class=\"text-venus-300\">baseURL</code>, headers, timeout, retry and hooks. It has the same methods as <code class=\"text-venus-300\">venus</code>. The two modes are <strong>exclusive</strong>: the first one you use locks the other.",
     },
     formats: {
       repeat:
@@ -340,7 +340,7 @@ export const en = {
       migrating:
         "Coming from v2? These are the changes that need action. The full list lives in the changelog below.",
       changelog:
-        "Full history up to the current version <strong class=\"text-purple-300\">3.0.1</strong>.",
+        "Full history up to the current version <strong class=\"text-venus-300\">3.0.1</strong>.",
       testing: "Venus is fully tested with Vitest.",
       license: "MIT © code-braydev",
       copyFailed: "Copy failed:",

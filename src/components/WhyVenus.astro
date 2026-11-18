@@ -8,32 +8,32 @@ const cards = [
   {
     key: "syntax",
     path: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2|M15 2H9a2 2 0 0 0-2 2v.5L12 7l5-2.5V4a2 2 0 0 0-2-2Z",
-    accent: "text-purple-400",
+    accent: "text-venus-400",
   },
   {
     key: "types",
     path: "M12 2v6|M12 18v4|M4.93 10.93l1.41 1.41|M17.66 17.66l1.41 1.41|M2 12h6|M18 12h4|m14 11-2 2-2-2|M5 22V10a7 7 0 0 1 14 0v12",
-    accent: "text-purple-400",
+    accent: "text-venus-400",
   },
   {
     key: "resilience",
     path: "M12 22a8 8 0 0 0 8-8V7l-4-3-4 3-4-3-4 3v7a8 8 0 0 0 8 8z",
-    accent: "text-purple-400",
+    accent: "text-venus-400",
   },
   {
     key: "results",
     path: "M18 10h-1.26a8 8 0 1 0-11.48 0H6c-.52 0-1 .42-1 1v3c0 .58.48 1 1 1h12c.52 0 1-.42 1-1v-3c0-.58-.48-1-1-1Z|circle:12,12,2",
-    accent: "text-purple-400",
+    accent: "text-venus-400",
   },
   {
     key: "deps",
     path: "m8 6 4-4 4 4|M12 2v10|M20 10c0 5.5-4.5 9-8 9s-8-3.5-8-9|M2 22h20",
-    accent: "text-purple-400",
+    accent: "text-venus-400",
   },
   {
     key: "focus",
     path: "M12 15V3|M20 19V3|M12 21v-3",
-    accent: "text-purple-300",
+    accent: "text-venus-300",
   },
 ] as const;
 ---
@@ -42,7 +42,7 @@ const cards = [
   <div class="mb-16 text-center">
     <h2 class="text-4xl md:text-5xl title-gradient mb-4">{t.why.title}</h2>
     <p
-      class="text-purple-100/50 max-w-2xl mx-auto leading-relaxed text-balance"
+      class="text-muted max-w-2xl mx-auto leading-relaxed text-balance"
     >
       {t.why.lead}
     </p>
@@ -55,15 +55,15 @@ const cards = [
           class:list={[
             "venus-card p-8 group",
             index === 5 &&
-              "bg-linear-to-br from-[#0B080E] to-[#08050A]",
+              "bg-linear-to-br from-surface-2 to-surface",
           ]}
         >
           <div
             class:list={[
               "absolute inset-0 bg-linear-to-br to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500",
               index === 5
-                ? "from-purple-500/20"
-                : "from-purple-500/10",
+                ? "from-venus-500/20"
+                : "from-venus-500/10",
             ]}
           />
           <div
@@ -96,12 +96,12 @@ const cards = [
                 ),
               )}
             </svg>
-            <h3 class="text-xl font-bold text-white mb-2">
+            <h3 class="text-xl font-bold text-ink mb-2">
               {t.why.cards[card.key].title}
             </h3>
             <p
               class:list={[
-                "text-purple-100/50 text-sm leading-relaxed",
+                "text-muted text-sm leading-relaxed",
                 index === 5 && "mb-6",
               ]}
             >
@@ -110,7 +110,7 @@ const cards = [
             {index === 5 && (
               <a
                 href={docHref}
-                class="mt-auto inline-flex items-center gap-2 text-purple-300 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest"
+                class="mt-auto inline-flex items-center gap-2 text-venus-300 hover:text-ink transition-colors text-xs font-bold uppercase tracking-widest"
               >
                 {t.why.learnMore}
                 <svg

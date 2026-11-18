@@ -17,15 +17,15 @@ const rows = [
 ---
 
 <section class="section-container">
-  <div class="venus-card overflow-hidden border-purple-500/10">
-    <div class="bg-white/5 px-6 py-4 border-b border-white/5">
-      <h3 class="text-sm font-bold uppercase tracking-widest text-purple-200">
+  <div class="venus-card overflow-hidden border-venus-500/10">
+    <div class="bg-ink/5 px-6 py-4 border-b border-ink/5">
+      <h3 class="text-sm font-bold uppercase tracking-widest text-venus-200">
         {t.methods.heading}
       </h3>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
-        <thead class="text-purple-100/20 uppercase text-[10px] font-bold">
+        <thead class="text-faint uppercase text-[10px] font-bold">
           <tr>
             <th class="px-6 py-4">{t.methods.thMethod}</th>
             <th class="px-6 py-4">{t.methods.thFunction}</th>
@@ -33,14 +33,14 @@ const rows = [
           </tr>
         </thead>
         <tbody
-          class="divide-y divide-white/5 text-purple-100/60 font-mono text-xs"
+          class="divide-y divide-ink/5 text-muted font-mono text-xs"
         >
           {
             rows.map((row) => (
-              <tr class="hover:bg-white/2 transition-colors">
-                <td class="px-6 py-4 text-purple-300 font-bold">{row.name}</td>
-                <td class="px-6 py-4 text-purple-100/80">{row.fn}</td>
-                <td class="px-6 py-4 italic text-purple-100/40">{row.effect}</td>
+              <tr class="hover:bg-ink/2 transition-colors">
+                <td class="px-6 py-4 text-venus-300 font-bold">{row.name}</td>
+                <td class="px-6 py-4 text-copy">{row.fn}</td>
+                <td class="px-6 py-4 italic text-faint">{row.effect}</td>
               </tr>
             ))
           }

@@ -97,57 +97,57 @@ const arrayFormats = [
 
 <div class="space-y-14">
   <div class="space-y-4">
-    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+    <h3 class="text-xl font-bold text-ink flex items-center gap-2">
       <span
-        class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
+        class="flex h-6 w-6 items-center justify-center rounded-full bg-venus-500/20 text-venus-300 text-xs font-bold"
         >1</span
       >
       {s.baseTitle}
     </h3>
     <p
-      class="text-sm text-purple-100/40 leading-relaxed"
+      class="text-sm text-faint leading-relaxed"
       set:html={s.baseBody}
     />
 
     <CodeBlock code={configSnippet} filename="config.ts" lines={false} />
 
     <p
-      class="text-[11px] text-purple-300/60 italic bg-purple-500/5 p-3 rounded border border-purple-500/10"
+      class="text-[11px] text-accent-soft italic bg-venus-500/5 p-3 rounded border border-venus-500/10"
       set:html={s.baseNote}
     />
   </div>
 
   <div class="space-y-4">
-    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+    <h3 class="text-xl font-bold text-ink flex items-center gap-2">
       <span
-        class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
+        class="flex h-6 w-6 items-center justify-center rounded-full bg-venus-500/20 text-venus-300 text-xs font-bold"
         >2</span
       >
       {s.headersTitle}
     </h3>
     <p
-      class="text-sm text-purple-100/40 leading-relaxed"
+      class="text-sm text-faint leading-relaxed"
       set:html={s.headersBody}
     />
 
     <CodeBlock code={headersSnippet} filename="config.ts" />
 
     <p
-      class="text-[11px] text-purple-300/60 italic bg-purple-500/5 p-3 rounded border border-purple-500/10"
+      class="text-[11px] text-accent-soft italic bg-venus-500/5 p-3 rounded border border-venus-500/10"
       set:html={s.headersNote}
     />
   </div>
 
   <div class="space-y-4">
-    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+    <h3 class="text-xl font-bold text-ink flex items-center gap-2">
       <span
-        class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
+        class="flex h-6 w-6 items-center justify-center rounded-full bg-venus-500/20 text-venus-300 text-xs font-bold"
         >3</span
       >
       {s.firstTitle}
     </h3>
     <p
-      class="text-sm text-purple-100/40 leading-relaxed"
+      class="text-sm text-faint leading-relaxed"
       set:html={s.firstBody}
     />
 
@@ -155,15 +155,15 @@ const arrayFormats = [
   </div>
 
   <div class="space-y-4">
-    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+    <h3 class="text-xl font-bold text-ink flex items-center gap-2">
       <span
-        class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
+        class="flex h-6 w-6 items-center justify-center rounded-full bg-venus-500/20 text-venus-300 text-xs font-bold"
         >4</span
       >
       {s.paramsTitle}
     </h3>
     <p
-      class="text-sm text-purple-100/40 leading-relaxed"
+      class="text-sm text-faint leading-relaxed"
       set:html={s.paramsBody}
     />
 
@@ -171,25 +171,25 @@ const arrayFormats = [
 
     <div class="space-y-3">
       <p
-        class="text-sm text-purple-100/40 leading-relaxed"
+        class="text-sm text-faint leading-relaxed"
         set:html={s.paramsSub}
       />
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {
           arrayFormats.map((format) => (
-            <div class="venus-card p-5 bg-[#0D0A11] font-mono text-xs border-purple-500/5">
-              <p class="text-purple-400 italic mb-3">
+            <div class="venus-card p-5 bg-surface-3 font-mono text-xs border-venus-500/5">
+              <p class="text-venus-400 italic mb-3">
                 {"// paramsArrayFormat: "}
                 {format.mode}
               </p>
-              <p class="text-purple-100/90">
+              <p class="text-copy">
                 params: &#123; tag: ["js", "ts"] &#125;
               </p>
               <p class="text-green-400 mt-2 break-all">
                 &#8594; {format.result}
               </p>
-              <p class="text-purple-100/40 mt-3 text-[11px] font-sans leading-relaxed">
+              <p class="text-faint mt-3 text-[11px] font-sans leading-relaxed">
                 {format.note}
               </p>
             </div>
@@ -200,15 +200,15 @@ const arrayFormats = [
   </div>
 
   <div class="space-y-4">
-    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+    <h3 class="text-xl font-bold text-ink flex items-center gap-2">
       <span
-        class="flex h-6 w-6 items-center justify-center rounded-full bg-purple-500/20 text-purple-300 text-xs font-bold"
+        class="flex h-6 w-6 items-center justify-center rounded-full bg-venus-500/20 text-venus-300 text-xs font-bold"
         >5</span
       >
       {s.clientTitle}
     </h3>
     <p
-      class="text-sm text-purple-100/40 leading-relaxed"
+      class="text-sm text-faint leading-relaxed"
       set:html={s.clientBody}
     />
 

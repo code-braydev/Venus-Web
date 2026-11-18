@@ -14,48 +14,48 @@ const fullRequest = `await get<User>("/profile", {
 });`;
 ---
 
-<div class="p-8 rounded-2xl bg-white/2 border border-white/5">
+<div class="p-8 rounded-2xl bg-ink/2 border border-ink/5">
   <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
     <div class="space-y-6">
       <div>
         <h4
-          class="text-sm font-bold text-purple-300 uppercase tracking-widest mb-2"
+          class="text-sm font-bold text-venus-300 uppercase tracking-widest mb-2"
         >
           {t.explainer.schemaTitle}
         </h4>
         <p
-          class="text-sm text-purple-100/40 leading-relaxed"
+          class="text-sm text-faint leading-relaxed"
           set:html={t.explainer.schemaBody}
         />
       </div>
       <div>
         <h4
-          class="text-sm font-bold text-purple-300 uppercase tracking-widest mb-2"
+          class="text-sm font-bold text-venus-300 uppercase tracking-widest mb-2"
         >
           {t.explainer.optionsTitle}
         </h4>
         <div class="space-y-3">
           <div
-            class="p-3 bg-white/5 rounded border border-white/5 hover:border-purple-500/20 transition-colors group"
+            class="p-3 bg-ink/5 rounded border border-ink/5 hover:border-venus-500/20 transition-colors group"
           >
             <p
-              class="text-xs font-bold text-white mb-1 group-hover:text-purple-300"
+              class="text-xs font-bold text-ink mb-1 group-hover:text-venus-300"
             >
               {t.explainer.requestControlsTitle}
             </p>
-            <p class="text-[10px] text-purple-100/30 italic">
+            <p class="text-[10px] text-faint italic">
               {t.explainer.requestControlsBody}
             </p>
           </div>
           <div
-            class="p-3 bg-white/5 rounded border border-white/5 hover:border-purple-500/20 transition-colors group"
+            class="p-3 bg-ink/5 rounded border border-ink/5 hover:border-venus-500/20 transition-colors group"
           >
             <p
-              class="text-xs font-bold text-white mb-1 group-hover:text-purple-300"
+              class="text-xs font-bold text-ink mb-1 group-hover:text-venus-300"
             >
               {t.explainer.parsingTitle}
             </p>
-            <p class="text-[10px] text-purple-100/30 italic">
+            <p class="text-[10px] text-faint italic">
               {t.explainer.parsingBody}
             </p>
           </div>

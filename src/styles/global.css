@@ -1,19 +1,152 @@
 @import "tailwindcss";
 
+/*
+ * ===== Venus identity =====
+ * Warm Venus clouds (cream, gold, amber) over deep space, with the original
+ * violet kept as a "nebula" accent. Every color below is a token: retune the
+ * brand here once the new icon is final.
+ *
+ * Dark is the default theme. `:root[data-theme="light"]` inverts the venus
+ * scale (text tones become violet ink, accents deep amber), so utilities like
+ * `text-venus-300` or `bg-venus-500/10` read well in both modes without
+ * per-class overrides. Body text uses solid tokens (copy, muted, faint,
+ * accent-soft) because alpha text loses contrast on a light background.
+ */
+@theme {
+  --color-venus-50: #fff8e7;
+  --color-venus-100: #fdebc6;
+  --color-venus-200: #f9d88f;
+  --color-venus-300: #f4c25e;
+  --color-venus-400: #eba43c;
+  --color-venus-500: #db8429;
+  --color-venus-600: #b96423;
+  --color-venus-700: #8e4a1b;
+  --color-venus-800: #5f3115;
+  --color-venus-900: #3a1e10;
+  --color-venus-950: #1f1009;
+  --color-nebula-300: #c4b0ff;
+  --color-nebula-400: #a78bfa;
+  --color-nebula-500: #8b5cf6;
+  --color-nebula-600: #7c4ddb;
+  --color-nebula-700: #5b35b5;
+  --color-nebula-950: #120a2b;
+  --color-space: #04030a;
+  --color-surface: #0a0714;
+  --color-surface-2: #0e0a1a;
+  --color-surface-3: #120d20;
+  --color-ink: #fff7e8;
+  --color-glow: #7c4ddb;
+  --color-copy: #cbbda0;
+  --color-muted: #8d8371;
+  --color-faint: #6b6358;
+  --color-accent-soft: #9a7a3e;
+
+  --animate-fade-in-up: fade-in-up 0.8s ease-out both;
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
 @layer base {
   :root {
-    /* Venus palette: pastel purple & dark mode */
-    --color-venus-pastel: 214 188 250; /* #D6BCFA */
-    --color-venus-deep: 3 0 5;       /* Near-black background */
-    --color-venus-accent: 168 85 247;  /* Vivid purple */
+    color-scheme: dark;
+  }
+
+  /* Light theme: pearl clouds, violet ink, deep-amber accents */
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --color-venus-50: #1b1230;
+    --color-venus-100: #2b1d47;
+    --color-venus-200: #43306e;
+    --color-venus-300: #8a4f00;
+    --color-venus-400: #a35f05;
+    --color-venus-500: #c77a12;
+    --color-venus-600: #e0a24a;
+    --color-venus-700: #ebc684;
+    --color-venus-800: #f4ddb0;
+    --color-venus-900: #f9ecd0;
+    --color-venus-950: #fdf6e6;
+    --color-nebula-300: #5b35b5;
+    --color-nebula-400: #6d45d0;
+    --color-nebula-500: #7c4ddb;
+    --color-nebula-600: #8b5cf6;
+    --color-nebula-700: #a78bfa;
+    --color-nebula-950: #e9e0ff;
+    --color-space: #fbf6ec;
+    --color-surface: #fffdf8;
+    --color-surface-2: #f6eedf;
+    --color-surface-3: #f1e7d3;
+    --color-ink: #1b1230;
+    --color-glow: #e0a24a;
+    --color-copy: #2b1d47;
+    --color-muted: #5a4b78;
+    --color-faint: #74668e;
+    --color-accent-soft: #96590a;
+    --color-green-300: #166534;
+    --color-green-400: #15803d;
+    --color-green-500: #16a34a;
+    --color-yellow-400: #a16207;
+    --color-red-400: #b91c1c;
+    --color-red-500: #dc2626;
+    --color-orange-400: #c2410c;
+    --color-orange-500: #ea580c;
+    --color-blue-400: #1d4ed8;
+    --color-blue-500: #2563eb;
+  }
+
+  /*
+   * Code windows and the home demo stay dark in both themes (they imitate an
+   * editor), so they re-apply the dark tokens on their own subtree.
+   */
+  .theme-dark,
+  .code-window {
+    color-scheme: dark;
+    --color-venus-50: #fff8e7;
+    --color-venus-100: #fdebc6;
+    --color-venus-200: #f9d88f;
+    --color-venus-300: #f4c25e;
+    --color-venus-400: #eba43c;
+    --color-venus-500: #db8429;
+    --color-venus-600: #b96423;
+    --color-venus-700: #8e4a1b;
+    --color-venus-800: #5f3115;
+    --color-venus-900: #3a1e10;
+    --color-venus-950: #1f1009;
+    --color-nebula-300: #c4b0ff;
+    --color-nebula-400: #a78bfa;
+    --color-nebula-500: #8b5cf6;
+    --color-nebula-600: #7c4ddb;
+    --color-nebula-700: #5b35b5;
+    --color-nebula-950: #120a2b;
+    --color-space: #04030a;
+    --color-surface: #0a0714;
+    --color-surface-2: #0e0a1a;
+    --color-surface-3: #120d20;
+    --color-ink: #fff7e8;
+    --color-glow: #7c4ddb;
+    --color-copy: #cbbda0;
+    --color-muted: #8d8371;
+    --color-faint: #6b6358;
+    --color-accent-soft: #9a7a3e;
+    --color-green-300: oklch(87.1% 0.15 154.449);
+    --color-green-400: oklch(79.2% 0.209 151.711);
+    --color-green-500: oklch(72.3% 0.219 149.579);
+    --color-yellow-400: oklch(85.2% 0.199 91.936);
+    --color-red-400: oklch(70.4% 0.191 22.216);
+    --color-red-500: oklch(63.7% 0.237 25.331);
+    --color-orange-400: oklch(75% 0.183 55.934);
+    --color-orange-500: oklch(70.5% 0.213 47.604);
+    --color-blue-400: oklch(70.7% 0.165 254.624);
+    --color-blue-500: oklch(62.3% 0.214 259.815);
   }
 
   html {
-    @apply scroll-smooth selection:bg-purple-500/30 selection:text-purple-200;
+    @apply scroll-smooth selection:bg-nebula-500/30 selection:text-ink;
   }
 
   body {
-    @apply bg-[#030005] text-purple-100/80 antialiased font-sans;
+    @apply bg-space text-copy antialiased font-sans;
   }
 
   /* Minimal custom scrollbar */
@@ -24,7 +157,7 @@
     @apply bg-transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-white/10 rounded-full hover:bg-purple-500/30 transition-colors;
+    @apply bg-ink/10 rounded-full hover:bg-nebula-500/30 transition-colors;
   }
 }
 
@@ -36,43 +169,43 @@
 
   /* Venus gradient titles */
   .title-gradient {
-    @apply bg-gradient-to-b from-purple-100 to-purple-400 bg-clip-text text-transparent font-extrabold;
+    @apply bg-gradient-to-b from-venus-100 to-venus-400 bg-clip-text text-transparent font-extrabold;
   }
 
   /* IDE cards and bento grid */
   .venus-card {
-    @apply relative overflow-hidden rounded-2xl border border-white/5 bg-[#08050A] 
-           transition-all duration-300 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-900/20;
+    @apply relative overflow-hidden rounded-2xl border border-ink/5 bg-surface 
+           transition-all duration-300 hover:border-venus-500/30 hover:shadow-2xl hover:shadow-glow/15;
   }
 
   /* Subtle glow effect */
   .venus-glow {
-    @apply absolute -z-10 rounded-full bg-purple-600/10 blur-[100px];
+    @apply absolute -z-10 rounded-full bg-glow/10 blur-[100px];
   }
 
   /* Primary button */
   .btn-primary {
-    @apply flex items-center gap-2 rounded-xl bg-purple-200 px-6 py-3 
-           text-sm font-bold text-purple-950 transition-all 
-           hover:bg-white hover:scale-105 active:scale-95 
-           shadow-[0_0_20px_rgba(214,188,250,0.2)];
+    @apply flex items-center gap-2 rounded-xl bg-venus-200 px-6 py-3 
+           text-sm font-bold text-venus-950 transition-all 
+           hover:bg-venus-50 hover:scale-105 active:scale-95 
+           shadow-lg shadow-venus-400/25;
   }
 
   /* Secondary / terminal command button */
   .btn-command {
-    @apply flex items-center gap-3 rounded-xl border border-white/5 bg-white/5 
-           px-5 py-3 font-mono text-sm text-purple-100/70 backdrop-blur-sm 
-           transition-all hover:border-purple-500/20 hover:text-purple-200;
+    @apply flex items-center gap-3 rounded-xl border border-ink/5 bg-ink/5 
+           px-5 py-3 font-mono text-sm text-copy backdrop-blur-sm 
+           transition-all hover:border-venus-500/20 hover:text-venus-200;
   }
   
   /* Code block style */
   .code-block {
-    @apply font-mono text-sm leading-relaxed text-purple-100/90;
+    @apply font-mono text-sm leading-relaxed text-copy;
   }
 
   /* ===== IDE / Terminal code window ===== */
   .code-window {
-    @apply overflow-hidden rounded-xl border border-white/10;
+    @apply overflow-hidden rounded-xl border border-ink/10;
   }
 
   .code-tabbar {
@@ -89,7 +222,7 @@
     @apply flex min-w-0 items-center gap-2 rounded-md px-3 py-1.5 text-[11px] font-medium;
     background-color: #1e1e1e;
     color: #cfd3dc;
-    box-shadow: inset 0 -2px 0 0 #7c5cff;
+    box-shadow: inset 0 -2px 0 0 var(--color-nebula-500);
   }
 
   .code-badge {
@@ -156,11 +289,11 @@
     background: transparent;
   }
   .code-scroll::-webkit-scrollbar-thumb {
-    background: rgba(168, 85, 247, 0.25);
+    background: color-mix(in srgb, var(--color-nebula-500) 25%, transparent);
     border-radius: 999px;
   }
   .code-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgba(168, 85, 247, 0.45);
+    background: color-mix(in srgb, var(--color-nebula-500) 45%, transparent);
   }
 
   /* ===== Sidebar ScrollSpy ===== */
@@ -169,13 +302,13 @@
   }
 
   .spy-link.is-active {
-    border-left-color: rgb(168 85 247);
-    color: rgb(233 213 255);
+    border-left-color: var(--color-nebula-500);
+    color: var(--color-nebula-300);
     font-weight: 600;
     background: linear-gradient(
       90deg,
-      rgba(168, 85, 247, 0.14),
-      rgba(168, 85, 247, 0)
+      color-mix(in srgb, var(--color-nebula-500) 14%, transparent),
+      transparent
     );
   }
 }

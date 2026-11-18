@@ -7,7 +7,7 @@ const docHref = localizePath("/doc", locale);
 ---
 
 <footer
-  class="relative mt-20 border-t border-purple-500/10 bg-black/20 py-12 overflow-hidden"
+  class="relative mt-20 border-t border-venus-500/10 bg-space/20 py-12 overflow-hidden"
 >
   <div
     class="venus-glow top-0 left-1/2 -translate-x-1/2 h-32 w-[120%] sm:w-full opacity-50"
@@ -23,16 +23,16 @@ const docHref = localizePath("/doc", locale);
       >
         <div class="flex items-center gap-2 mb-4 group">
           <div
-            class="h-6 w-6 rounded bg-purple-200 text-purple-950 flex items-center justify-center text-[10px] font-extrabold transition-transform group-hover:rotate-12"
+            class="h-6 w-6 rounded bg-venus-200 text-venus-950 flex items-center justify-center text-[10px] font-extrabold transition-transform group-hover:rotate-12"
           >
             V
           </div>
-          <span class="text-lg font-bold text-white tracking-tight">
-            Venus<span class="text-purple-300">.</span>
+          <span class="text-lg font-bold text-ink tracking-tight">
+            Venus<span class="text-venus-300">.</span>
           </span>
         </div>
         <p
-          class="max-w-70 text-sm text-purple-100/40 leading-relaxed"
+          class="max-w-70 text-sm text-faint leading-relaxed"
           set:html={t.footer.tagline}
         />
       </div>
@@ -42,29 +42,29 @@ const docHref = localizePath("/doc", locale);
       >
         <div>
           <h4
-            class="text-xs font-bold uppercase tracking-widest text-white mb-5"
+            class="text-xs font-bold uppercase tracking-widest text-ink mb-5"
           >
             {t.footer.project}
           </h4>
-          <ul class="space-y-3 text-sm text-purple-100/40">
+          <ul class="space-y-3 text-sm text-faint">
             <li>
               <a
                 href="https://github.com/code-braydev/venus"
                 target="_blank"
-                class="hover:text-purple-200 transition-colors">GitHub</a
+                class="hover:text-venus-200 transition-colors">GitHub</a
               >
             </li>
             <li>
               <a
                 href="https://www.npmjs.com/package/@braydev/venus"
                 target="_blank"
-                class="hover:text-purple-200 transition-colors">NPM</a
+                class="hover:text-venus-200 transition-colors">NPM</a
               >
             </li>
             <li>
               <a
                 href={docHref}
-                class="hover:text-purple-200 transition-colors"
+                class="hover:text-venus-200 transition-colors"
                 >{t.footer.docs}</a
               >
             </li>
@@ -73,21 +73,21 @@ const docHref = localizePath("/doc", locale);
 
         <div>
           <h4
-            class="text-xs font-bold uppercase tracking-widest text-white mb-5"
+            class="text-xs font-bold uppercase tracking-widest text-ink mb-5"
           >
             {t.footer.author}
           </h4>
-          <ul class="space-y-3 text-sm text-purple-100/40">
+          <ul class="space-y-3 text-sm text-faint">
             <li>
               <a
                 href="https://braydev.xyz"
-                class="hover:text-purple-200 transition-colors">braydev.xyz</a
+                class="hover:text-venus-200 transition-colors">braydev.xyz</a
               >
             </li>
             <li>
               <a
                 href="https://noticias.braydev.xyz"
-                class="hover:text-purple-200 transition-colors">BrayNews</a
+                class="hover:text-venus-200 transition-colors">BrayNews</a
               >
             </li>
           </ul>
@@ -96,15 +96,15 @@ const docHref = localizePath("/doc", locale);
     </div>
 
     <div
-      class="mt-16 flex flex-col items-center justify-between border-t border-white/5 pt-8 gap-4 md:flex-row"
+      class="mt-16 flex flex-col items-center justify-between border-t border-ink/5 pt-8 gap-4 md:flex-row"
     >
-      <p class="text-[10px] sm:text-xs text-purple-100/20 order-2 md:order-1">
+      <p class="text-[10px] sm:text-xs text-faint order-2 md:order-1">
         &copy; {new Date().getFullYear()} @braydev. {t.footer.built}
       </p>
 
       <div class="flex items-center gap-4 order-1 md:order-2">
         <span
-          class="flex items-center gap-2 text-[10px] font-medium uppercase tracking-tighter text-purple-300/40"
+          class="flex items-center gap-2 text-[10px] font-medium uppercase tracking-tighter text-accent-soft"
         >
           <span
             class="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"

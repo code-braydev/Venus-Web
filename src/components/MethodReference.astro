@@ -50,7 +50,7 @@ const removeCode = `const res = await venus.remove<null>("/users/10");
 if (res.ok) refreshTable(res.status);`;
 
 const anatomyFields = [
-  { code: "data: T", color: "text-purple-300", key: "data" },
+  { code: "data: T", color: "text-venus-300", key: "data" },
   { code: "ok: boolean", color: "text-green-400", key: "ok" },
   { code: "status?: number", color: "text-blue-400", key: "status" },
   { code: "error: string | null", color: "text-red-400", key: "error" },
@@ -64,10 +64,10 @@ const anatomyFields = [
 
   <section
     id="anatomy"
-    class="p-8 rounded-2xl bg-purple-500/3 border border-purple-500/10 mb-20 scroll-mt-32"
+    class="p-8 rounded-2xl bg-venus-500/3 border border-venus-500/10 mb-20 scroll-mt-32"
   >
     <div class="flex items-center gap-3 mb-6">
-      <div class="p-2 bg-purple-500/20 rounded-lg">
+      <div class="p-2 bg-venus-500/20 rounded-lg">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
@@ -76,7 +76,7 @@ const anatomyFields = [
           fill="none"
           stroke="currentColor"
           stroke-width="2"
-          class="text-purple-400"
+          class="text-venus-400"
           ><path
             d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"
           ></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"
@@ -84,26 +84,26 @@ const anatomyFields = [
         >
       </div>
       <div>
-        <h3 class="text-xl font-bold text-white">{ins.anatomyTitle}</h3>
-        <p class="text-xs text-purple-100/30 uppercase tracking-widest mt-1">
+        <h3 class="text-xl font-bold text-ink">{ins.anatomyTitle}</h3>
+        <p class="text-xs text-faint uppercase tracking-widest mt-1">
           {ins.anatomyKicker}
         </p>
       </div>
     </div>
 
     <p
-      class="text-sm text-purple-100/40 mb-8 leading-relaxed"
+      class="text-sm text-faint mb-8 leading-relaxed"
       set:html={ins.anatomyBody}
     />
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {
         anatomyFields.map((field) => (
-          <div class="p-4 rounded-xl bg-black/40 border border-white/5 hover:border-purple-500/20 transition-colors group">
+          <div class="p-4 rounded-xl bg-space/40 border border-ink/5 hover:border-venus-500/20 transition-colors group">
             <code class:list={[field.color, "font-bold block mb-1"]}>
               {field.code}
             </code>
-            <p class="text-[11px] text-purple-100/30 italic">
+            <p class="text-[11px] text-faint italic">
               {ins.anatomy[field.key]}
             </p>
           </div>

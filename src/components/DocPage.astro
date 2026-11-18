@@ -383,16 +383,16 @@ const navGroups = [
           {
             navGroups.map((group) => (
               <div>
-                <h4 class="text-xs font-bold uppercase tracking-widest text-purple-300/40 mb-4">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-accent-soft mb-4">
                   {group.title}
                 </h4>
-                <ul class="space-y-2.5 text-sm text-purple-100/50 font-medium">
+                <ul class="space-y-2.5 text-sm text-muted font-medium">
                   {group.links.map((link) => (
                     <li>
                       <a
                         href={link.href}
                         data-spy={link.href.slice(1)}
-                        class="spy-link hover:text-purple-200 transition-colors"
+                        class="spy-link hover:text-venus-200 transition-colors"
                       >
                         {link.label}
                       </a>
@@ -407,11 +407,11 @@ const navGroups = [
 
       <article class="flex-1 max-w-4xl min-w-0">
         <header class="mb-12 sm:mb-16">
-          <h1 class="text-4xl sm:text-6xl font-extrabold text-white mb-6">
+          <h1 class="text-4xl sm:text-6xl font-extrabold text-ink mb-6">
             {d.title}
           </h1>
           <p
-            class="text-base sm:text-lg text-purple-100/40 leading-relaxed text-balance"
+            class="text-base sm:text-lg text-faint leading-relaxed text-balance"
           >
             {d.lead}
           </p>
@@ -420,20 +420,20 @@ const navGroups = [
         <!-- ===================== GETTING STARTED ===================== -->
         <section id="quick-start" class="scroll-mt-32 mb-24">
           <div class="mb-8">
-            <h2 class="text-2xl font-bold text-white mb-4">
+            <h2 class="text-2xl font-bold text-ink mb-4">
               {d.headings.installation}
             </h2>
             <div
               class="btn-command py-4 px-6 mb-8 w-full sm:w-fit flex justify-between items-center gap-4 overflow-hidden"
             >
-              <span class="text-purple-400 font-mono mr-2">$</span>
+              <span class="text-venus-400 font-mono mr-2">$</span>
               <span id="command-text" class="truncate font-mono text-sm"
                 >npm install @braydev/venus</span
               >
 
               <button
                 id="copy-btn"
-                class="ml-4 text-purple-100/30 hover:text-purple-200 transition-all shrink-0 active:scale-90"
+                class="ml-4 text-faint hover:text-venus-200 transition-all shrink-0 active:scale-90"
                 title={t.header.copyTitle}
               >
                 <svg
@@ -480,32 +480,32 @@ const navGroups = [
           </div>
 
           <section id="modes" class="scroll-mt-32 mb-24 space-y-6">
-            <h2 class="text-2xl font-bold text-white">{d.headings.modes}</h2>
+            <h2 class="text-2xl font-bold text-ink">{d.headings.modes}</h2>
             <p
-              class="text-purple-100/50 leading-relaxed"
+              class="text-muted leading-relaxed"
               set:html={d.prose.modes}
             />
             <CodeBlock code={modesSnippet} filename="modes.ts" label="Modes" />
           </section>
 
-          <hr class="border-white/5 mb-24" />
+          <hr class="border-ink/5 mb-24" />
 
           <!-- ===================== ADVANCED PATTERNS ===================== -->
           <section id="advanced" class="scroll-mt-32 mb-24">
-            <h2 class="text-2xl font-bold text-white mb-4">
+            <h2 class="text-2xl font-bold text-ink mb-4">
               {d.headings.advanced}
             </h2>
             <p
-              class="text-purple-100/50 leading-relaxed mb-10"
+              class="text-muted leading-relaxed mb-10"
               set:html={d.prose.advanced}
             />
 
             <div id="advanced-retry" class="scroll-mt-32 space-y-6 mb-16">
-              <h3 class="text-xl font-bold text-white">
+              <h3 class="text-xl font-bold text-ink">
                 {d.headings.retries}
               </h3>
               <p
-                class="text-purple-100/50 leading-relaxed"
+                class="text-muted leading-relaxed"
                 set:html={d.prose.retries}
               />
               <CodeBlock
@@ -516,11 +516,11 @@ const navGroups = [
             </div>
 
             <div id="advanced-hooks" class="scroll-mt-32 space-y-6 mb-16">
-              <h3 class="text-xl font-bold text-white">
+              <h3 class="text-xl font-bold text-ink">
                 {d.headings.hooks}
               </h3>
               <p
-                class="text-purple-100/50 leading-relaxed"
+                class="text-muted leading-relaxed"
                 set:html={d.prose.hooks}
               />
               <CodeBlock
@@ -531,11 +531,11 @@ const navGroups = [
             </div>
 
             <div id="advanced-upload" class="scroll-mt-32 space-y-6 mb-16">
-              <h3 class="text-xl font-bold text-white">
+              <h3 class="text-xl font-bold text-ink">
                 {d.headings.uploads}
               </h3>
               <p
-                class="text-purple-100/50 leading-relaxed"
+                class="text-muted leading-relaxed"
                 set:html={d.prose.uploads}
               />
               <CodeBlock
@@ -546,11 +546,11 @@ const navGroups = [
             </div>
 
             <div id="advanced-abort" class="scroll-mt-32 space-y-6 mb-16">
-              <h3 class="text-xl font-bold text-white">
+              <h3 class="text-xl font-bold text-ink">
                 {d.headings.abort}
               </h3>
               <p
-                class="text-purple-100/50 leading-relaxed"
+                class="text-muted leading-relaxed"
                 set:html={d.prose.abort}
               />
               <CodeBlock
@@ -561,11 +561,11 @@ const navGroups = [
             </div>
 
             <div id="advanced-engine" class="scroll-mt-32 space-y-6 mb-16">
-              <h3 class="text-xl font-bold text-white">
+              <h3 class="text-xl font-bold text-ink">
                 {d.headings.engine}
               </h3>
               <p
-                class="text-purple-100/50 leading-relaxed"
+                class="text-muted leading-relaxed"
                 set:html={d.prose.engine}
               />
               <CodeBlock
@@ -576,13 +576,13 @@ const navGroups = [
             </div>
 
             <div id="advanced-arch" class="scroll-mt-32 space-y-6">
-              <h3 class="text-xl font-bold text-white">
+              <h3 class="text-xl font-bold text-ink">
                 {d.headings.architecture}
               </h3>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="space-y-3">
                   <p
-                    class="text-[10px] uppercase tracking-widest text-purple-300/40"
+                    class="text-[10px] uppercase tracking-widest text-accent-soft"
                   >
                     {d.headings.frontend}
                   </p>
@@ -594,7 +594,7 @@ const navGroups = [
                 </div>
                 <div class="space-y-3">
                   <p
-                    class="text-[10px] uppercase tracking-widest text-purple-300/40"
+                    class="text-[10px] uppercase tracking-widest text-accent-soft"
                   >
                     {d.headings.backend}
                   </p>
@@ -608,26 +608,26 @@ const navGroups = [
             </div>
           </section>
 
-          <hr class="border-white/5 mb-24" />
+          <hr class="border-ink/5 mb-24" />
 
           <!-- ============ METHOD REFERENCE / INSIGHTS ============ -->
           <section id="method-reference" class="scroll-mt-32">
-            <h2 class="text-2xl font-bold text-white mb-4">
+            <h2 class="text-2xl font-bold text-ink mb-4">
               {d.headings.methodReference}
             </h2>
             <p
-              class="text-purple-100/50 leading-relaxed mb-12"
+              class="text-muted leading-relaxed mb-12"
               set:html={d.prose.methodReference}
             />
             <MethodReference />
           </section>
 
           <section id="common-options" class="scroll-mt-32 mt-24">
-            <h2 class="text-2xl font-bold text-white mb-6">
+            <h2 class="text-2xl font-bold text-ink mb-6">
               {d.headings.commonOptions}
             </h2>
             <p
-              class="text-purple-100/50 leading-relaxed mb-6"
+              class="text-muted leading-relaxed mb-6"
               set:html={d.prose.commonOptions}
             />
             <CodeBlock
@@ -638,11 +638,11 @@ const navGroups = [
           </section>
 
           <section id="migrating" class="scroll-mt-32 mt-24 space-y-6">
-            <h2 class="text-2xl font-bold text-white">
+            <h2 class="text-2xl font-bold text-ink">
               {d.headings.migrating}
             </h2>
             <p
-              class="text-purple-100/50 leading-relaxed"
+              class="text-muted leading-relaxed"
               set:html={d.prose.migrating}
             />
             <CodeBlock
@@ -655,11 +655,11 @@ const navGroups = [
           </section>
 
           <section id="changelog" class="scroll-mt-32 mt-24 space-y-6">
-            <h2 class="text-2xl font-bold text-white">
+            <h2 class="text-2xl font-bold text-ink">
               {d.headings.changelog}
             </h2>
             <p
-              class="text-purple-100/50 leading-relaxed"
+              class="text-muted leading-relaxed"
               set:html={d.prose.changelog}
             />
             <CodeBlock
@@ -672,17 +672,17 @@ const navGroups = [
           </section>
 
           <section id="testing" class="scroll-mt-32 mt-24 space-y-4">
-            <h2 class="text-2xl font-bold text-white">{d.headings.testing}</h2>
-            <p class="text-purple-100/50 leading-relaxed">{d.prose.testing}</p>
+            <h2 class="text-2xl font-bold text-ink">{d.headings.testing}</h2>
+            <p class="text-muted leading-relaxed">{d.prose.testing}</p>
             <div class="btn-command py-3 px-5 w-fit">
-              <span class="text-purple-400 font-mono mr-2">$</span>
+              <span class="text-venus-400 font-mono mr-2">$</span>
               <code class="font-mono text-sm">npm test</code>
             </div>
           </section>
 
           <section id="license" class="scroll-mt-32 mt-24 space-y-4">
-            <h2 class="text-2xl font-bold text-white">{d.headings.license}</h2>
-            <p class="text-purple-100/50">{d.prose.license}</p>
+            <h2 class="text-2xl font-bold text-ink">{d.headings.license}</h2>
+            <p class="text-muted">{d.prose.license}</p>
           </section>
         </section>
       </article>
@@ -704,12 +704,12 @@ const navGroups = [
 
         iconCopy?.classList.add("hidden");
         iconCheck?.classList.remove("hidden");
-        copyBtn?.classList.replace("text-purple-100/30", "text-green-400");
+        copyBtn?.classList.replace("text-faint", "text-green-400");
 
         setTimeout(() => {
           iconCopy?.classList.remove("hidden");
           iconCheck?.classList.add("hidden");
-          copyBtn?.classList.replace("text-green-400", "text-purple-100/30");
+          copyBtn?.classList.replace("text-green-400", "text-faint");
         }, 2000);
       } catch (err) {
         console.error("Copy failed:", err);

@@ -35,7 +35,7 @@ export const es: Dict = {
 
   footer: {
     tagline:
-      'Convertimos <code class="text-purple-200/60 font-mono">fetch</code> en una experiencia tranquila, predecible y resistente.',
+      'Convertimos <code class="text-accent-soft font-mono">fetch</code> en una experiencia tranquila, predecible y resistente.',
     project: "Proyecto",
     author: "Autor",
     docs: "Docs",
@@ -48,7 +48,7 @@ export const es: Dict = {
     titleLine1: "HTTP,",
     titleLine2: "sin fricción.",
     lead:
-      'Un cliente HTTP moderno y sin dependencias que convierte los patrones complejos de <code class="text-purple-300 font-mono bg-purple-500/10 px-1 rounded">fetch</code> en una <span class="text-purple-200">experiencia tranquila y predecible</span>.',
+      'Un cliente HTTP moderno y sin dependencias que convierte los patrones complejos de <code class="text-venus-300 font-mono bg-venus-500/10 px-1 rounded">fetch</code> en una <span class="text-venus-200">experiencia tranquila y predecible</span>.',
     cta: "Comenzar",
     copyTitle: "Copiar comando",
     copyFailed: "Error al copiar:",
@@ -117,7 +117,7 @@ export const es: Dict = {
   explainer: {
     schemaTitle: "¿El Schema es obligatorio?",
     schemaBody:
-      "<strong>No.</strong> Si lo omites, <code class=\"text-purple-300\">data</code> es de tipo <code class=\"text-purple-300\">unknown</code>. Aun así, lo <strong>recomendamos encarecidamente</strong>: con <code class=\"text-purple-300\">get&lt;User&gt;</code> tienes Intellisense completo y <code class=\"text-purple-300\">data</code> es un <code class=\"text-purple-300\">User</code> en cuanto compruebas <code class=\"text-purple-300\">ok</code>.",
+      "<strong>No.</strong> Si lo omites, <code class=\"text-venus-300\">data</code> es de tipo <code class=\"text-venus-300\">unknown</code>. Aun así, lo <strong>recomendamos encarecidamente</strong>: con <code class=\"text-venus-300\">get&lt;User&gt;</code> tienes Intellisense completo y <code class=\"text-venus-300\">data</code> es un <code class=\"text-venus-300\">User</code> en cuanto compruebas <code class=\"text-venus-300\">ok</code>.",
     optionsTitle: "Opciones unificadas en v3",
     requestControlsTitle: "Control de la petición",
     requestControlsBody:
@@ -132,29 +132,29 @@ export const es: Dict = {
     steps: {
       baseTitle: "Configura tu API",
       baseBody:
-        'Llama a <code class="text-purple-300">venus.config()</code> una sola vez. Cada ruta relativa (por ejemplo <code class="text-purple-300">/users</code>) se resuelve entonces contra tu <code class="text-purple-300">baseURL</code>. Con una <code class="text-purple-300">baseURL</code> configurada el scope queda <strong>cerrado</strong>: las URLs absolutas se rechazan con <code class="text-purple-300">INVALID_URL</code>. Sin ninguna configuración, una URL absoluta pasa directa.',
+        'Llama a <code class="text-venus-300">venus.config()</code> una sola vez. Cada ruta relativa (por ejemplo <code class="text-venus-300">/users</code>) se resuelve entonces contra tu <code class="text-venus-300">baseURL</code>. Con una <code class="text-venus-300">baseURL</code> configurada el scope queda <strong>cerrado</strong>: las URLs absolutas se rechazan con <code class="text-venus-300">INVALID_URL</code>. Sin ninguna configuración, una URL absoluta pasa directa.',
       baseNote:
-        '💡 <strong>Buena práctica:</strong> importa este archivo de configuración desde tu punto de entrada principal (por ejemplo <code class="text-white">Layout.astro</code> o <code class="text-white">main.ts</code>) para que se ejecute antes de que se renderice cualquier componente.',
+        '💡 <strong>Buena práctica:</strong> importa este archivo de configuración desde tu punto de entrada principal (por ejemplo <code class="text-ink">Layout.astro</code> o <code class="text-ink">main.ts</code>) para que se ejecute antes de que se renderice cualquier componente.',
 
       headersTitle: "Cabeceras globales e inyección de token",
       headersBody:
-        "Las cabeceras estáticas van en <code class=\"text-purple-300\">headers</code> y se aplican a <strong>todas</strong> las peticiones. Para un token que cambia, usa un hook <code class=\"text-purple-300\">beforeRequest</code> a nivel de scope: se ejecuta en cada intento, reintentos incluidos, así que siempre lee el token actual.",
+        "Las cabeceras estáticas van en <code class=\"text-venus-300\">headers</code> y se aplican a <strong>todas</strong> las peticiones. Para un token que cambia, usa un hook <code class=\"text-venus-300\">beforeRequest</code> a nivel de scope: se ejecuta en cada intento, reintentos incluidos, así que siempre lee el token actual.",
       headersNote:
-        '⚡ <strong>Precedencia:</strong> una cabecera con el mismo nombre en las opciones de una petición puntual gana a la global, nunca al revés. Quita una cabecera heredada en una petición con <code class="text-white">disableHeaders</code>.',
+        '⚡ <strong>Precedencia:</strong> una cabecera con el mismo nombre en las opciones de una petición puntual gana a la global, nunca al revés. Quita una cabecera heredada en una petición con <code class="text-ink">disableHeaders</code>.',
 
       firstTitle: "Tu primera petición",
       firstBody:
-        "Todos los métodos se llaman sobre <code class=\"text-purple-300\">venus</code> y devuelven la misma forma: <code class=\"text-purple-300\">data</code>, <code class=\"text-purple-300\">ok</code>, <code class=\"text-purple-300\">error</code>, <code class=\"text-purple-300\">errorCode</code>, <code class=\"text-purple-300\">status</code> y <code class=\"text-purple-300\">metrics</code>. Comprueba <code class=\"text-purple-300\">ok</code> y TypeScript estrecha el resto: <code class=\"text-purple-300\">data</code> pasa a ser tu tipo cuando hay éxito.",
+        "Todos los métodos se llaman sobre <code class=\"text-venus-300\">venus</code> y devuelven la misma forma: <code class=\"text-venus-300\">data</code>, <code class=\"text-venus-300\">ok</code>, <code class=\"text-venus-300\">error</code>, <code class=\"text-venus-300\">errorCode</code>, <code class=\"text-venus-300\">status</code> y <code class=\"text-venus-300\">metrics</code>. Comprueba <code class=\"text-venus-300\">ok</code> y TypeScript estrecha el resto: <code class=\"text-venus-300\">data</code> pasa a ser tu tipo cuando hay éxito.",
 
       paramsTitle: "Query params: qué son y cómo se serializan",
       paramsBody:
-        "La opción <code class=\"text-purple-300\">params</code> recibe un objeto plano de parámetros de query. Venus lo serializa y lo añade a la URL con el URL-encoding correcto, así que nunca construyes query strings a mano.",
+        "La opción <code class=\"text-venus-300\">params</code> recibe un objeto plano de parámetros de query. Venus lo serializa y lo añade a la URL con el URL-encoding correcto, así que nunca construyes query strings a mano.",
       paramsSub:
-        "Cuando un valor es un <strong>array</strong>, eliges cómo se serializa con <code class=\"text-purple-300\">paramsArrayFormat</code>. Cada modo produce una URL distinta y apunta a un tipo de backend diferente:",
+        "Cuando un valor es un <strong>array</strong>, eliges cómo se serializa con <code class=\"text-venus-300\">paramsArrayFormat</code>. Cada modo produce una URL distinta y apunta a un tipo de backend diferente:",
 
       clientTitle: "¿Varias APIs? Usa clientes",
       clientBody:
-        "<code class=\"text-purple-300\">createClient()</code> devuelve un cliente independiente e inmutable con su propia <code class=\"text-purple-300\">baseURL</code>, cabeceras, timeout, retry y hooks. Tiene los mismos métodos que <code class=\"text-purple-300\">venus</code>. Los dos modos son <strong>excluyentes</strong>: el primero que uses bloquea al otro.",
+        "<code class=\"text-venus-300\">createClient()</code> devuelve un cliente independiente e inmutable con su propia <code class=\"text-venus-300\">baseURL</code>, cabeceras, timeout, retry y hooks. Tiene los mismos métodos que <code class=\"text-venus-300\">venus</code>. Los dos modos son <strong>excluyentes</strong>: el primero que uses bloquea al otro.",
     },
     formats: {
       repeat:
@@ -340,7 +340,7 @@ export const es: Dict = {
       migrating:
         "¿Vienes de la v2? Estos son los cambios que requieren acción. La lista completa está en el changelog de abajo.",
       changelog:
-        "Historial completo hasta la versión actual <strong class=\"text-purple-300\">3.0.1</strong>.",
+        "Historial completo hasta la versión actual <strong class=\"text-venus-300\">3.0.1</strong>.",
       testing: "Venus está completamente testeado con Vitest.",
       license: "MIT © code-braydev",
       copyFailed: "Error al copiar:",
