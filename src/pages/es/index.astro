@@ -2,15 +2,27 @@
 import Layout from "../../layouts/Layout.astro";
 import Hero from "../../components/Hero.astro";
 import CodeExample from "../../components/CodeExample.astro";
+import UseCases from "../../components/UseCases.astro";
 import WhyVenus from "../../components/WhyVenus.astro";
 import WhyName from "../../components/WhyName.astro";
 import Methods from "../../components/Methods.astro";
+import Faq from "../../components/Faq.astro";
+import { getDict, getContent } from "../../i18n";
+import { homeJsonLd } from "../../docs/seo";
+
+const jsonLd = homeJsonLd(
+  "es",
+  getContent("es"),
+  getDict("es").layout.homeDescription,
+);
 ---
 
-<Layout>
+<Layout jsonLd={jsonLd}>
   <Hero />
   <CodeExample />
+  <UseCases />
   <WhyVenus />
   <WhyName />
   <Methods />
+  <Faq />
 </Layout>

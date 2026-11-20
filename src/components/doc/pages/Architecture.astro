@@ -1,0 +1,20 @@
+---
+import CodeBlock from "../../CodeBlock.astro";
+import { getDict, resolveLocale } from "../../../i18n";
+import { getSnippets } from "../../../docs/snippets";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const d = getDict(locale).doc;
+const sn = getSnippets(locale);
+---
+
+<section class="space-y-8">
+  <div class="space-y-3">
+    <h2 class="text-2xl font-bold text-ink">{d.headings.frontend}</h2>
+    <CodeBlock code={sn.frontendSnippet} filename="news.ts" lines={false} />
+  </div>
+  <div class="space-y-3">
+    <h2 class="text-2xl font-bold text-ink">{d.headings.backend}</h2>
+    <CodeBlock code={sn.backendSnippet} filename="feed-ssr.ts" lines={false} />
+  </div>
+</section>

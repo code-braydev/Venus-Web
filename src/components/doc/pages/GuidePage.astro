@@ -1,0 +1,46 @@
+---
+/** A guide page: explanation, optional bullet points and one code sample. */
+import CodeBlock from "../../CodeBlock.astro";
+import { getDict, resolveLocale } from "../../../i18n";
+import { getSnippets } from "../../../docs/snippets";
+
+interface Props {
+  id: "retries" | "timeouts" | "hooks" | "bodies" | "abort" | "engine";
+}
+
+const { id } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const d = getDict(locale).doc;
+const sn = getSnippets(locale);
+
+const guides = {
+  retries: { prose: d.prose.retries, code: sn.retrySnippet, file: "retry.ts", label: "Resilience" },
+  timeouts: { prose: d.prose.timeouts, points: d.prose.timeoutPoints, code: sn.timeoutSnippet, file: "timeout.ts", label: "Timeouts" },
+  hooks: { prose: d.prose.hooks, code: sn.hooksSnippet, file: "hooks.ts", label: "Instrumentation" },
+  bodies: { prose: d.prose.uploads, code: sn.uploadSnippet, file: "upload.ts", label: "Uploads" },
+  abort: { prose: d.prose.abort, code: sn.abortSnippet, file: "abort.ts", label: "Cancellation" },
+  engine: { prose: d.prose.engine, code: sn.engineSnippet, file: "engine.ts", label: "Engine" },
+} as const;
+
+const g: {
+  prose: string;
+  points?: readonly string[];
+  code: string;
+  file: string;
+  label: string;
+} = guides[id];
+---
+
+<section class="space-y-6">
+  <p class="leading-relaxed text-muted" set:html={g.prose} />
+  {
+    g.points && (
+      <ul class="list-disc space-y-2 pl-5 leading-relaxed text-muted marker:text-venus-400">
+        {g.points.map((point) => (
+          <li set:html={point} />
+        ))}
+      </ul>
+    )
+  }
+  <CodeBlock code={g.code} filename={g.file} label={g.label} />
+</section>

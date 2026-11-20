@@ -1,0 +1,16 @@
+---
+import DocTable from "../../DocTable.astro";
+import { getDict, resolveLocale } from "../../../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const d = getDict(locale).doc;
+---
+
+<section class="space-y-6">
+  <p class="leading-relaxed text-muted" set:html={d.prose.types} />
+  <DocTable
+    headers={d.prose.tables.types.headers}
+    rows={d.prose.tables.types.rows}
+    anchors
+  />
+</section>

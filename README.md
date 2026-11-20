@@ -1,6 +1,6 @@
 # Venus Landing (Astro)
 
-Landing y documentacion oficial de Venus, una libreria moderna y ligera para networking en JavaScript/TypeScript.
+Landing y documentacion oficial de Venus, una libreria http moderna y ligera para JavaScript/TypeScript.
 
 ## Venus v3.0.1
 
@@ -13,37 +13,6 @@ La landing y la documentacion describen la version 3.0.1. Novedades principales:
 - Reintentos seguros: solo metodos idempotentes, `retryMethods`, `Retry-After` y jitter.
 - `abort()` por scope, hooks y `onTelemetry` a nivel de `venus.config` y `createClient`.
 - Cero dependencias. El soporte RSS/Atom se elimino de Venus.
-
-## Scripts
-
-- npm run dev: inicia entorno local.
-- npm run build: genera build de produccion.
-- npm run preview: previsualiza la build.
-
-## Estructura principal
-
-- src/pages/index.astro: landing principal.
-- src/pages/doc.astro: pagina de documentacion.
-- src/components: secciones reutilizables de landing/docs.
-- src/styles/global.css: estilos globales.
-
-## Desarrollo
-
-1. Instalar dependencias:
-
-```bash
-npm install
-```
-
-2. Levantar entorno local:
-
-```bash
-npm run dev
-```
-
-3. Abrir en navegador:
-
-`http://localhost:4321`
 
 ## Referencias
 

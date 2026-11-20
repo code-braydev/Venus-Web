@@ -1,75 +1,12 @@
 ---
 import CodeBlock from "./CodeBlock.astro";
 import { getDict, resolveLocale } from "../i18n";
+import { getSnippets } from "../docs/snippets";
 
 const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
+const sn = getSnippets(locale);
 const s = t.quickStart.steps;
-
-const configSnippet = `import { venus } from "@braydev/venus";
-
-venus.config({
-  baseURL: "https://api.braydev.xyz",
-  timeout: 8000,
-});`;
-
-const headersSnippet = `import { venus } from "@braydev/venus";
-
-venus.config({
-  baseURL: "https://api.braydev.xyz",
-  headers: { "X-App-Version": "1.0.0" },
-  hooks: {
-    // Runs on every attempt, retries included: always the current token
-    beforeRequest: () => ({
-      headers: { Authorization: "Bearer " + session.token },
-    }),
-  },
-});
-
-// Read the active config back
-const current = venus.config();`;
-
-const firstRequestSnippet = `import { venus } from "@braydev/venus";
-
-// GET with query params, timeout and auto parsing
-const profile = await venus.get<User>("/profile", {
-  timeout: 8000,
-  params: { include: ["roles", "permissions"] },
-  paramsArrayFormat: "repeat",
-});
-
-if (profile.ok) {
-  console.log(profile.data.name); // User: no null check needed
-} else {
-  console.error(profile.errorCode, profile.error);
-}
-
-// POST: the object is sent as JSON, Content-Type included
-const created = await venus.send<User>("/users", { name: "Brayan" });`;
-
-const paramsSnippet = `await venus.get("/news", {
-  params: { category: "tech", limit: 5 },
-});
-
-// Result: /news?category=tech&limit=5`;
-
-const clientSnippet = `import { createClient } from "@braydev/venus";
-
-export const api = createClient({
-  baseURL: "https://api.braydev.xyz",
-  headers: { "X-App-Version": "1.0.0" },
-  timeout: 8000,
-});
-
-export const cdn = createClient({
-  baseURL: "https://cdn.braydev.xyz",
-  timeout: 30_000,
-});
-
-const res = await api.get<User[]>("/users");
-if (res.ok) console.log(res.data.length);
-
-api.abort(); // cancel everything in flight on this client`;
 
 const arrayFormats = [
   {
@@ -109,7 +46,7 @@ const arrayFormats = [
       set:html={s.baseBody}
     />
 
-    <CodeBlock code={configSnippet} filename="config.ts" lines={false} />
+    <CodeBlock code={sn.configSnippet} filename="config.ts" lines={false} />
 
     <p
       class="text-[11px] text-accent-soft italic bg-venus-500/5 p-3 rounded border border-venus-500/10"
@@ -130,7 +67,7 @@ const arrayFormats = [
       set:html={s.headersBody}
     />
 
-    <CodeBlock code={headersSnippet} filename="config.ts" />
+    <CodeBlock code={sn.headersSnippet} filename="config.ts" />
 
     <p
       class="text-[11px] text-accent-soft italic bg-venus-500/5 p-3 rounded border border-venus-500/10"
@@ -151,7 +88,7 @@ const arrayFormats = [
       set:html={s.firstBody}
     />
 
-    <CodeBlock code={firstRequestSnippet} filename="profile.ts" label="TypeScript" />
+    <CodeBlock code={sn.firstRequestSnippet} filename="profile.ts" label="TypeScript" />
   </div>
 
   <div class="space-y-4">
@@ -167,7 +104,7 @@ const arrayFormats = [
       set:html={s.paramsBody}
     />
 
-    <CodeBlock code={paramsSnippet} filename="news.ts" />
+    <CodeBlock code={sn.paramsSnippet} filename="news.ts" />
 
     <div class="space-y-3">
       <p
@@ -212,6 +149,6 @@ const arrayFormats = [
       set:html={s.clientBody}
     />
 
-    <CodeBlock code={clientSnippet} filename="clients.ts" label="Clients" />
+    <CodeBlock code={sn.clientSnippet} filename="clients.ts" label="Clients" />
   </div>
 </div>

@@ -1,0 +1,46 @@
+---
+/** Docs navigation: pages grouped by section, current page highlighted. */
+import { docPages, docGroups, docPath, type DocPageId } from "../../docs/nav";
+import { getContent, resolveLocale, localizePath } from "../../i18n";
+
+interface Props {
+  current: DocPageId;
+}
+
+const { current } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const c = getContent(locale);
+
+const groups = docGroups.map((g) => ({
+  title: c.nav.groups[g],
+  pages: docPages.filter((p) => p.group === g),
+}));
+---
+
+<nav class="space-y-7" aria-label={c.nav.menu}>
+  {
+    groups.map((group) => (
+      <div>
+        <h4 class="mb-3 text-xs font-bold uppercase tracking-widest text-accent-soft">
+          {group.title}
+        </h4>
+        <ul class="space-y-2 text-sm font-medium text-muted">
+          {group.pages.map((page) => (
+            <li>
+              <a
+                href={localizePath(docPath(page.id), locale)}
+                aria-current={page.id === current ? "page" : undefined}
+                class:list={[
+                  "spy-link hover:text-venus-200 transition-colors",
+                  page.id === current && "is-active",
+                ]}
+              >
+                {c.pages[page.id].label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+</nav>

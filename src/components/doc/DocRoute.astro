@@ -1,0 +1,44 @@
+---
+/** Renders one docs page by id inside the docs layout. */
+import DocLayout from "../../layouts/DocLayout.astro";
+import type { DocPageId } from "../../docs/nav";
+import Intro from "./pages/Intro.astro";
+import Config from "./pages/Config.astro";
+import Requests from "./pages/Requests.astro";
+import GuidePage from "./pages/GuidePage.astro";
+import Architecture from "./pages/Architecture.astro";
+import Options from "./pages/Options.astro";
+import Errors from "./pages/Errors.astro";
+import Types from "./pages/Types.astro";
+import Glossary from "./pages/Glossary.astro";
+import Migration from "./pages/Migration.astro";
+import Changelog from "./pages/Changelog.astro";
+
+interface Props {
+  id: DocPageId;
+}
+
+const { id } = Astro.props;
+
+const guideIds = ["retries", "timeouts", "hooks", "bodies", "abort", "engine"] as const;
+const guide = guideIds.find((g) => g === id);
+
+const pages = {
+  intro: Intro,
+  config: Config,
+  requests: Requests,
+  architecture: Architecture,
+  options: Options,
+  errors: Errors,
+  types: Types,
+  glossary: Glossary,
+  migration: Migration,
+  changelog: Changelog,
+} as const;
+
+const Page = guide ? null : pages[id as keyof typeof pages];
+---
+
+<DocLayout id={id}>
+  {guide ? <GuidePage id={guide} /> : Page && <Page />}
+</DocLayout>

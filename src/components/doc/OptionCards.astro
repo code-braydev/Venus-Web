@@ -1,0 +1,71 @@
+---
+/**
+ * A grid of cards, one per option: name, type, one-line description and, when
+ * the option accepts several values, the list of them with what each one does.
+ */
+interface Item {
+  name: string;
+  type: string;
+  desc: string;
+  href?: string;
+  tag?: string;
+  values?: readonly { value: string; desc: string }[];
+}
+
+interface Props {
+  items: readonly Item[];
+  valuesLabel: string;
+}
+
+const { items, valuesLabel } = Astro.props;
+---
+
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  {
+    items.map((item) => (
+      <article
+        class:list={[
+          "flex flex-col rounded-xl border border-ink/10 bg-surface-2/60 p-4 transition-colors hover:border-venus-500/30",
+          item.values && item.values.length > 2 && "sm:col-span-2",
+        ]}
+      >
+        <header class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          {item.href ? (
+            <a
+              href={item.href}
+              class="font-mono text-sm font-bold text-venus-300 hover:text-venus-100"
+            >
+              {item.name}
+            </a>
+          ) : (
+            <span class="font-mono text-sm font-bold text-venus-300">
+              {item.name}
+            </span>
+          )}
+          <code class="text-[11px] text-faint">{item.type}</code>
+          {item.tag && (
+            <span class="ml-auto rounded border border-venus-500/20 bg-venus-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-venus-300">
+              {item.tag}
+            </span>
+          )}
+        </header>
+        <p class="mt-2 text-sm leading-relaxed text-muted">{item.desc}</p>
+        {item.values && item.values.length > 0 && (
+          <div class="mt-3 border-t border-ink/5 pt-3">
+            <p class="mb-2 text-[10px] font-bold uppercase tracking-widest text-accent-soft">
+              {valuesLabel}
+            </p>
+            <dl class="grid grid-cols-1 gap-x-6 gap-y-1.5 text-[12px] sm:grid-cols-2">
+              {item.values.map((v) => (
+                <div class="flex items-baseline gap-2">
+                  <dt class="shrink-0 font-mono text-venus-200">{v.value}</dt>
+                  <dd class="text-faint">{v.desc}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        )}
+      </article>
+    ))
+  }
+</div>

@@ -1,0 +1,22 @@
+---
+import MethodCards from "../MethodCards.astro";
+import MethodReference from "../../MethodReference.astro";
+import { getDict, getContent, resolveLocale } from "../../../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const d = getDict(locale).doc;
+const c = getContent(locale);
+---
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold text-ink">{c.cards.labels.mapTitle}</h2>
+  <MethodCards />
+</section>
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold text-ink">{d.headings.methodReference}</h2>
+  <p class="leading-relaxed text-muted" set:html={d.prose.methodReference} />
+  <div class="pt-6">
+    <MethodReference />
+  </div>
+</section>

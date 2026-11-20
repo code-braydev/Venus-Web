@@ -1,0 +1,204 @@
+---
+/**
+ * Shell of every docs page: left menu, the article (title, lead, content,
+ * previous/next) and, on wide screens, an "on this page" index built from
+ * the headings of the article.
+ */
+import Layout from "./Layout.astro";
+import DocNav from "../components/doc/DocNav.astro";
+import { docPages, docPath, type DocPageId } from "../docs/nav";
+import { getContent, resolveLocale, localizePath } from "../i18n";
+import { docJsonLd } from "../docs/seo";
+
+interface Props {
+  id: DocPageId;
+}
+
+const { id } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const c = getContent(locale);
+const meta = c.pages[id];
+
+// Keep it near 60 characters: full suffix, else just the brand, else the bare title.
+const fit = (candidates: string[]) =>
+  candidates.find((t) => t.length <= 62) ?? candidates[candidates.length - 1];
+const seoTitle =
+  id === "intro"
+    ? c.nav.introTitle
+    : fit([
+        `${meta.title} · ${c.nav.titleSuffix}`,
+        `${meta.title} | Venus`,
+        meta.title,
+      ]);
+const jsonLd = docJsonLd(locale, c, id, meta.title, meta.lead);
+
+const index = docPages.findIndex((p) => p.id === id);
+const prev = docPages[index - 1];
+const next = docPages[index + 1];
+const href = (pageId: DocPageId) => localizePath(docPath(pageId), locale);
+---
+
+<Layout title={seoTitle} description={meta.lead} jsonLd={jsonLd}>
+  <div class="mx-auto max-w-7xl px-6 pt-32 pb-20">
+    <div class="flex flex-col gap-10 lg:flex-row">
+      <aside
+        class="hidden w-56 shrink-0 lg:sticky lg:top-32 lg:block lg:h-fit lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto lg:pr-3"
+      >
+        <DocNav current={id} />
+      </aside>
+
+      <article class="min-w-0 max-w-3xl flex-1">
+        <details
+          class="mb-8 rounded-xl border border-ink/10 bg-surface-2/60 lg:hidden"
+        >
+          <summary
+            class="cursor-pointer px-4 py-3 text-sm font-semibold text-venus-200"
+          >
+            {c.nav.menu}
+          </summary>
+          <div class="border-t border-ink/5 p-4">
+            <DocNav current={id} />
+          </div>
+        </details>
+
+        <header class="mb-12">
+          <h1 class="mb-5 text-4xl font-extrabold text-ink sm:text-5xl">
+            {meta.title}
+          </h1>
+          <p class="text-base leading-relaxed text-faint text-balance sm:text-lg">
+            {meta.lead}
+          </p>
+        </header>
+
+        <div id="doc-content" class="space-y-16">
+          <slot />
+        </div>
+
+        <footer
+          class="mt-20 grid grid-cols-1 gap-4 border-t border-ink/5 pt-8 sm:grid-cols-2"
+        >
+          {
+            prev ? (
+              <a
+                href={href(prev.id)}
+                class="group rounded-xl border border-ink/10 bg-surface-2/60 p-4 transition-colors hover:border-venus-500/30"
+              >
+                <span class="block text-[10px] font-bold uppercase tracking-widest text-accent-soft">
+                  ← {c.nav.previous}
+                </span>
+                <span class="mt-1 block font-semibold text-ink group-hover:text-venus-200">
+                  {c.pages[prev.id].label}
+                </span>
+              </a>
+            ) : (
+              <span />
+            )
+          }
+          {
+            next && (
+              <a
+                href={href(next.id)}
+                class="group rounded-xl border border-ink/10 bg-surface-2/60 p-4 text-right transition-colors hover:border-venus-500/30"
+              >
+                <span class="block text-[10px] font-bold uppercase tracking-widest text-accent-soft">
+                  {c.nav.next} →
+                </span>
+                <span class="mt-1 block font-semibold text-ink group-hover:text-venus-200">
+                  {c.pages[next.id].label}
+                </span>
+              </a>
+            )
+          }
+        </footer>
+      </article>
+
+      <aside
+        id="toc"
+        class="hidden w-48 shrink-0 xl:sticky xl:top-32 xl:block xl:h-fit"
+      >
+        <h4 class="mb-3 text-xs font-bold uppercase tracking-widest text-accent-soft">
+          {c.nav.onThisPage}
+        </h4>
+        <ul id="toc-list" class="space-y-2 text-[13px] font-medium text-muted"></ul>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // "On this page": built from the h2/h3 of the article, with scroll-spy.
+    const slugify = (text: string) =>
+      text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+    const list = document.getElementById("toc-list");
+    const toc = document.getElementById("toc");
+    const headings = Array.from(
+      document.querySelectorAll<HTMLElement>("#doc-content h2, #doc-content h3"),
+    );
+
+    // Heading text without decorative spans (e.g. the step number badge)
+    const labelOf = (h: HTMLElement) => {
+      const clone = h.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll("span").forEach((s) => s.remove());
+      return (clone.textContent || "").trim();
+    };
+
+    if (list && toc && headings.length > 1) {
+      const used = new Set<string>();
+      for (const h of headings) {
+        if (!h.id) {
+          let id = slugify(labelOf(h) || "section") || "section";
+          while (used.has(id) || document.getElementById(id)) id += "-2";
+          h.id = id;
+        }
+        used.add(h.id);
+
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = "#" + h.id;
+        a.dataset.spy = h.id;
+        a.textContent = labelOf(h);
+        a.className =
+          "spy-link hover:text-venus-200 transition-colors" +
+          (h.tagName === "H3" ? " pl-6" : "");
+        li.appendChild(a);
+        list.appendChild(li);
+      }
+
+      const links = Array.from(list.querySelectorAll<HTMLAnchorElement>("a[data-spy]"));
+      let ticking = false;
+
+      const update = () => {
+        ticking = false;
+        let current = headings[0];
+        for (const h of headings) {
+          if (h.getBoundingClientRect().top <= 160) current = h;
+        }
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) {
+          current = headings[headings.length - 1];
+        }
+        for (const link of links) {
+          link.classList.toggle("is-active", link.dataset.spy === current.id);
+        }
+      };
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(update);
+          }
+        },
+        { passive: true },
+      );
+      update();
+    } else {
+      toc?.remove();
+    }
+  </script>
+</Layout>

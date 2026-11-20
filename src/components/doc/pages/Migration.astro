@@ -1,0 +1,20 @@
+---
+import CodeBlock from "../../CodeBlock.astro";
+import { getDict, resolveLocale } from "../../../i18n";
+import { getSnippets } from "../../../docs/snippets";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const d = getDict(locale).doc;
+const sn = getSnippets(locale);
+---
+
+<section class="space-y-6">
+  <p class="leading-relaxed text-muted" set:html={d.prose.migrating} />
+  <CodeBlock
+    code={sn.migrationSnippet}
+    filename="migrate.diff"
+    lang="diff"
+    lines={false}
+    label="v2 → v3"
+  />
+</section>

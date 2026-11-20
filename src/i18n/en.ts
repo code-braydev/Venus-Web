@@ -9,14 +9,16 @@
 
 export const en = {
   layout: {
-    homeTitle: "Venus | HTTP, without friction",
+    homeTitle: "Venus: TypeScript HTTP client with zero dependencies",
     homeDescription:
-      "A modern, zero-dependency HTTP client for JS/TS. Stop fighting fetch.",
-    docTitle: "Documentation | Venus SDK",
+      "Typed, zero-dependency HTTP client for JavaScript and TypeScript: safe retries, timeouts, abort and upload progress. Responses never throw.",
+    ogAlt:
+      "Venus logo, a golden wireframe sphere, with the text: HTTP client, without friction",
+    docTitle: "Venus documentation | HTTP client for JavaScript",
     docDescription:
       "Venus v3.0.1 from scratch: setup, modes, request bodies, resilience and the full reference of every method.",
     keywords:
-      "venus, networking, library, javascript, typescript, fetch, api, restful, graphql",
+      "venus, http client, typescript, javascript, fetch wrapper, api client, retry, timeout, abort request, upload progress, zero dependency, xhr",
   },
 
   header: {
@@ -39,7 +41,6 @@ export const en = {
     author: "Author",
     docs: "Docs",
     built: "Built with Astro & Love.",
-    operational: "Operational on Vercel",
   },
 
   hero: {
@@ -90,7 +91,7 @@ export const en = {
     kicker: "The name",
     title: "Why the name Venus?",
     p1: "I've always loved space. Venus caught my eye because it's the quiet one: a planet that keeps its distance but is beautiful, with a short name, and the brightest planet in our sky. I'll admit that at first I even mixed it up with the planet with the rings.",
-    p2: "I wanted an HTTP client that stood out the same way: for its clarity and agility. The power of Axios, but ultralight, friendly, and without the friction of writing a try/catch around every request.",
+    p2: "I wanted an HTTP client that stood out the same way: for its clarity and agility. Powerful, but ultralight and friendly, and without the friction of writing a try/catch around every request.",
     signature: "— Braydev, author of Venus",
     traits: {
       clarity: {
@@ -99,7 +100,7 @@ export const en = {
       },
       agility: {
         title: "Agility",
-        body: "Zero dependencies and native fetch by default. Axios-grade power, ultralight.",
+        body: "Zero dependencies and native fetch by default. Real power, ultralight.",
       },
       connection: {
         title: "Connection",
@@ -283,7 +284,7 @@ export const en = {
       },
       options: {
         title: "Same options as everywhere else",
-        body: "Supports params, timeout, signal, responseType, retry and hooks — the same unified options model used by get, send and update. DELETE is idempotent, so it retries by default.",
+        body: "Supports params, timeout, signal, responseType, retry and hooks — the same unified options model used by get, send and update. DELETE is idempotent, so it can be retried when retry is enabled.",
       },
       generic: {
         title: "The <T> generic",
@@ -322,6 +323,10 @@ export const en = {
         update: "update / updateOnly",
         remove: "venus.remove",
         commonOptions: "Common options",
+        setupApi: "Setup & lifecycle",
+        timeouts: "Timeouts",
+        errorCodes: "Error codes",
+        types: "Types",
         migrating: "Migrating from v2",
         changelog: "Changelog",
       },
@@ -342,6 +347,11 @@ export const en = {
       changelog: "Changelog",
       testing: "Testing",
       license: "License",
+      timeouts: "Timeouts: never wait forever",
+      setupApi: "Setup & lifecycle API",
+      configOptions: "Configuration options",
+      errorCodes: "Error codes",
+      types: "Types reference",
       frontend: "Frontend (SPA)",
       backend: "Backend (Node / SSR)",
     },
@@ -351,15 +361,15 @@ export const en = {
       advanced:
         "Production patterns: retry policies, lifecycle hooks, request bodies, aborting, the dual engine and SPA/SSR architecture.",
       retries:
-        "<code>retry</code> recovers requests that failed for transient reasons (network errors, timeouts, 408, 429 and 5xx). By default only <strong>idempotent</strong> methods retry (GET, HEAD, OPTIONS, PUT, DELETE): a POST or PATCH is never repeated unless you opt in with <code>retryMethods</code> or <code>shouldRetry</code>, so a retry can never duplicate an order or a payment. Backoff is exponential with jitter, and a server <code>Retry-After</code> header replaces it. When the attempts run out, the response reports <code class=\"text-yellow-400\">errorCode: \"RETRY_EXHAUSTED\"</code> and keeps the last status and body.",
+        "Retries are <strong>off</strong> until you set <code>retry</code> (<code>true</code> means 2 retries). Once on, it recovers requests that failed for transient reasons (network errors, timeouts, 408, 429 and 5xx). By default only <strong><a class=\"term\" href=\"/doc/glossary#idempotent\">idempotent</a></strong> methods retry (GET, HEAD, OPTIONS, PUT, DELETE): a POST or PATCH is never repeated unless you opt in with <code>retryMethods</code> or <code>shouldRetry</code>, so a retry can never duplicate an order or a payment. <a class=\"term\" href=\"/doc/glossary#backoff\">Backoff</a> is exponential with <a class=\"term\" href=\"/doc/glossary#jitter\">jitter</a>, and a server <a class=\"term\" href=\"/doc/glossary#retry-after\"><code>Retry-After</code></a> header replaces it. When the attempts run out, the response reports <code class=\"text-yellow-400\">errorCode: \"RETRY_EXHAUSTED\"</code> and keeps the last status and body.",
       hooks:
-        "<code>beforeRequest</code> runs on every attempt and returns a partial override that is merged into the request (headers combine). <code>afterResponse</code> runs when the response arrives, with its duration and attempt. <code>onTelemetry</code> emits one event per attempt. Put them in <code>venus.config</code> or <code>createClient</code> to apply them to every request; the ones in a request run after the scope ones. A hook that throws never breaks the contract: the response is <code class=\"text-yellow-400\">UNKNOWN_ERROR</code>.",
+        "<code>beforeRequest</code> runs on every attempt and returns a partial override that is merged into the request (headers combine). <code>afterResponse</code> runs when the response arrives, with its duration and attempt. <a class=\"term\" href=\"/doc/glossary#telemetry\"><code>onTelemetry</code></a> emits one event per attempt. Put them in <code>venus.config</code> or <code>createClient</code> to apply them to every request; the ones in a request run after the scope ones. A hook that throws never breaks the contract: the response is <code class=\"text-yellow-400\">UNKNOWN_ERROR</code>.",
       uploads:
-        "Venus detects the payload and sets the <code>Content-Type</code> for you. An explicit <code>Content-Type</code> header always wins. Empty payloads (<code>null</code>, <code>\"\"</code>, <code>{}</code>, <code>[]</code>) return <code>INVALID_BODY</code> without touching the network.",
+        "Venus detects the <a class=\"term\" href=\"/doc/glossary#payload\">payload</a> and sets the <a class=\"term\" href=\"/doc/glossary#content-type\"><code>Content-Type</code></a> for you. An explicit <code>Content-Type</code> header always wins. Empty payloads (<code>null</code>, <code>\"\"</code>, <code>{}</code>, <code>[]</code>) return <code>INVALID_BODY</code> without touching the network.",
       abort:
-        "Cancel one request with a standard <code>AbortSignal</code>, or everything in flight in a scope with <code>venus.abort()</code> or <code>api.abort()</code>. Aborted requests resolve as <code class=\"text-yellow-400\">ABORTED</code> (status 499) and are never retried.",
+        "Cancel one request with a standard <a class=\"term\" href=\"/doc/glossary#abort-signal\"><code>AbortSignal</code></a>, or everything in flight in a scope with <code>venus.abort()</code> or <code>api.abort()</code>. Aborted requests resolve as <code class=\"text-yellow-400\">ABORTED</code> (status 499) and are never retried.",
       engine:
-        "<code>fetch</code> is the default engine. Venus switches to <code>XMLHttpRequest</code> on its own when you pass a <code>progress</code> callback or enable <code>metrics</code>: no flags to set. In Node there is no XHR, so <code>metrics</code> falls back to fetch and <code>progress</code> resolves as <code class=\"text-yellow-400\">UNSUPPORTED</code>.",
+        "<a class=\"term\" href=\"/doc/glossary#fetch\"><code>fetch</code></a> is the default engine. Venus switches to <a class=\"term\" href=\"/doc/glossary#xhr\"><code>XMLHttpRequest</code></a> on its own when you pass a <code>progress</code> callback or enable <code>metrics</code>: no flags to set. In Node there is no XHR, so <code>metrics</code> falls back to fetch and <code>progress</code> resolves as <code class=\"text-yellow-400\">UNSUPPORTED</code>.",
       methodReference:
         "Every method with its syntax, response contract and all of its insights: which options it accepts, what it improves and how it behaves in edge cases.",
       commonOptions: "Every option documented with exactly what it does.",
@@ -369,6 +379,409 @@ export const en = {
         "Full history up to the current version <strong class=\"text-venus-300\">3.0.1</strong>.",
       testing: "Venus is fully tested with Vitest.",
       license: "MIT © code-braydev",
+      timeouts:
+        "<code>timeout</code> is the maximum time, in milliseconds, a request may take before Venus gives up and cancels it. It has <strong>no default</strong>: if you never set it, a request waits as long as the server and the network allow, so a hung server can leave your UI loading forever. Set it once in <code>venus.config</code> or <code>createClient</code> as the default of the <a class=\"term\" href=\"/doc/glossary#scope\">scope</a>, and override it in a single request when an endpoint needs more (or less) time. <code>timeout: 0</code> turns it off for that request. When the time runs out Venus never throws: you get <code class=\"text-yellow-400\">{ ok: false, errorCode: \"TIMEOUT\", status: 408 }</code>.",
+      setupApi:
+        "These members configure Venus and control its lifecycle. Use <code>venus</code> (one API, global config) <strong>or</strong> <code>createClient()</code> (several APIs, immutable clients): the first one you use locks the other. A locked <code>config</code>, <code>reset</code>, <code>abort</code> or <code>createClient</code> throws; a locked request method (<code>get</code>, <code>send</code>...) resolves as <code class=\"text-yellow-400\">MODE_CONFLICT</code>.",
+      configOptions:
+        "The same keys work in <code>venus.config()</code> and <code>createClient()</code>. They are the defaults of the scope: anything you pass to a single request wins over them.",
+      requestOptions:
+        "Options accepted by every request method, with their defaults and exactly what they do. The ones marked <em>scope</em> fall back to the value set in <code>venus.config</code> or <code>createClient</code>.",
+      errorCodes:
+        "Every failure carries a stable <code>errorCode</code>: use it, not the message, to decide what to do (retry, show a toast, sign out). <code>status</code> is the HTTP status when there is one and <code>0</code> when the request never got an answer. \"Retried\" applies only when <code>retry</code> is enabled and the method is allowed to retry.",
+      types:
+        "Everything below is exported from <code>@braydev/venus</code> as a type, so you can annotate your own helpers.",
+      timeoutPoints: [
+        "<strong>Per attempt.</strong> With <code>retry</code>, every attempt gets a fresh timer and the backoff wait between attempts is not counted. <code>timeout: 2000</code> with <code>retry: 2</code> can take about 6 s plus backoff in the worst case.",
+        "<strong>What it covers.</strong> From the start of the attempt until the response body is read and parsed, hooks included.",
+        "<strong>Retried like a network error.</strong> <code>TIMEOUT</code> is retried when <code>retry</code> is on and the method is allowed (GET, PUT, DELETE...; never POST or PATCH by default). If the last attempt also times out you get <code>TIMEOUT</code>, not <code>RETRY_EXHAUSTED</code>.",
+        "<strong>Not the same as aborting.</strong> <code>signal</code>, <code>venus.abort()</code> and <code>api.abort()</code> resolve as <code>ABORTED</code> (499) and are never retried. If both happen, the external cancel wins.",
+        "<strong>Choosing a value.</strong> Interactive reads: 5 000 to 10 000 ms. Big uploads and slow reports: a larger value, or <code>0</code> plus a <code>signal</code> so the user can cancel."
+      ],
+      tables: {
+        "setup": {
+          "headers": [
+            "Member",
+            "Mode",
+            "What it does"
+          ],
+          "rows": [
+            [
+              "venus.config(options)",
+              "venus",
+              "Merges the keys you pass into the global config; omitted keys keep their value. <code>headers</code> is replaced as a whole, not merged. A trailing slash in <code>baseURL</code> is removed. Returns nothing."
+            ],
+            [
+              "venus.config()",
+              "venus",
+              "Returns a copy of the active global config. Changing the copy has no effect."
+            ],
+            [
+              "venus.reset()",
+              "venus",
+              "Clears <code>baseURL</code>, <code>headers</code>, <code>timeout</code>, <code>retry</code>, <code>metrics</code>, <code>hooks</code> and <code>onTelemetry</code>. Use it on logout or between tests. Venus stays in global mode."
+            ],
+            [
+              "venus.abort()",
+              "venus",
+              "Cancels every in-flight global request; they resolve as <code>ABORTED</code>."
+            ],
+            [
+              "venus.get / send / update / updateOnly / remove",
+              "venus",
+              "The request methods, with the global config applied. See the method reference."
+            ],
+            [
+              "createClient(defaults)",
+              "client",
+              "Creates an independent, immutable client with its own defaults (same keys as <code>venus.config</code>). Throws if <code>venus.config()</code> was already used."
+            ],
+            [
+              "api.get / send / update / updateOnly / remove",
+              "client",
+              "Same methods and options as <code>venus</code>, using only this client's defaults. They never read the global config."
+            ],
+            [
+              "api.config()",
+              "client",
+              "Read-only copy of the client defaults. There is no setter: create another client instead."
+            ],
+            [
+              "api.abort()",
+              "client",
+              "Cancels only this client's in-flight requests."
+            ]
+          ]
+        },
+        "config": {
+          "headers": [
+            "Option",
+            "Type",
+            "Default",
+            "What it does"
+          ],
+          "rows": [
+            [
+              "baseURL",
+              "string",
+              "\"\"",
+              "Prefix for every relative path, so you can write <code>/users</code>. Once set, the scope is <strong>closed</strong>: absolute URLs return <code>INVALID_URL</code>."
+            ],
+            [
+              "headers",
+              "Record<string, string>",
+              "{}",
+              "Sent with every request. A request's own <code>headers</code> win header by header, and <code>disableHeaders</code> removes one."
+            ],
+            [
+              "timeout",
+              "number (ms)",
+              "none",
+              "Maximum time per attempt before <code>TIMEOUT</code>. See Timeouts."
+            ],
+            [
+              "retry",
+              "boolean | number | object",
+              "off",
+              "Default retry policy. <code>true</code> means 2 retries, a number means that many, an object tunes every detail. <code>retry: false</code> in a request turns it off."
+            ],
+            [
+              "metrics",
+              "boolean",
+              "false",
+              "Fills <code>response.metrics</code> (engine, startedAt, durationMs, attempts) in every response."
+            ],
+            [
+              "hooks",
+              "{ beforeRequest, afterResponse }",
+              "none",
+              "Interceptors that run on every attempt, before the request's own hooks."
+            ],
+            [
+              "onTelemetry",
+              "(event) => void",
+              "none",
+              "Receives one event per attempt: url, method, ok, status, durationMs, attempt, errorCode. Runs before the request's own listener; errors thrown inside it are ignored."
+            ]
+          ]
+        },
+        "options": {
+          "headers": [
+            "Option",
+            "Type",
+            "Default",
+            "What it does"
+          ],
+          "rows": [
+            [
+              "headers",
+              "HeadersInit",
+              "scope",
+              "Headers for this request. They win over the scope's, header by header."
+            ],
+            [
+              "disableHeaders",
+              "string[]",
+              "none",
+              "Header names (case-insensitive) removed from this request, e.g. an inherited <code>Authorization</code>."
+            ],
+            [
+              "body",
+              "unknown",
+              "none",
+              "The payload. In <code>send</code>, <code>update</code> and <code>updateOnly</code> it is the second argument. It is serialized with its Content-Type; empty bodies return <code>INVALID_BODY</code>."
+            ],
+            [
+              "timeout",
+              "number (ms)",
+              "scope, else none",
+              "Maximum time per attempt before <code>TIMEOUT</code>. <code>0</code> disables it for this request."
+            ],
+            [
+              "signal",
+              "AbortSignal",
+              "none",
+              "Cancels the request from outside. It resolves as <code>ABORTED</code> (499) and is never retried."
+            ],
+            [
+              "params",
+              "object",
+              "none",
+              "Query params, URL-encoded and appended to the URL."
+            ],
+            [
+              "paramsArrayFormat",
+              "\"repeat\" | \"comma\" | \"brackets\" | \"indices\"",
+              "\"repeat\"",
+              "How arrays inside <code>params</code> are serialized."
+            ],
+            [
+              "responseType",
+              "\"auto\" | \"json\" | \"text\" | \"blob\" | \"formData\" | \"arrayBuffer\" | \"stream\"",
+              "\"auto\"",
+              "Which parser reads the response body. <code>auto</code> detects JSON vs text."
+            ],
+            [
+              "retry",
+              "boolean | number | object",
+              "scope, else off",
+              "Retry policy for this request. The object form is detailed in the next rows."
+            ],
+            [
+              "retry.attempts",
+              "number",
+              "2",
+              "Retries after the first attempt, once retry is on (so 3 tries in total)."
+            ],
+            [
+              "retry.backoffMs",
+              "number",
+              "200",
+              "Initial wait. It doubles on every attempt, with jitter."
+            ],
+            [
+              "retry.maxBackoffMs",
+              "number",
+              "2000",
+              "Ceiling of the wait. It also caps a server's <code>Retry-After</code>."
+            ],
+            [
+              "retry.retryOn",
+              "number[]",
+              "408, 429, 500, 502, 503, 504",
+              "HTTP status codes worth retrying. Network errors and timeouts always count."
+            ],
+            [
+              "retry.retryMethods",
+              "string[]",
+              "GET, HEAD, OPTIONS, PUT, DELETE",
+              "Methods allowed to retry. Add <code>\"POST\"</code> or <code>\"PATCH\"</code> only if repeating them is safe."
+            ],
+            [
+              "retry.shouldRetry",
+              "(ctx) => boolean",
+              "none",
+              "Custom decision with <code>{ attempt, status, errorCode }</code>. It replaces <code>retryMethods</code> and <code>retryOn</code>."
+            ],
+            [
+              "hooks",
+              "{ beforeRequest, afterResponse }",
+              "none",
+              "Request hooks. They run after the scope's hooks."
+            ],
+            [
+              "onTelemetry",
+              "(event) => void",
+              "none",
+              "Telemetry listener for this request."
+            ],
+            [
+              "metrics",
+              "boolean",
+              "scope, else false",
+              "Fills <code>response.metrics</code> for this request."
+            ],
+            [
+              "progress",
+              "({ direction, loaded, percent }) => void",
+              "none",
+              "Transfer progress. It switches the request to XHR; in Node it resolves as <code>UNSUPPORTED</code>."
+            ]
+          ]
+        },
+        "errors": {
+          "headers": [
+            "Code",
+            "Status",
+            "Retried",
+            "When it happens"
+          ],
+          "rows": [
+            [
+              "HTTP_ERROR",
+              "server's",
+              "if in retryOn",
+              "The server answered with an error status (4xx/5xx). <code>data</code> keeps the error body."
+            ],
+            [
+              "TIMEOUT",
+              "408",
+              "yes",
+              "The attempt exceeded <code>timeout</code>."
+            ],
+            [
+              "ABORTED",
+              "499",
+              "never",
+              "<code>signal</code>, <code>venus.abort()</code> or <code>api.abort()</code> cancelled the request."
+            ],
+            [
+              "NETWORK_ERROR",
+              "0",
+              "yes",
+              "The request failed before any answer: offline, DNS, CORS, connection reset."
+            ],
+            [
+              "JSON_PARSE_ERROR",
+              "server's",
+              "no",
+              "The server answered, but the JSON body is invalid."
+            ],
+            [
+              "INVALID_BODY",
+              "400",
+              "never",
+              "The body is empty (<code>null</code>, <code>undefined</code>, <code>\"\"</code>, <code>{}</code>, <code>[]</code>) or cannot be serialized. No network call is made."
+            ],
+            [
+              "INVALID_URL",
+              "0",
+              "never",
+              "An absolute URL was used while a <code>baseURL</code> is configured."
+            ],
+            [
+              "MODE_CONFLICT",
+              "0",
+              "never",
+              "A <code>venus</code> request was made after <code>createClient()</code> took the process."
+            ],
+            [
+              "UNSUPPORTED",
+              "0",
+              "never",
+              "<code>progress</code> was used where there is no XMLHttpRequest (Node)."
+            ],
+            [
+              "RETRY_EXHAUSTED",
+              "last status (503 if none)",
+              "n/a",
+              "Every retry failed. The last status and body are kept."
+            ],
+            [
+              "UNKNOWN_ERROR",
+              "0",
+              "never",
+              "A <code>beforeRequest</code> or <code>afterResponse</code> hook threw."
+            ]
+          ]
+        },
+        "types": {
+          "headers": [
+            "Type",
+            "What it describes"
+          ],
+          "rows": [
+            [
+              "VenusResponse<T>",
+              "What every method returns: <code>VenusSuccess&lt;T&gt;</code> or <code>VenusFailure</code>. Check <code>ok</code> to narrow it."
+            ],
+            [
+              "VenusSuccess<T>",
+              "<code>ok: true</code>, <code>data: T</code>, <code>status</code>, <code>error: null</code>, <code>errorCode: null</code>, <code>metrics</code>."
+            ],
+            [
+              "VenusFailure",
+              "<code>ok: false</code>, <code>data: unknown</code>, <code>status?</code>, <code>error: string</code>, <code>errorCode</code>, <code>metrics</code>."
+            ],
+            [
+              "VenusErrorCode",
+              "Union of the 11 error codes in the table above."
+            ],
+            [
+              "VenusOptions",
+              "Options of a single request (the request options table)."
+            ],
+            [
+              "VenusConfigInput",
+              "Keys accepted by <code>venus.config()</code> and <code>createClient()</code>."
+            ],
+            [
+              "VenusClient",
+              "What <code>createClient()</code> returns."
+            ],
+            [
+              "VenusRetryOptions",
+              "Object form of <code>retry</code>."
+            ],
+            [
+              "VenusHooks",
+              "<code>beforeRequest</code> and <code>afterResponse</code>."
+            ],
+            [
+              "VenusRequestOverride",
+              "What <code>beforeRequest</code> may return: a partial <code>RequestInit</code> plus <code>disableHeaders</code>."
+            ],
+            [
+              "VenusTelemetryEvent",
+              "Payload of <code>onTelemetry</code>."
+            ],
+            [
+              "VenusMetrics",
+              "<code>{ engine, startedAt, durationMs, attempts }</code>."
+            ],
+            [
+              "VenusProgress",
+              "<code>{ direction, loaded, percent }</code>, with <code>VenusProgressCallback</code> as its callback."
+            ],
+            [
+              "VenusResponseType",
+              "Values accepted by <code>responseType</code>."
+            ],
+            [
+              "VenusQueryParams",
+              "Shape of <code>params</code>; <code>ParamsArrayFormat</code> lists the array formats."
+            ],
+            [
+              "InferData<R>",
+              "Extracts the <code>data</code> type from a <code>VenusResponse</code>."
+            ],
+            [
+              "VenusNormalizedError",
+              "<code>ok</code>, <code>status</code>, <code>error</code> and <code>errorCode</code>: the shape of a failure."
+            ]
+          ]
+        }
+      },
       copyFailed: "Copy failed:",
     },
   },

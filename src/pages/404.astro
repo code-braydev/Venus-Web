@@ -1,0 +1,24 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Page not found | Venus"
+  description="This page does not exist. Go back to the Venus documentation or the home page."
+  noindex
+>
+  <section class="section-container pt-40 text-center">
+    <p class="mb-3 font-mono text-sm text-venus-300">404</p>
+    <h1 class="mb-4 text-4xl font-extrabold text-ink sm:text-5xl">
+      Page not found
+    </h1>
+    <p class="mx-auto mb-10 max-w-md text-faint">
+      This page does not exist. · Esta página no existe.
+    </p>
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <a href="/" class="btn-primary">Home</a>
+      <a href="/doc/" class="btn-command">Docs</a>
+      <a href="/es/doc/" class="btn-command">Documentación</a>
+    </div>
+  </section>
+</Layout>

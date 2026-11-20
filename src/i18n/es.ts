@@ -10,14 +10,16 @@ import type { Dict } from "./en";
 
 export const es: Dict = {
   layout: {
-    homeTitle: "Venus | HTTP, sin fricción",
+    homeTitle: "Venus: cliente HTTP para TypeScript sin dependencias",
     homeDescription:
-      "Un cliente HTTP moderno y sin dependencias para JS/TS. Deja de pelearte con fetch.",
-    docTitle: "Documentación | Venus SDK",
+      "Cliente HTTP tipado y sin dependencias para JavaScript y TypeScript: reintentos seguros, timeouts, cancelación y progreso de subida. Nunca lanza.",
+    ogAlt:
+      "Logo de Venus, una esfera dorada de malla, con el texto: cliente HTTP, sin fricción",
+    docTitle: "Documentación de Venus | Cliente HTTP para JavaScript",
     docDescription:
       "Venus v3.0.1 desde cero: instalación, los dos modos, cuerpos de petición, resiliencia y la referencia completa de cada método.",
     keywords:
-      "venus, networking, librería, javascript, typescript, fetch, api, restful, graphql",
+      "venus, cliente http, typescript, javascript, wrapper de fetch, cliente api, reintentos, timeout, cancelar peticiones, progreso de subida, sin dependencias, xhr",
   },
 
   header: {
@@ -40,7 +42,6 @@ export const es: Dict = {
     author: "Autor",
     docs: "Docs",
     built: "Hecho con Astro & Love.",
-    operational: "Operativo en Vercel",
   },
 
   hero: {
@@ -91,7 +92,7 @@ export const es: Dict = {
     kicker: "El nombre",
     title: "¿Por qué el nombre Venus?",
     p1: "Siempre me ha gustado el espacio. Venus me llamó la atención porque es la discreta: un planeta apartado pero bonito, con un nombre corto, y el planeta más brillante de nuestro cielo. Lo confieso: al principio hasta lo confundí con el planeta de los anillos.",
-    p2: "Quería un cliente HTTP que destacara igual: por su claridad y agilidad. La potencia de Axios, pero ultraligero, amigable y sin la fricción de escribir un try/catch en cada petición.",
+    p2: "Quería un cliente HTTP que destacara igual: por su claridad y agilidad. Potente, pero ultraligero y amigable, y sin la fricción de escribir un try/catch en cada petición.",
     signature: "— Braydev, autor de Venus",
     traits: {
       clarity: {
@@ -100,7 +101,7 @@ export const es: Dict = {
       },
       agility: {
         title: "Agilidad",
-        body: "Cero dependencias y fetch nativo por defecto. Potencia al nivel de Axios, ultraligera.",
+        body: "Cero dependencias y fetch nativo por defecto. Potencia real, ultraligera.",
       },
       connection: {
         title: "Conexión",
@@ -283,7 +284,7 @@ export const es: Dict = {
       },
       options: {
         title: "Las mismas opciones de siempre",
-        body: "Admite params, timeout, signal, responseType, retry y hooks — el mismo modelo de opciones que usan get, send y update. DELETE es idempotente, así que se reintenta por defecto.",
+        body: "Admite params, timeout, signal, responseType, retry y hooks — el mismo modelo de opciones que usan get, send y update. DELETE es idempotente, así que puede reintentarse cuando retry está activo.",
       },
       generic: {
         title: "El genérico <T>",
@@ -322,6 +323,10 @@ export const es: Dict = {
         update: "update / updateOnly",
         remove: "venus.remove",
         commonOptions: "Opciones comunes",
+        setupApi: "Configuración y ciclo de vida",
+        timeouts: "Timeouts",
+        errorCodes: "Códigos de error",
+        types: "Tipos",
         migrating: "Migrar desde v2",
         changelog: "Changelog",
       },
@@ -342,6 +347,11 @@ export const es: Dict = {
       changelog: "Changelog",
       testing: "Testing",
       license: "Licencia",
+      timeouts: "Timeouts: nunca esperes para siempre",
+      setupApi: "API de configuración y ciclo de vida",
+      configOptions: "Opciones de configuración",
+      errorCodes: "Códigos de error",
+      types: "Referencia de tipos",
       frontend: "Frontend (SPA)",
       backend: "Backend (Node / SSR)",
     },
@@ -351,15 +361,15 @@ export const es: Dict = {
       advanced:
         "Patrones de producción: políticas de retry, hooks del ciclo de vida, cuerpos de petición, cancelación, el motor dual y arquitectura SPA/SSR.",
       retries:
-        "<code>retry</code> recupera peticiones fallidas por motivos transitorios (errores de red, timeouts, 408, 429 y 5xx). Por defecto solo reintentan los métodos <strong>idempotentes</strong> (GET, HEAD, OPTIONS, PUT, DELETE): un POST o un PATCH nunca se repite salvo que lo actives con <code>retryMethods</code> o <code>shouldRetry</code>, así un reintento jamás duplica un pedido o un pago. El backoff es exponencial con jitter y una cabecera <code>Retry-After</code> del servidor lo reemplaza. Al agotarse los intentos, la respuesta indica <code class=\"text-yellow-400\">errorCode: \"RETRY_EXHAUSTED\"</code> y conserva el último status y body.",
+        "Los reintentos están <strong>desactivados</strong> hasta que defines <code>retry</code> (<code>true</code> son 2 reintentos). Una vez activo, recupera peticiones fallidas por motivos transitorios (errores de red, timeouts, 408, 429 y 5xx). Por defecto solo reintentan los métodos <strong><a class=\"term\" href=\"/es/doc/glossary#idempotent\">idempotentes</a></strong> (GET, HEAD, OPTIONS, PUT, DELETE): un POST o un PATCH nunca se repite salvo que lo actives con <code>retryMethods</code> o <code>shouldRetry</code>, así un reintento jamás duplica un pedido o un pago. El <a class=\"term\" href=\"/es/doc/glossary#backoff\">backoff</a> es exponencial con <a class=\"term\" href=\"/es/doc/glossary#jitter\">jitter</a> y una cabecera <a class=\"term\" href=\"/es/doc/glossary#retry-after\"><code>Retry-After</code></a> del servidor lo reemplaza. Al agotarse los intentos, la respuesta indica <code class=\"text-yellow-400\">errorCode: \"RETRY_EXHAUSTED\"</code> y conserva el último status y body.",
       hooks:
-        "<code>beforeRequest</code> se ejecuta en cada intento y devuelve un override parcial que se fusiona con la petición (las cabeceras se combinan). <code>afterResponse</code> se ejecuta cuando llega la respuesta, con su duración e intento. <code>onTelemetry</code> emite un evento por intento. Ponlos en <code>venus.config</code> o <code>createClient</code> para aplicarlos a todas las peticiones; los de una petición se ejecutan después de los del scope. Un hook que lanza nunca rompe el contrato: la respuesta es <code class=\"text-yellow-400\">UNKNOWN_ERROR</code>.",
+        "<code>beforeRequest</code> se ejecuta en cada intento y devuelve un override parcial que se fusiona con la petición (las cabeceras se combinan). <code>afterResponse</code> se ejecuta cuando llega la respuesta, con su duración e intento. <a class=\"term\" href=\"/es/doc/glossary#telemetry\"><code>onTelemetry</code></a> emite un evento por intento. Ponlos en <code>venus.config</code> o <code>createClient</code> para aplicarlos a todas las peticiones; los de una petición se ejecutan después de los del scope. Un hook que lanza nunca rompe el contrato: la respuesta es <code class=\"text-yellow-400\">UNKNOWN_ERROR</code>.",
       uploads:
-        "Venus detecta el payload y pone el <code>Content-Type</code> por ti. Una cabecera <code>Content-Type</code> explícita siempre gana. Los payloads vacíos (<code>null</code>, <code>\"\"</code>, <code>{}</code>, <code>[]</code>) devuelven <code>INVALID_BODY</code> sin tocar la red.",
+        "Venus detecta el <a class=\"term\" href=\"/es/doc/glossary#payload\">payload</a> y pone el <a class=\"term\" href=\"/es/doc/glossary#content-type\"><code>Content-Type</code></a> por ti. Una cabecera <code>Content-Type</code> explícita siempre gana. Los payloads vacíos (<code>null</code>, <code>\"\"</code>, <code>{}</code>, <code>[]</code>) devuelven <code>INVALID_BODY</code> sin tocar la red.",
       abort:
-        "Cancela una petición con un <code>AbortSignal</code> estándar, o todo lo que está en vuelo en un scope con <code>venus.abort()</code> o <code>api.abort()</code>. Las peticiones canceladas resuelven como <code class=\"text-yellow-400\">ABORTED</code> (status 499) y nunca se reintentan.",
+        "Cancela una petición con un <a class=\"term\" href=\"/es/doc/glossary#abort-signal\"><code>AbortSignal</code></a> estándar, o todo lo que está en vuelo en un scope con <code>venus.abort()</code> o <code>api.abort()</code>. Las peticiones canceladas resuelven como <code class=\"text-yellow-400\">ABORTED</code> (status 499) y nunca se reintentan.",
       engine:
-        "<code>fetch</code> es el motor por defecto. Venus cambia solo a <code>XMLHttpRequest</code> cuando pasas un callback <code>progress</code> o activas <code>metrics</code>: sin flags que configurar. En Node no hay XHR, así que <code>metrics</code> recurre a fetch y <code>progress</code> resuelve como <code class=\"text-yellow-400\">UNSUPPORTED</code>.",
+        "<a class=\"term\" href=\"/es/doc/glossary#fetch\"><code>fetch</code></a> es el motor por defecto. Venus cambia solo a <a class=\"term\" href=\"/es/doc/glossary#xhr\"><code>XMLHttpRequest</code></a> cuando pasas un callback <code>progress</code> o activas <code>metrics</code>: sin flags que configurar. En Node no hay XHR, así que <code>metrics</code> recurre a fetch y <code>progress</code> resuelve como <code class=\"text-yellow-400\">UNSUPPORTED</code>.",
       methodReference:
         "Cada método con su sintaxis, contrato de respuesta y todas sus curiosidades: qué opciones acepta, qué mejora y cómo se comporta en casos límite.",
       commonOptions: "Cada opción documentada con exactamente lo que hace.",
@@ -369,6 +379,409 @@ export const es: Dict = {
         "Historial completo hasta la versión actual <strong class=\"text-venus-300\">3.0.1</strong>.",
       testing: "Venus está completamente testeado con Vitest.",
       license: "MIT © code-braydev",
+      timeouts:
+        "<code>timeout</code> es el tiempo máximo, en milisegundos, que puede tardar una petición antes de que Venus se rinda y la cancele. <strong>No tiene valor por defecto</strong>: si nunca lo defines, la petición espera lo que el servidor y la red permitan, así que un servidor colgado puede dejar tu interfaz cargando para siempre. Defínelo una vez en <code>venus.config</code> o <code>createClient</code> como valor por defecto del <a class=\"term\" href=\"/es/doc/glossary#scope\">scope</a>, y sobrescríbelo en una petición cuando un endpoint necesite más (o menos) tiempo. <code>timeout: 0</code> lo desactiva para esa petición. Al agotarse el tiempo Venus nunca lanza: recibes <code class=\"text-yellow-400\">{ ok: false, errorCode: \"TIMEOUT\", status: 408 }</code>.",
+      setupApi:
+        "Estos miembros configuran Venus y controlan su ciclo de vida. Usa <code>venus</code> (una API, config global) <strong>o</strong> <code>createClient()</code> (varias APIs, clientes inmutables): el primero que uses bloquea al otro. Un <code>config</code>, <code>reset</code>, <code>abort</code> o <code>createClient</code> bloqueado lanza una excepción; un método de petición bloqueado (<code>get</code>, <code>send</code>...) resuelve como <code class=\"text-yellow-400\">MODE_CONFLICT</code>.",
+      configOptions:
+        "Las mismas claves funcionan en <code>venus.config()</code> y en <code>createClient()</code>. Son los valores por defecto del scope: lo que pases en una petición concreta tiene prioridad.",
+      requestOptions:
+        "Opciones que acepta cada método de petición, con sus valores por defecto y exactamente lo que hacen. Las marcadas como <em>scope</em> usan el valor definido en <code>venus.config</code> o <code>createClient</code>.",
+      errorCodes:
+        "Cada fallo trae un <code>errorCode</code> estable: úsalo, no el mensaje, para decidir qué hacer (reintentar, mostrar un aviso, cerrar sesión). <code>status</code> es el estado HTTP cuando existe y <code>0</code> cuando la petición nunca recibió respuesta. \"Reintenta\" solo aplica si <code>retry</code> está activo y el método puede reintentarse.",
+      types:
+        "Todo lo de abajo se exporta desde <code>@braydev/venus</code> como tipo, para que anotes tus propios helpers.",
+      timeoutPoints: [
+        "<strong>Por intento.</strong> Con <code>retry</code>, cada intento tiene un temporizador nuevo y la espera del backoff entre intentos no cuenta. <code>timeout: 2000</code> con <code>retry: 2</code> puede tardar unos 6 s más el backoff en el peor caso.",
+        "<strong>Qué abarca.</strong> Desde que empieza el intento hasta que el cuerpo de la respuesta se lee y se parsea, hooks incluidos.",
+        "<strong>Se reintenta como un error de red.</strong> <code>TIMEOUT</code> se reintenta si <code>retry</code> está activo y el método lo permite (GET, PUT, DELETE...; nunca POST ni PATCH por defecto). Si el último intento también agota el tiempo recibes <code>TIMEOUT</code>, no <code>RETRY_EXHAUSTED</code>.",
+        "<strong>No es lo mismo que cancelar.</strong> <code>signal</code>, <code>venus.abort()</code> y <code>api.abort()</code> resuelven como <code>ABORTED</code> (499) y nunca se reintentan. Si ocurren las dos cosas, gana la cancelación externa.",
+        "<strong>Elegir un valor.</strong> Lecturas interactivas: de 5 000 a 10 000 ms. Subidas grandes e informes lentos: un valor mayor, o <code>0</code> más un <code>signal</code> para que el usuario pueda cancelar."
+      ],
+      tables: {
+        "setup": {
+          "headers": [
+            "Miembro",
+            "Modo",
+            "Qué hace"
+          ],
+          "rows": [
+            [
+              "venus.config(options)",
+              "venus",
+              "Fusiona en la config global las claves que pases; las omitidas conservan su valor. <code>headers</code> se reemplaza completo, no se fusiona. Se quita la barra final de <code>baseURL</code>. No devuelve nada."
+            ],
+            [
+              "venus.config()",
+              "venus",
+              "Devuelve una copia de la config global activa. Modificar la copia no tiene efecto."
+            ],
+            [
+              "venus.reset()",
+              "venus",
+              "Limpia <code>baseURL</code>, <code>headers</code>, <code>timeout</code>, <code>retry</code>, <code>metrics</code>, <code>hooks</code> y <code>onTelemetry</code>. Úsalo al cerrar sesión o entre tests. Venus sigue en modo global."
+            ],
+            [
+              "venus.abort()",
+              "venus",
+              "Cancela todas las peticiones globales en vuelo; resuelven como <code>ABORTED</code>."
+            ],
+            [
+              "venus.get / send / update / updateOnly / remove",
+              "venus",
+              "Los métodos de petición, con la config global aplicada. Mira la referencia de métodos."
+            ],
+            [
+              "createClient(defaults)",
+              "client",
+              "Crea un cliente independiente e inmutable con sus propios valores (las mismas claves que <code>venus.config</code>). Lanza si ya se usó <code>venus.config()</code>."
+            ],
+            [
+              "api.get / send / update / updateOnly / remove",
+              "client",
+              "Mismos métodos y opciones que <code>venus</code>, usando solo los valores de este cliente. Nunca leen la config global."
+            ],
+            [
+              "api.config()",
+              "client",
+              "Copia de solo lectura de los valores del cliente. No hay setter: crea otro cliente."
+            ],
+            [
+              "api.abort()",
+              "client",
+              "Cancela únicamente las peticiones en vuelo de este cliente."
+            ]
+          ]
+        },
+        "config": {
+          "headers": [
+            "Opción",
+            "Tipo",
+            "Por defecto",
+            "Qué hace"
+          ],
+          "rows": [
+            [
+              "baseURL",
+              "string",
+              "\"\"",
+              "Prefijo de cada ruta relativa, para escribir <code>/users</code>. Al definirla, el scope queda <strong>cerrado</strong>: las URLs absolutas devuelven <code>INVALID_URL</code>."
+            ],
+            [
+              "headers",
+              "Record<string, string>",
+              "{}",
+              "Se envían en cada petición. Los <code>headers</code> de la petición ganan cabecera por cabecera, y <code>disableHeaders</code> quita alguna."
+            ],
+            [
+              "timeout",
+              "number (ms)",
+              "ninguno",
+              "Tiempo máximo por intento antes de <code>TIMEOUT</code>. Mira Timeouts."
+            ],
+            [
+              "retry",
+              "boolean | number | object",
+              "desactivado",
+              "Política de reintentos por defecto. <code>true</code> son 2 reintentos, un número son esos reintentos, un objeto ajusta cada detalle. <code>retry: false</code> en una petición lo desactiva."
+            ],
+            [
+              "metrics",
+              "boolean",
+              "false",
+              "Rellena <code>response.metrics</code> (engine, startedAt, durationMs, attempts) en cada respuesta."
+            ],
+            [
+              "hooks",
+              "{ beforeRequest, afterResponse }",
+              "ninguno",
+              "Interceptores que se ejecutan en cada intento, antes de los hooks de la propia petición."
+            ],
+            [
+              "onTelemetry",
+              "(event) => void",
+              "ninguno",
+              "Recibe un evento por intento: url, method, ok, status, durationMs, attempt, errorCode. Se ejecuta antes del listener de la petición; los errores que lance se ignoran."
+            ]
+          ]
+        },
+        "options": {
+          "headers": [
+            "Opción",
+            "Tipo",
+            "Por defecto",
+            "Qué hace"
+          ],
+          "rows": [
+            [
+              "headers",
+              "HeadersInit",
+              "scope",
+              "Cabeceras de esta petición. Ganan a las del scope, cabecera por cabecera."
+            ],
+            [
+              "disableHeaders",
+              "string[]",
+              "ninguno",
+              "Nombres de cabecera (sin distinguir mayúsculas) que se quitan de esta petición, p. ej. un <code>Authorization</code> heredado."
+            ],
+            [
+              "body",
+              "unknown",
+              "ninguno",
+              "El payload. En <code>send</code>, <code>update</code> y <code>updateOnly</code> es el segundo argumento. Se serializa con su Content-Type; los cuerpos vacíos devuelven <code>INVALID_BODY</code>."
+            ],
+            [
+              "timeout",
+              "number (ms)",
+              "scope, si no ninguno",
+              "Tiempo máximo por intento antes de <code>TIMEOUT</code>. <code>0</code> lo desactiva para esta petición."
+            ],
+            [
+              "signal",
+              "AbortSignal",
+              "ninguno",
+              "Cancela la petición desde fuera. Resuelve como <code>ABORTED</code> (499) y nunca se reintenta."
+            ],
+            [
+              "params",
+              "object",
+              "ninguno",
+              "Query params, codificados y añadidos a la URL."
+            ],
+            [
+              "paramsArrayFormat",
+              "\"repeat\" | \"comma\" | \"brackets\" | \"indices\"",
+              "\"repeat\"",
+              "Cómo se serializan los arrays dentro de <code>params</code>."
+            ],
+            [
+              "responseType",
+              "\"auto\" | \"json\" | \"text\" | \"blob\" | \"formData\" | \"arrayBuffer\" | \"stream\"",
+              "\"auto\"",
+              "Qué parser lee el cuerpo de la respuesta. <code>auto</code> detecta JSON o texto."
+            ],
+            [
+              "retry",
+              "boolean | number | object",
+              "scope, si no desactivado",
+              "Política de reintentos de esta petición. La forma objeto se detalla en las filas siguientes."
+            ],
+            [
+              "retry.attempts",
+              "number",
+              "2",
+              "Reintentos después del primer intento, una vez activo retry (3 intentos en total)."
+            ],
+            [
+              "retry.backoffMs",
+              "number",
+              "200",
+              "Espera inicial. Se duplica en cada intento, con jitter."
+            ],
+            [
+              "retry.maxBackoffMs",
+              "number",
+              "2000",
+              "Techo de la espera. También limita el <code>Retry-After</code> del servidor."
+            ],
+            [
+              "retry.retryOn",
+              "number[]",
+              "408, 429, 500, 502, 503, 504",
+              "Códigos HTTP que merece la pena reintentar. Los errores de red y los timeouts siempre cuentan."
+            ],
+            [
+              "retry.retryMethods",
+              "string[]",
+              "GET, HEAD, OPTIONS, PUT, DELETE",
+              "Métodos que pueden reintentarse. Añade <code>\"POST\"</code> o <code>\"PATCH\"</code> solo si repetirlos es seguro."
+            ],
+            [
+              "retry.shouldRetry",
+              "(ctx) => boolean",
+              "ninguno",
+              "Decisión propia con <code>{ attempt, status, errorCode }</code>. Reemplaza a <code>retryMethods</code> y <code>retryOn</code>."
+            ],
+            [
+              "hooks",
+              "{ beforeRequest, afterResponse }",
+              "ninguno",
+              "Hooks de la petición. Se ejecutan después de los del scope."
+            ],
+            [
+              "onTelemetry",
+              "(event) => void",
+              "ninguno",
+              "Listener de telemetría de esta petición."
+            ],
+            [
+              "metrics",
+              "boolean",
+              "scope, si no false",
+              "Rellena <code>response.metrics</code> en esta petición."
+            ],
+            [
+              "progress",
+              "({ direction, loaded, percent }) => void",
+              "ninguno",
+              "Progreso de la transferencia. Cambia la petición a XHR; en Node resuelve como <code>UNSUPPORTED</code>."
+            ]
+          ]
+        },
+        "errors": {
+          "headers": [
+            "Código",
+            "Status",
+            "Reintenta",
+            "Cuándo ocurre"
+          ],
+          "rows": [
+            [
+              "HTTP_ERROR",
+              "el del servidor",
+              "si está en retryOn",
+              "El servidor respondió con un estado de error (4xx/5xx). <code>data</code> conserva el cuerpo del error."
+            ],
+            [
+              "TIMEOUT",
+              "408",
+              "sí",
+              "El intento superó <code>timeout</code>."
+            ],
+            [
+              "ABORTED",
+              "499",
+              "nunca",
+              "<code>signal</code>, <code>venus.abort()</code> o <code>api.abort()</code> cancelaron la petición."
+            ],
+            [
+              "NETWORK_ERROR",
+              "0",
+              "sí",
+              "La petición falló antes de recibir respuesta: sin conexión, DNS, CORS, conexión cortada."
+            ],
+            [
+              "JSON_PARSE_ERROR",
+              "el del servidor",
+              "no",
+              "El servidor respondió, pero el cuerpo JSON no es válido."
+            ],
+            [
+              "INVALID_BODY",
+              "400",
+              "nunca",
+              "El cuerpo está vacío (<code>null</code>, <code>undefined</code>, <code>\"\"</code>, <code>{}</code>, <code>[]</code>) o no se puede serializar. No se hace ninguna llamada de red."
+            ],
+            [
+              "INVALID_URL",
+              "0",
+              "nunca",
+              "Se usó una URL absoluta con una <code>baseURL</code> configurada."
+            ],
+            [
+              "MODE_CONFLICT",
+              "0",
+              "nunca",
+              "Se hizo una petición con <code>venus</code> después de que <code>createClient()</code> tomara el proceso."
+            ],
+            [
+              "UNSUPPORTED",
+              "0",
+              "nunca",
+              "Se usó <code>progress</code> donde no hay XMLHttpRequest (Node)."
+            ],
+            [
+              "RETRY_EXHAUSTED",
+              "el último (503 si no hay)",
+              "n/a",
+              "Todos los reintentos fallaron. Se conservan el último status y body."
+            ],
+            [
+              "UNKNOWN_ERROR",
+              "0",
+              "nunca",
+              "Un hook <code>beforeRequest</code> o <code>afterResponse</code> lanzó una excepción."
+            ]
+          ]
+        },
+        "types": {
+          "headers": [
+            "Tipo",
+            "Qué describe"
+          ],
+          "rows": [
+            [
+              "VenusResponse<T>",
+              "Lo que devuelve cada método: <code>VenusSuccess&lt;T&gt;</code> o <code>VenusFailure</code>. Comprueba <code>ok</code> para acotarlo."
+            ],
+            [
+              "VenusSuccess<T>",
+              "<code>ok: true</code>, <code>data: T</code>, <code>status</code>, <code>error: null</code>, <code>errorCode: null</code>, <code>metrics</code>."
+            ],
+            [
+              "VenusFailure",
+              "<code>ok: false</code>, <code>data: unknown</code>, <code>status?</code>, <code>error: string</code>, <code>errorCode</code>, <code>metrics</code>."
+            ],
+            [
+              "VenusErrorCode",
+              "Unión de los 11 códigos de error de la tabla anterior."
+            ],
+            [
+              "VenusOptions",
+              "Opciones de una petición concreta (la tabla de opciones de petición)."
+            ],
+            [
+              "VenusConfigInput",
+              "Claves que aceptan <code>venus.config()</code> y <code>createClient()</code>."
+            ],
+            [
+              "VenusClient",
+              "Lo que devuelve <code>createClient()</code>."
+            ],
+            [
+              "VenusRetryOptions",
+              "Forma objeto de <code>retry</code>."
+            ],
+            [
+              "VenusHooks",
+              "<code>beforeRequest</code> y <code>afterResponse</code>."
+            ],
+            [
+              "VenusRequestOverride",
+              "Lo que puede devolver <code>beforeRequest</code>: un <code>RequestInit</code> parcial más <code>disableHeaders</code>."
+            ],
+            [
+              "VenusTelemetryEvent",
+              "Payload de <code>onTelemetry</code>."
+            ],
+            [
+              "VenusMetrics",
+              "<code>{ engine, startedAt, durationMs, attempts }</code>."
+            ],
+            [
+              "VenusProgress",
+              "<code>{ direction, loaded, percent }</code>, con <code>VenusProgressCallback</code> como su callback."
+            ],
+            [
+              "VenusResponseType",
+              "Valores que acepta <code>responseType</code>."
+            ],
+            [
+              "VenusQueryParams",
+              "Forma de <code>params</code>; <code>ParamsArrayFormat</code> lista los formatos de array."
+            ],
+            [
+              "InferData<R>",
+              "Extrae el tipo de <code>data</code> de un <code>VenusResponse</code>."
+            ],
+            [
+              "VenusNormalizedError",
+              "<code>ok</code>, <code>status</code>, <code>error</code> y <code>errorCode</code>: la forma de un fallo."
+            ]
+          ]
+        }
+      },
       copyFailed: "Error al copiar:",
     },
   },

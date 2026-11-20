@@ -1,0 +1,22 @@
+---
+import { getContent, resolveLocale } from "../../../i18n";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const entries = [...getContent(locale).glossary.entries].sort((a, b) =>
+  a.term.localeCompare(b.term, locale),
+);
+---
+
+<dl class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  {
+    entries.map((e) => (
+      <div
+        id={e.id}
+        class="scroll-mt-32 rounded-xl border border-ink/10 bg-surface-2/60 p-4 target:border-venus-400/50 target:bg-venus-500/5"
+      >
+        <dt class="font-bold text-venus-200">{e.term}</dt>
+        <dd class="mt-2 text-sm leading-relaxed text-muted">{e.def}</dd>
+      </div>
+    ))
+  }
+</dl>

@@ -2,52 +2,12 @@
 import DocMethod from "./DocMethod.astro";
 import GenericExplainer from "./GenericExplainer.astro";
 import { getDict, resolveLocale } from "../i18n";
+import { getSnippets } from "../docs/snippets";
 
 const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
+const sn = getSnippets(locale);
 const ins = t.insights;
-
-const getCode = `const { data, ok, errorCode } = await venus.get<User>("/profile", {
-  params: { include: ["roles"] },
-  paramsArrayFormat: "repeat",
-  responseType: "auto",
-  timeout: 8000,
-});
-
-if (!ok) return handleError(errorCode);
-console.log(data.name); // narrowed to User`;
-
-const sendCode = `// Objects and arrays are sent as JSON
-await venus.send<User>("/users", { name: "Brayan" });
-
-// File upload: FormData keeps its multipart boundary
-const form = new FormData();
-form.append("avatar", file);
-await venus.send("/upload", form, {
-  progress: ({ direction, loaded, percent }) => {
-    console.log(direction, loaded, percent);
-  },
-});
-
-// Raw binary: the Content-Type comes from the file
-await venus.send("/files", file);`;
-
-const updateCode = `// PUT: full replacement
-await venus.update("/users/1", {
-  name: "Brayan",
-  email: "bray@dev.com",
-  active: true,
-});
-
-// PATCH: only the fields that change
-await venus.updateOnly("/users/1", { active: false }, {
-  timeout: 6000,
-});`;
-
-const removeCode = `const res = await venus.remove<null>("/users/10");
-
-// ok is true on 204 No Content, and data is null
-if (res.ok) refreshTable(res.status);`;
 
 const anatomyFields = [
   { code: "data: T", color: "text-venus-300", key: "data" },
@@ -119,7 +79,7 @@ const anatomyFields = [
     syntax="venus.get<T>(path, options?)"
     description={ins.descriptions.get}
     status="200 OK"
-    code={getCode}
+    code={sn.getCode}
     filename="profile.ts"
     details={[
       ins.get.params,
@@ -137,7 +97,7 @@ const anatomyFields = [
     syntax="venus.send<T>(path, body, options?)"
     description={ins.descriptions.send}
     status="201 Created"
-    code={sendCode}
+    code={sn.sendCode}
     filename="users.ts"
     details={[
       ins.send.validation,
@@ -154,7 +114,7 @@ const anatomyFields = [
     syntax="venus.update<T>(path, body, options?)"
     description={ins.descriptions.update}
     status="200 OK"
-    code={updateCode}
+    code={sn.updateCode}
     filename="update-user.ts"
     details={[
       ins.update.difference,
@@ -171,7 +131,7 @@ const anatomyFields = [
     syntax="venus.remove<T>(path, options?)"
     description={ins.descriptions.remove}
     status="204 No Content"
-    code={removeCode}
+    code={sn.removeCode}
     filename="delete.ts"
     details={[
       ins.remove.noContent,

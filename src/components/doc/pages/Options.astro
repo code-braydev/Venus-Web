@@ -1,0 +1,34 @@
+---
+import DocTable from "../../DocTable.astro";
+import OptionCards from "../OptionCards.astro";
+import { getDict, getContent, resolveLocale } from "../../../i18n";
+import { requestOptionTypes } from "../../../docs/nav";
+import { anchorId } from "../../../docs/slug";
+import { optionItems } from "../../../docs/cards";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const d = getDict(locale).doc;
+const c = getContent(locale);
+
+const items = optionItems(
+  requestOptionTypes,
+  c.cards.options,
+  (name) => `#${anchorId(name)}`,
+);
+---
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold text-ink">{c.cards.labels.mapTitle}</h2>
+  <p class="leading-relaxed text-muted" set:html={c.cards.optionsIntro} />
+  <OptionCards items={items} valuesLabel={c.cards.labels.values} />
+</section>
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold text-ink">{c.cards.labels.detailTitle}</h2>
+  <p class="leading-relaxed text-muted" set:html={d.prose.requestOptions} />
+  <DocTable
+    headers={d.prose.tables.options.headers}
+    rows={d.prose.tables.options.rows}
+    anchors
+  />
+</section>

@@ -1,11 +1,14 @@
 ---
 /**
- * Venus, fixed behind the page.
+ * The Venus logo (a golden wireframe sphere), fixed behind the page.
  *
  * At the top it is a huge arc rising from the bottom of the hero. As you scroll
  * it shrinks and slides to the left edge, where it stays half out of view
  * while the content cards pass in front of it. `--p` (0 -> 1) is the scroll
  * progress, written by the script below; everything else is CSS.
+ *
+ * The sphere is drawn as inline SVG (computed at build time), so it stays
+ * sharp at any size.
  */
 interface Props {
   /** Start already shrunk at the left (pages without a hero, e.g. the docs). */
@@ -14,15 +17,62 @@ interface Props {
 
 const { settled = false } = Astro.props;
 
-const cloudTexture =
-  "data:image/svg+xml;utf8," +
-  encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='420'>` +
-      `<filter id='n' x='0' y='0' width='100%' height='100%'>` +
-      `<feTurbulence type='fractalNoise' baseFrequency='0.0035 0.018' numOctaves='3' seed='7' stitchTiles='stitch'/>` +
-      `<feColorMatrix values='0 0 0 0 1  0 0 0 0 0.9  0 0 0 0 0.6  0 0 0 1.5 -0.55'/>` +
-      `</filter><rect width='100%' height='100%' filter='url(#n)'/></svg>`,
-  );
+// --- Wireframe sphere: Fibonacci points + nearest-neighbour edges ---------
+const N = 190;
+const K = 5;
+const R = 470;
+const C = 500;
+const TILT = 0.38; // radians, tilts the poles toward the viewer
+
+type P3 = { x: number; y: number; z: number };
+
+const golden = Math.PI * (3 - Math.sqrt(5));
+const pts: P3[] = Array.from({ length: N }, (_, i) => {
+  const y = 1 - (i / (N - 1)) * 2;
+  const r = Math.sqrt(1 - y * y);
+  const a = golden * i;
+  const x0 = Math.cos(a) * r;
+  const z0 = Math.sin(a) * r;
+  // rotate around X by TILT
+  return {
+    x: x0,
+    y: y * Math.cos(TILT) - z0 * Math.sin(TILT),
+    z: y * Math.sin(TILT) + z0 * Math.cos(TILT),
+  };
+});
+
+const dist2 = (a: P3, b: P3) =>
+  (a.x - b.x) ** 2 + (a.y - b.y) ** 2 + (a.z - b.z) ** 2;
+
+const edgeSet = new Set<string>();
+pts.forEach((p, i) => {
+  pts
+    .map((q, j) => ({ j, d: i === j ? Infinity : dist2(p, q) }))
+    .sort((a, b) => a.d - b.d)
+    .slice(0, K)
+    .forEach(({ j }) => edgeSet.add(i < j ? `${i}-${j}` : `${j}-${i}`));
+});
+
+const sx = (p: P3) => (C + p.x * R).toFixed(1);
+const sy = (p: P3) => (C + p.y * R).toFixed(1);
+
+const edges = [...edgeSet].map((key) => {
+  const [i, j] = key.split("-").map(Number);
+  const a = pts[i];
+  const b = pts[j];
+  return {
+    d: `M${sx(a)} ${sy(a)}L${sx(b)} ${sy(b)}`,
+    front: (a.z + b.z) / 2 >= 0,
+  };
+});
+
+const frontEdges = edges.filter((e) => e.front).map((e) => e.d).join("");
+const backEdges = edges.filter((e) => !e.front).map((e) => e.d).join("");
+const nodes = pts.map((p) => ({
+  cx: sx(p),
+  cy: sy(p),
+  front: p.z >= 0,
+}));
 ---
 
 <div
@@ -30,14 +80,43 @@ const cloudTexture =
   data-planet
   data-settled={settled ? "true" : "false"}
   aria-hidden="true"
-  style={`--cloud:url("${cloudTexture}")`}
 >
   <div class="planet-wrap">
     <div class="halo"></div>
-    <div class="planet">
-      <div class="clouds"></div>
-      <div class="shade"></div>
-    </div>
+    <svg class="sphere" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="sphere-body" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#151413" />
+          <stop offset="78%" stop-color="#0c0b0a" />
+          <stop offset="100%" stop-color="#1a140a" />
+        </radialGradient>
+        <radialGradient id="sphere-node">
+          <stop offset="0%" stop-color="#fff6dc" />
+          <stop offset="45%" stop-color="#f6cf7a" stop-opacity="0.9" />
+          <stop offset="100%" stop-color="#f4c25e" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+
+      <circle cx={C} cy={C} r={R} fill="url(#sphere-body)" />
+
+      <g class="spin">
+        <path d={backEdges} class="edge back" />
+        <path d={frontEdges} class="edge front" />
+        {
+          nodes.map((n) => (
+            <circle
+              cx={n.cx}
+              cy={n.cy}
+              r={n.front ? 5 : 3}
+              fill="url(#sphere-node)"
+              opacity={n.front ? 0.85 : 0.3}
+            />
+          ))
+        }
+      </g>
+
+      <circle cx={C} cy={C} r={R} class="rim" />
+    </svg>
   </div>
 </div>
 
@@ -59,7 +138,7 @@ const cloudTexture =
     --x1: calc(-9vw - var(--d) / 2);
   }
 
-  /* One transform moves and scales the whole planet (halo included) */
+  /* One transform moves and scales the whole sphere (halo included) */
   .planet-wrap {
     --d: clamp(820px, 170vw, 2800px);
     --cap: clamp(110px, 21vh, 280px);
@@ -83,9 +162,9 @@ const cloudTexture =
     will-change: transform;
   }
 
-  /* Atmosphere: a radial glow ring (no blur filters, so no tiling artifacts) */
+  /* Glow: a radial ring around the sphere (no blur filters, no tiling artifacts) */
   .halo {
-    --r: calc(var(--d) / 2);
+    --r: calc(var(--d) * 0.47);
     --h: 340px;
     position: absolute;
     top: 50%;
@@ -97,70 +176,59 @@ const cloudTexture =
     background: radial-gradient(
       circle closest-side,
       transparent calc(var(--r) - 4px),
-      rgb(255 236 190 / 0.6) var(--r),
-      rgb(244 194 94 / 0.3) calc(var(--r) + 36px),
-      rgb(219 132 41 / 0.14) calc(var(--r) + 130px),
+      rgb(255 236 190 / 0.5) var(--r),
+      rgb(244 194 94 / 0.25) calc(var(--r) + 36px),
+      rgb(219 160 60 / 0.1) calc(var(--r) + 130px),
       transparent calc(var(--r) + var(--h))
     );
   }
 
-  .planet {
+  .sphere {
     position: absolute;
     inset: 0;
-    border-radius: 50%;
-    overflow: hidden;
-    background: radial-gradient(
-      circle at 50% 0%,
-      #fff4d6 0%,
-      #f9d88f 5%,
-      #eba43c 16%,
-      #c9702a 30%,
-      #7a3f19 48%,
-      #2b1410 66%,
-      #070a14 100%
-    );
-    box-shadow: 0 -1px 0 0 rgb(255 240 205 / 0.9);
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
 
-  /* Streaky sulfuric clouds, drifting sideways (transform only: compositor) */
-  .clouds {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: calc(100% + 1200px);
-    background-image: var(--cloud);
-    background-size: 1200px 420px;
-    background-repeat: repeat;
-    opacity: 0.5;
-    mix-blend-mode: soft-light;
-    animation: drift 220s linear infinite;
+  .edge {
+    fill: none;
+    stroke-linecap: round;
   }
-  @keyframes drift {
+  .edge.front {
+    stroke: #f4c25e;
+    stroke-width: 1.3;
+    opacity: 0.5;
+  }
+  .edge.back {
+    stroke: #c9953a;
+    stroke-width: 1;
+    opacity: 0.18;
+  }
+  .rim {
+    fill: none;
+    stroke: rgb(255 236 190 / 0.75);
+    stroke-width: 3;
+  }
+
+  /* Slow spin of the wireframe (transform only: compositor) */
+  .spin {
+    transform-origin: 500px 500px;
+    animation: spin 240s linear infinite;
+  }
+  @keyframes spin {
     to {
-      transform: translate3d(-1200px, 0, 0);
+      transform: rotate(360deg);
     }
   }
 
-  /* Terminator: the planet fades into shadow away from the light */
-  .shade {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      circle at 50% 0%,
-      transparent 18%,
-      rgb(3 4 9 / 0.55) 58%,
-      rgb(3 4 9 / 0.9) 100%
-    );
-  }
-
-  /* While the planet travels, freeze the drift: fewer layers to recomposite */
-  .planet-layer.moving .clouds {
+  /* While the sphere travels, freeze the spin: fewer layers to recomposite */
+  .planet-layer.moving .spin {
     animation-play-state: paused;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .clouds {
+    .spin {
       animation: none;
     }
   }

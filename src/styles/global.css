@@ -171,16 +171,23 @@
     display: inline-block;
   }
 
+  /* Blank lines have no text, so their box collapses and the next number
+     lands on top of theirs: give them a zero-width character as baseline. */
+  .code-scroll .line:empty::after {
+    content: "\200b";
+  }
+
   .code-scroll .line[data-line] {
     position: relative;
-    padding-left: 3.5ch;
+    padding-left: 4.5ch;
   }
 
   .code-scroll .line[data-line]::before {
     content: attr(data-line);
     position: absolute;
+    top: 0;
     left: 0;
-    width: 2.4ch;
+    width: 3ch;
     text-align: right;
     color: #6e7681;
     user-select: none;
@@ -249,5 +256,23 @@
     animation-name: reveal;
     animation-range: entry 10% cover 30%;
     animation-fill-mode: both;
+  }
+}
+/* ===== Docs: deep links, glossary terms ===== */
+@layer base {
+  #doc-content h2,
+  #doc-content h3 {
+    scroll-margin-top: 8rem;
+  }
+
+  a.term {
+    color: inherit;
+    text-decoration: underline dotted;
+    text-decoration-color: color-mix(in srgb, var(--color-venus-400) 60%, transparent);
+    text-underline-offset: 4px;
+  }
+  a.term:hover {
+    color: var(--color-venus-200);
+    text-decoration-style: solid;
   }
 }

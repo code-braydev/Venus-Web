@@ -1,0 +1,12 @@
+---
+import DocRoute from "../../components/doc/DocRoute.astro";
+import { docSlugs } from "../../docs/nav";
+
+export function getStaticPaths() {
+  return docSlugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+---
+
+<DocRoute id={slug as (typeof docSlugs)[number]} />

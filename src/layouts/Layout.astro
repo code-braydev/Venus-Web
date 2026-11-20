@@ -3,28 +3,35 @@ import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import Starfield from "../components/Starfield.astro";
-import VenusPlanet from "../components/VenusPlanet.astro";
+import LogoSphere from "../components/LogoSphere.astro";
 import { getDict, localeFromPath, localizePath } from "../i18n";
+import { SITE } from "../docs/site";
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
   autoRedirect?: boolean;
+  /** Keep the page out of search results (404). */
+  noindex?: boolean;
+  /** schema.org structured data, one script per object. */
+  jsonLd?: Record<string, unknown>[];
 }
 
 const {
   title,
   description,
-  image = "/og-image.png", // 1200x630 image used when the link is shared
+  image = SITE.ogImage.path, // image used when the link is shared
   autoRedirect = false,
+  noindex = false,
+  jsonLd = [],
 } = Astro.props;
 
 const locale = localeFromPath(Astro.url.pathname);
 const t = getDict(locale);
 
 const path = Astro.url.pathname.replace(/\/$/, "");
-const isDocPage = path === "/doc" || path.endsWith("/doc");
+const isDocPage = /^(\/es)?\/doc(\/|$)/.test(path);
 const pageTitle = title ?? (isDocPage ? t.layout.docTitle : t.layout.homeTitle);
 const pageDescription = description ?? (isDocPage ? t.layout.docDescription : t.layout.homeDescription);
 
@@ -53,8 +60,11 @@ const redirectScript = `(function(){
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#030409" />
 
@@ -67,13 +77,25 @@ const redirectScript = `(function(){
     <link rel="alternate" hreflang="x-default" href={new URL(localizePath(Astro.url.pathname, "en"), Astro.site)} />
     <meta name="keywords" content={t.layout.keywords} />
     <meta name="author" content="Braydev" />
-    <meta name="robots" content="index, follow" />
+    <meta
+      name="robots"
+      content={noindex
+        ? "noindex, follow"
+        : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"}
+    />
+    <meta name="application-name" content={SITE.name} />
+    <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content={Astro.url} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
+    <meta property="og:site_name" content={SITE.name} />
     <meta property="og:image" content={new URL(image, Astro.url)} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content={String(SITE.ogImage.width)} />
+    <meta property="og:image:height" content={String(SITE.ogImage.height)} />
+    <meta property="og:image:alt" content={t.layout.ogAlt} />
     <meta property="og:locale" content={locale === "es" ? "es_ES" : "en_US"} />
     <meta property="og:locale:alternate" content={locale === "es" ? "en_US" : "es_ES"} />
 
@@ -82,6 +104,7 @@ const redirectScript = `(function(){
     <meta property="twitter:title" content={pageTitle} />
     <meta property="twitter:description" content={pageDescription} />
     <meta property="twitter:image" content={new URL(image, Astro.url)} />
+    <meta property="twitter:image:alt" content={t.layout.ogAlt} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -89,13 +112,21 @@ const redirectScript = `(function(){
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
+    {
+      jsonLd.map((data) => (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(data).replace(/</g, "\\u003c")}
+        />
+      ))
+    }
     {autoRedirect && <script is:inline set:html={redirectScript} />}
   </head>
   <body
     class="bg-space antialiased selection:bg-venus-500/30 overflow-x-hidden"
   >
     <Starfield dim={isDocPage} />
-    <VenusPlanet settled={isDocPage} />
+    <LogoSphere settled={isDocPage} />
     <Header />
 
     <main class="min-h-screen">

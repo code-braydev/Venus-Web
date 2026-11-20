@@ -1,0 +1,57 @@
+---
+/** Real-world problems an HTTP client solves, each with the Venus snippet that fixes it. */
+import CodeBlock from "./CodeBlock.astro";
+import { getContent, resolveLocale, localizePath } from "../i18n";
+import { getSnippets } from "../docs/snippets";
+import { docPath } from "../docs/nav";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const c = getContent(locale);
+const u = c.useCases;
+const sn = getSnippets(locale);
+
+const snippetFor = {
+  token: sn.useCaseToken,
+  timeout: sn.useCaseTimeout,
+  retry: sn.useCaseRetry,
+  abort: sn.useCaseAbort,
+  progress: sn.useCaseProgress,
+  errors: sn.useCaseErrors,
+} as const;
+---
+
+<section class="section-container" id="use-cases">
+  <div class="mb-14 max-w-2xl">
+    <h2 class="mb-4 text-3xl font-bold text-ink">{u.title}</h2>
+    <p class="text-balance text-faint">{u.lead}</p>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    {
+      u.items.map((item, i) => (
+        <article class="flex min-w-0 flex-col rounded-2xl border border-ink/10 bg-surface-2/60 p-5 sm:p-6">
+          <div class="mb-1 flex items-center gap-3">
+            <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-venus-500/20 text-xs font-bold text-venus-300">
+              {i + 1}
+            </span>
+            <h3 class="text-lg font-bold text-ink">{item.title}</h3>
+          </div>
+          <p class="mb-5 text-sm leading-relaxed text-muted">{item.problem}</p>
+          <div class="min-w-0">
+            <CodeBlock
+              code={snippetFor[item.id as keyof typeof snippetFor]}
+              filename={`${item.id}.ts`}
+              lines={false}
+            />
+          </div>
+          <a
+            href={localizePath(docPath(item.guide as Parameters<typeof docPath>[0]), locale)}
+            class="mt-auto inline-flex w-fit pt-4 items-center gap-1 text-xs font-bold uppercase tracking-widest text-venus-300 transition-colors hover:text-venus-100"
+          >
+            {u.cta} <span aria-hidden="true">→</span>
+          </a>
+        </article>
+      ))
+    }
+  </div>
+</section>

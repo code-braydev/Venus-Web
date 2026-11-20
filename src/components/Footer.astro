@@ -22,11 +22,15 @@ const docHref = localizePath("/doc", locale);
         class="flex flex-col items-center md:items-start text-center md:text-left"
       >
         <div class="flex items-center gap-2 mb-4 group">
-          <div
-            class="h-6 w-6 rounded bg-venus-200 text-venus-950 flex items-center justify-center text-[10px] font-extrabold transition-transform group-hover:rotate-12"
-          >
-            V
-          </div>
+          <img
+            src="/android-chrome-192x192.png"
+            alt=""
+            width="24"
+            height="24"
+            loading="lazy"
+            decoding="async"
+            class="h-6 w-6 transition-transform duration-500 group-hover:rotate-12"
+          />
           <span class="text-lg font-bold text-ink tracking-tight">
             Venus<span class="text-venus-300">.</span>
           </span>
@@ -96,22 +100,12 @@ const docHref = localizePath("/doc", locale);
     </div>
 
     <div
-      class="mt-16 flex flex-col items-center justify-between border-t border-ink/5 pt-8 gap-4 md:flex-row"
+      class="mt-16 flex flex-col items-center border-t border-ink/5 pt-8 md:items-start"
     >
-      <p class="text-[10px] sm:text-xs text-faint order-2 md:order-1">
+      <p class="text-[10px] sm:text-xs text-faint">
         &copy; {new Date().getFullYear()} @braydev. {t.footer.built}
       </p>
 
-      <div class="flex items-center gap-4 order-1 md:order-2">
-        <span
-          class="flex items-center gap-2 text-[10px] font-medium uppercase tracking-tighter text-accent-soft"
-        >
-          <span
-            class="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"
-          ></span>
-          {t.footer.operational}
-        </span>
-      </div>
     </div>
   </div>
 </footer>

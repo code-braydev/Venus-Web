@@ -1,0 +1,31 @@
+---
+import CodeBlock from "../../CodeBlock.astro";
+import DocTable from "../../DocTable.astro";
+import { getDict, getContent, resolveLocale } from "../../../i18n";
+import { getSnippets } from "../../../docs/snippets";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const d = getDict(locale).doc;
+const c = getContent(locale);
+const sn = getSnippets(locale);
+---
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold text-ink">{d.headings.configOptions}</h2>
+  <p class="leading-relaxed text-muted" set:html={c.cards.configIntro} />
+  <DocTable
+    headers={d.prose.tables.config.headers}
+    rows={d.prose.tables.config.rows}
+    anchors
+  />
+</section>
+
+<section class="space-y-6">
+  <h2 class="text-2xl font-bold text-ink">{d.headings.setupApi}</h2>
+  <p class="leading-relaxed text-muted" set:html={d.prose.setupApi} />
+  <DocTable
+    headers={d.prose.tables.setup.headers}
+    rows={d.prose.tables.setup.rows}
+  />
+  <CodeBlock code={sn.setupSnippet} filename="setup.ts" label="Lifecycle" />
+</section>

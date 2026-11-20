@@ -1,28 +1,13 @@
 ---
 import { Code } from "astro:components";
-import type { ShikiTransformer } from "shiki";
+import { lineNumbers } from "../utils/shiki";
 import { getDict, resolveLocale } from "../i18n";
+import { getSnippets } from "../docs/snippets";
 
 const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
+const sn = getSnippets(locale);
 
-const exampleCode = `import { venus } from "@braydev/venus";
-
-venus.config({ baseURL: "https://api.example.com" });
-
-const res = await venus.get<Post>("/posts/1");
-
-if (res.ok) {
-  console.log(res.data); // typed as Post
-} else {
-  console.error(res.errorCode, res.error);
-}`;
-
-const lineNumbers: ShikiTransformer = {
-  line(node, line) {
-    node.properties = { ...node.properties, "data-line": line };
-  },
-};
 ---
 
 <section class="section-container">
@@ -68,7 +53,7 @@ const lineNumbers: ShikiTransformer = {
 
         <div class="code-scroll">
           <Code
-            code={exampleCode}
+            code={sn.exampleCode}
             lang="ts"
             theme="dark-plus"
             transformers={[lineNumbers]}

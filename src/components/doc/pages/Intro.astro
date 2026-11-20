@@ -1,0 +1,94 @@
+---
+import CodeBlock from "../../CodeBlock.astro";
+import QuickStart from "../../QuickStart.astro";
+import { getDict, resolveLocale } from "../../../i18n";
+import { getSnippets } from "../../../docs/snippets";
+
+const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
+const t = getDict(locale);
+const d = t.doc;
+const sn = getSnippets(locale);
+---
+
+<section id="quick-start" class="space-y-6">
+  <h2 class="text-2xl font-bold text-ink">{d.headings.installation}</h2>
+  <div
+    class="btn-command flex w-full items-center justify-between gap-4 overflow-hidden px-6 py-4 sm:w-fit"
+  >
+    <span class="mr-2 font-mono text-venus-400">$</span>
+    <span id="command-text" class="truncate font-mono text-sm"
+      >npm install @braydev/venus</span
+    >
+    <button
+      id="copy-btn"
+      class="ml-4 shrink-0 text-faint transition-all hover:text-venus-200 active:scale-90"
+      title={t.header.copyTitle}
+    >
+      <svg
+        id="icon-copy"
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="block"
+      >
+        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+      </svg>
+      <svg
+        id="icon-check"
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#4ade80"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="hidden"
+      >
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </button>
+  </div>
+</section>
+
+<section id="basics">
+  <QuickStart />
+</section>
+
+<section id="modes" class="space-y-6">
+  <h2 class="text-2xl font-bold text-ink">{d.headings.modes}</h2>
+  <p class="leading-relaxed text-muted" set:html={d.prose.modes} />
+  <CodeBlock code={sn.modesSnippet} filename="modes.ts" label="Modes" />
+</section>
+
+<script>
+  const copyBtn = document.getElementById("copy-btn");
+  const commandText = document.getElementById("command-text")?.innerText;
+  const iconCopy = document.getElementById("icon-copy");
+  const iconCheck = document.getElementById("icon-check");
+
+  copyBtn?.addEventListener("click", async () => {
+    if (!commandText) return;
+    try {
+      await navigator.clipboard.writeText(commandText);
+      iconCopy?.classList.add("hidden");
+      iconCheck?.classList.remove("hidden");
+      copyBtn.classList.replace("text-faint", "text-green-400");
+      setTimeout(() => {
+        iconCopy?.classList.remove("hidden");
+        iconCheck?.classList.add("hidden");
+        copyBtn.classList.replace("text-green-400", "text-faint");
+      }, 2000);
+    } catch (err) {
+      console.error("Copy failed:", err);
+    }
+  });
+</script>

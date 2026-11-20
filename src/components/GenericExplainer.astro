@@ -1,17 +1,12 @@
 ---
 import CodeBlock from "./CodeBlock.astro";
 import { getDict, resolveLocale } from "../i18n";
+import { getSnippets } from "../docs/snippets";
 
 const locale = resolveLocale(Astro.currentLocale, Astro.url.pathname);
 const t = getDict(locale);
+const sn = getSnippets(locale);
 
-const fullRequest = `await get<User>("/profile", {
-  headers: { Authorization: "Bearer ..." },
-  timeout: 5000,
-  params: { include: ["roles"] },
-  responseType: "auto",
-  retry: { attempts: 2, backoffMs: 200 },
-});`;
 ---
 
 <div class="p-8 rounded-2xl bg-ink/2 border border-ink/5">
@@ -64,7 +59,7 @@ const fullRequest = `await get<User>("/profile", {
     </div>
 
     <CodeBlock
-      code={fullRequest}
+      code={sn.fullRequest}
       filename="request.ts"
       label={t.explainer.fullRequest}
     />

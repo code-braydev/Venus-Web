@@ -2,5 +2,4 @@
 User-agent: *
 Allow: /
 
-# IMPORTANTE: Indica la ruta de tu sitemap para que Google encuentre todas las rutas
 Sitemap: https://venus.braydev.xyz/sitemap-index.xml

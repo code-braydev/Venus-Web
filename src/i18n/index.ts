@@ -1,5 +1,7 @@
 import { en, type Dict } from "./en";
 import { es } from "./es";
+import { contentEn, type ContentDict } from "./content.en";
+import { contentEs } from "./content.es";
 
 export type Locale = "en" | "es";
 
@@ -31,6 +33,11 @@ export function getDict(locale?: string | null): Dict {
   const l: Locale = locale === "es" ? "es" : "en";
   if (l === "en") return en;
   return merge(en, dictionaries.es) as Dict;
+}
+
+/** Docs and use-case content (nav, cards, glossary) for a locale. */
+export function getContent(locale?: string | null): ContentDict {
+  return locale === "es" ? contentEs : contentEn;
 }
 
 /** `isLocale("es")` → true */

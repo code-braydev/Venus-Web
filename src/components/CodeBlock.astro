@@ -1,6 +1,6 @@
 ---
 import { Code } from "astro:components";
-import type { ShikiTransformer } from "shiki";
+import { lineNumbers } from "../utils/shiki";
 
 interface Props {
   code: string;
@@ -17,12 +17,6 @@ const {
   lines = true,
   label,
 } = Astro.props;
-
-const lineNumbers: ShikiTransformer = {
-  line(node, line) {
-    node.properties = { ...node.properties, "data-line": line };
-  },
-};
 
 const ext = filename.includes(".") ? filename.split(".").pop()!.toLowerCase() : "";
 const badge =

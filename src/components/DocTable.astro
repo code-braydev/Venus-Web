@@ -1,0 +1,67 @@
+---
+/**
+ * Reference table for the docs. Cells accept inline HTML (<code>, <strong>),
+ * the first column is rendered as code. Scrolls sideways on narrow screens.
+ */
+import { anchorId } from "../docs/slug";
+
+interface Props {
+  headers: readonly string[];
+  rows: readonly (readonly string[])[];
+  /** Give every row an id built from its first cell, so cards can link to it. */
+  anchors?: boolean;
+}
+
+const { headers, rows, anchors = false } = Astro.props;
+---
+
+<div class="doc-table-wrap overflow-x-auto rounded-xl border border-ink/10 bg-surface-2/60">
+  <table class="w-full min-w-[40rem] border-collapse text-left text-sm">
+    <thead>
+      <tr class="border-b border-ink/10 bg-surface/60">
+        {
+          headers.map((h) => (
+            <th class="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-accent-soft whitespace-nowrap">
+              {h}
+            </th>
+          ))
+        }
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr
+            id={anchors ? anchorId(row[0]) : undefined}
+            class="border-b border-ink/5 last:border-0 align-top scroll-mt-32 target:bg-venus-500/5"
+          >
+            {row.map((cell, i) =>
+              i === 0 ? (
+                <td class="px-4 py-3 font-mono text-[12px] text-venus-300 whitespace-nowrap">
+                  {cell}
+                </td>
+              ) : (
+                <td
+                  class:list={[
+                    "px-4 py-3 leading-relaxed text-muted",
+                    i === headers.length - 1 && "min-w-[17rem]",
+                    i <= headers.length - 2 && "font-mono text-[12px] text-copy",
+                  ]}
+                  set:html={cell}
+                />
+              ),
+            )}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .doc-table-wrap :global(code) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85em;
+    color: var(--color-venus-300);
+  }
+</style>
